@@ -6,21 +6,26 @@ komentare s uputama i ogledne <details> blokove te prije predaje izbrišite ovu
 napomenu. Nemojte kopirati nastavni primjer kao rezultat svojeg projekta.
 -->
 
-# ArtConnect (README nije još gotov!)
+# ArtConnect
 
-[TODO: U jednoj rečenici navedite što aplikacija omogućuje svojim korisnicima.]
+ArtConnect je web platforma namijenjena mladim umjetnicima koja im omogućuje predstavljanje vlastitog rada, pronalaženje umjetničkih natječaja i prilika za izlaganje te
+povezivanje s galerijama, kulturnim institucijama i organizatorima događanja.
 
 **Projekt na kolegiju:** Ovu je aplikaciju razvio studentski tim u sklopu kolegija [Programsko inženjerstvo](https://www.fer.unizg.hr/predmet/proinz) na Fakultetu elektrotehnike i računarstva Sveučilišta u Zagrebu (FER).
 
 ## Opis aplikacije
 
-[TODO: U dvije ili tri rečenice objasnite problem, ciljane korisnike i glavnu korist svoje aplikacije. Trenutačne funkcionalnosti navedite odvojeno od planiranih; opišite stvarni opseg umjesto obećanih mogućnosti.]
+Cilj platforme je mladim umjetnicima olakšati ulazak u profesionalni svijet umjetnosti i omogućiti im da na jednom mjestu upravljaju svojim portfolijom i prijavama na različite umjetničke prilike. Za korištenje platforme potrebno je registrirati se kao umjetnik ili organizator. Umjetnici na platformi mogu izraditi vlastiti digitalni portfolio, a organizatori mogu objavljivati natječaje, izložbe, radionice i druge umjetničke prilike na koje se umjetnici mogu prijavljivati.
 
-**Ključne funkcionalnosti (TODO)**
+**Ključne funkcionalnosti**
 
-- [Reprezentativna funkcionalnost koju korisnici mogu isprobati]
-- [Druga reprezentativna funkcionalnost]
-- [Po želji dodatna funkcionalnost; nemojte kopirati cijeli popis zahtjeva]
+- Registracija i prijava u aplikaciju
+- Funkcionalnost izrade portfolija kao umjetnik
+- Funkcionalnost kreiranja prilika (natječaja, izložba, radionica...) kao organizator
+- Funkcionalnost prijave umjetnika na objavljene prilike kao i organizatorova mogućnost pregleda istih
+- Integracije s vanjskim servisima (OAuth2, Google Calendar)
+- Mogućnost uvida u statistiku objavljenih prilika (organizatori)
+- Sposobnost prijave u sustav kao administrator
 
 Za potpuni opseg, zahtjeve, oblikovanje i dokaze ispitivanja pogledajte (TODO) [docs](docs/Home.md).
 
@@ -63,54 +68,42 @@ cd [repository directory]
 
 ## Tehnologije
 
-Navedite nekoliko tehnologija i vanjskih usluga koje bitno određuju kako vaša aplikacija radi. Za svaku navedite njezinu konkretnu ulogu i jedan razlog ili ograničenje važno za projekt. Alat za razvoj ili ispitivanje uključite samo ako je njegova uloga važna za razumijevanje načina na koji je projekt izrađen ili provjeren. Nemojte prepisivati popis ovisnosti (engl. dependencies), statistiku programskih jezika ni popis razvojnih okruženja i komunikacijskih alata. Tablicu provjerite prema stvarnom repozitoriju i pokrenutoj aplikaciji; potrebne verzije i konfiguraciju dokumentirajte u vodiču za instalaciju.
-
 | Tehnologija ili alat | Uloga u ovom projektu | Razlog uporabe ili važno ograničenje |
 | --- | --- | --- |
-| [Naziv] | [Što radi u ovoj aplikaciji] | [Razlog ili ograničenje specifično za projekt] |
+| React | JS biblioteka za izradu frontend sučelja | Jednostavnost i široka primjena u industriji |
+| Vite | Alat koji pretvara JSX i TypeScript u JavaScript te omogućuje brzo pokretanje i izgradnju web aplikacije | Brz odaziv na promjene zbog HMR (Hot Module Reload) |
+| Python | Progamski jezik za izradu backenda | Jednostavnost i široka primjena u industriji |
+| PostgreSQL | Baza podataka | Povezanost s kolegijem "Baze podataka" koji se predaje na fakultetu |
+| Docker | Izrada slika/containera za VPS | Prenosivost na različite sustave |
 
-<details>
-<summary><strong>Primjer: objašnjenje ključnih tehnoloških odluka</strong></summary>
-
-**Primjer — CrisisMap:**
-
-| Tehnologija ili alat | Uloga u ovom projektu | Razlog uporabe ili važno ograničenje |
-| --- | --- | --- |
-| React | Prikazuje obrazac za prijavu i kartu kriznih događaja u pregledniku. | Karta i poslane prijave mogu se ažurirati bez ponovnog učitavanja cijele stranice. |
-| PostgreSQL | Pohranjuje prijave, lokacije i njihove odnose. | Zapisi o prijavama moraju ostati povezani s autorima i lokacijama; promjene sheme zahtijevaju migracije baze podataka (engl. database migrations). |
-| Usluga kartografskih pločica (engl. map tile service) | Omogućuje prikaz karte u pregledniku. | Karta ovisi o vanjskoj usluzi; aplikacija mora imati definirano ponašanje i kada kartografske pločice nisu dostupne. |
-
-**Analiza primjera:** Svaki redak opisuje ulogu ili posljedicu konkretne tehnologije u ovoj aplikaciji. Verzije paketa pripadaju datotekama s ovisnostima projekta; verzije izvršnog okruženja i konfiguracija važna za postavljanje pripadaju vodiču za instalaciju. Važne kompromise u oblikovanju (engl. design trade-offs) objasnite na stranici arhitekture u direktoriju `docs/` umjesto da ovdje ponavljate cijeli zapis odluke. Navodite samo usluge koje vaš tim stvarno integrira.
-
-</details>
 
 <a id="team-members"></a>
 ## Članovi tima
 
 | Član | Glavna uloga ili doprinos |
 | --- | --- |
-| [Ime] | [Uloga ili doprinos] |
-| [Ime] | [Uloga ili doprinos] |
-
-Uloge se tijekom projekta mogu mijenjati. Repozitorij i dogovoreni alat za praćenje zadataka (engl. task tracker) služe kao dodatni dokazi timskog rada.
+| Ana Dumbović | [Uloga ili doprinos] |
+| Borna Janežić | [Uloga ili doprinos] |
+| Matko Crnoja | Voditelj, devops |
+| Mia Barada | Frontend |
+| Luka Kauzlarić | [Uloga ili doprinos] |
+| Sabljak Leon | [Uloga ili doprinos] |
+| Vilim Crčić | Backend |
 
 ## Doprinos projektu
 
-[Ako je primjenjivo, ukratko opišite kako se evidentiraju zadaci i nedostaci te kako se pregledavaju promjene koda i gdje se nalazi aktualna evidencija zadataka. Ako tim održava `CONTRIBUTING.md`, ovdje postavite poveznicu umjesto ponavljanja pravila. Nemojte stvarati tu datoteku samo zato da biste popunili ovaj odjeljak.]
+Zadaci se evidentiraju pomoću GitHub Projects/Trello (TODO: Dogovoriti se).
 
 <a id="license"></a>
 
-**Status licence:** [Navedite licencu i postavite poveznicu na projektnu datoteku `LICENSE` ili izričito navedite da nije dodijeljena licenca koja dopušta javnu ponovnu uporabu. Namjeravani opseg provjerite s timom; nemojte prepisivati licencu predloška ove dokumentacije kao licencu svoje aplikacije.]
-
-Dokumentacijski predložak kolegija sadrži otvorene obrazovne sadržaje (engl. Open Educational Resources, OER) i licenciran je licencom Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International. Ta licenca **ne određuje automatski licencu studentske aplikacije**; tim treba jasno navesti licencu svojeg projekta u prethodnom retku i datoteci `LICENSE`, ako je primjenjivo.
-
-Kod trećih strana, skupovi podataka, slike, ikone i drugi sadržaji zadržavaju vlastite licence i uvjete uporabe. [Po potrebi postavite poveznicu na zahvale i izvore.]
+**Status licence:** Nije dodijeljena licenca koja dopušta javnu ponovnu uporabu.
 
 <a id="ai-usage"></a>
 ## Uporaba umjetne inteligencije [![AI Usage: Disclosed](https://img.shields.io/badge/AI%20Usage-Disclosed-blue.svg)](https://www.fer.unizg.hr/_download/repository/Policy%20on%20the%20appropriate%20use%20of%20artificial%20intelligence%20at%20the%20faculty%20of%20electrical%20engineering%20and%20computing%5B1%5D.pdf)
 
 Ovaj projekt slijedi FER-ova [pravila o primjerenoj uporabi umjetne inteligencije](https://www.fer.unizg.hr/_download/repository/Policy%20on%20the%20appropriate%20use%20of%20artificial%20intelligence%20at%20the%20faculty%20of%20electrical%20engineering%20and%20computing%5B1%5D.pdf).
 
+TODO: Na kraju
 **Izjava:** [Navedite jesu li korišteni alati umjetne inteligencije. Ako jesu, navedite alate i njihove glavne namjene te objasnite kako je tim pregledao nastali kod ili tekst i kako može objasniti vlastiti doprinos. Ako nisu korišteni, to jasno navedite. U alate umjetne inteligencije nemojte unositi privatne podatke, pristupne podatke ni tuđe zaštićene materijale.]
 
 [Ako je za ovaj projekt potreban detaljniji zapis uporabe umjetne inteligencije, postavite poveznicu na njegovo jedinstveno mjerodavno mjesto u dokumentaciji.]
@@ -118,7 +111,7 @@ Ovaj projekt slijedi FER-ova [pravila o primjerenoj uporabi umjetne inteligencij
 <a id="code-of-conduct-and-support"></a>
 ## Kodeks ponašanja i podrška [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
 
-Od članova tima očekuje se pridržavanje **Kodeksa ponašanja studenata** Fakulteta elektrotehnike i računarstva Sveučilišta u Zagrebu, pravila timskog rada na kolegiju i [Etičkog kodeksa IEEE-a](https://www.ieee.org/about/corporate/governance/p7-8.html). [Postavite poveznicu na `CODE_OF_CONDUCT.md` ako se ta datoteka koristi u vašem repozitoriju.]
+Od članova tima očekuje se pridržavanje **Kodeksa ponašanja studenata** Fakulteta elektrotehnike i računarstva Sveučilišta u Zagrebu, pravila timskog rada na kolegiju i [Etičkog kodeksa IEEE-a](https://www.ieee.org/about/corporate/governance/p7-8.html).
 
 ---
 
