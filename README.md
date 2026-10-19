@@ -82,12 +82,12 @@ cd [repository directory]
 
 | Član | Glavna uloga ili doprinos |
 | --- | --- |
-| Ana Dumbović | [Uloga ili doprinos] |
-| Borna Janežić | [Uloga ili doprinos] |
+| Ana Dumbović | Frontend |
+| Borna Janežić | Backend |
 | Matko Crnoja | Voditelj, devops |
 | Mia Barada | Frontend |
-| Luka Kauzlarić | [Uloga ili doprinos] |
-| Sabljak Leon | [Uloga ili doprinos] |
+| Luka Kauzlarić | Dokumentacija |
+| Sabljak Leon | Devops & backend |
 | Vilim Crčić | Backend |
 
 ## Doprinos projektu
