@@ -53,10 +53,12 @@ Za Iteraciju 1 i Završni pregled navedite konkretne podatke. Provjerite vodi li
 **Preduvjeti:** [Navedite potrebno izvršno okruženje (engl. runtime) i verzija, upravitelj paketa (engl. package manager), baza podataka ili vanjska usluga ako je nužna.] (TODO)
 
 ```bash
-git clone [repository URL]
-cd [repository directory]
-[install dependencies]
-[run the application]
+git clone https://github.com/matkocrnoja/ArtConnect.git
+cd ...direktorij gdje se to sve nalazi.../ArtConnect
+
+cd vite-frontend
+npm install # ako se prvi put pokrece ili ako ima izmjena u package.json
+npm run dev # pokrece frontend na localhostu
 ```
 
 **Adresa:** [Stvarna adresa koju aplikacija ispiše nakon pokretanja.] (TODO)
