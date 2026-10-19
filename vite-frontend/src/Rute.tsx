@@ -10,6 +10,7 @@ import Ana from './Stranice/OsobneStranice/Ana';
 import Leon from './Stranice/OsobneStranice/Leon';
 import Luka from './Stranice/OsobneStranice/Luka';
 import Borna from './Stranice/OsobneStranice/Borna';
+import Mia from './Stranice/OsobneStranice/Mia'
 
 const Rute = createBrowserRouter([
   {
@@ -47,6 +48,10 @@ const Rute = createBrowserRouter([
       {
         path: '/prikazi-broj/:id?',
         element: <ShowNumber/>,
+      },
+      {
+        path: '/mia',
+        element: <Mia />,
       },
       {
         path: '/dashboard',
