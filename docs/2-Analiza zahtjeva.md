@@ -13,10 +13,32 @@ Primjeri koriste temu projekta CrisisMap. Neki namjerno sadrže korisne nedostat
 
 **Cilj:** Navesti što aplikacija mora omogućiti korisnicima, odakle pojedina mogućnost proizlazi i koji se opažljivi rezultat smatra prihvaćanjem.
 
+#### F1 - F5: Pristup usluzi
 | ID | Opis | Prioritet | Izvor | Kriteriji prihvaćanja |
 | --- | --- | --- | --- | --- |
-| F-001 | [Funkcijski zahtjev/ponašanje sustava] | [Visok/Srednji/Nizak] | [Odobreni zadatak / zahtjev dionika / povratna informacija] | [Opažljivi rezultat] |
-|  |  |  |  |  |
+| F-001 | Registracija umjetnika i organizatora (nadalje: korisnika) putem vanjskog servisa OAuth 2.0 (Google) | Visok | ArtConnect.pdf | TBD |
+| F-002 | Prijava korisnika & administratora putem vanjskog servisa OAuth 2.0 (Google) | x | x | x |
+| F-003 | Odjava korisnika iz sesije klikom na gumb | x | x | x |
+| F-004 | Automatska odjava korisnika iz sesije po isteku vremena | x | x | Administratorska sesija traje nešto kraće |
+| F-005 | Prijavljeni korisnici s ovjerenom sesijom imaju pristup Dashboardu | x | x | x |
+
+
+#### F6 - F...: Dashboard prijavljenog umjetnika
+| ID | Opis | Prioritet | Izvor | Kriteriji prihvaćanja |
+| --- | --- | --- | --- | --- |
+| F-005 | Umjetnici mogu urediti svoj profil koji su kreirali prilikom registracije klikom na "Postavke" | x | x | x |
+| F-005 | Umjetnici mogu vidjeti svoj portfolio klikom na "Moj portfolio" gdje su sva djela prikazana kao akrtice | x | x | x |
+| F-005 | Umjetnici mogu dodavati nova djela u svoj portfolio klikom na gumb "Dodaj" unutar "Moj portfolio"| x | x | x |
+| F-005 | Umjetnici mogu uređivati djela unutar portfolija klikom na gumb "Uredi" na kartici djela | x | x | x |
+| F-005 | Umjetnici mogu brisati djela unutar portfolija klikom na gumb "Obriši" na kartici djela | x | x | x |
+| F-005 | Svako djelo može sadržavati do 3 datoteke (.pdf, .jpg, .png, .gif) s ograničenjem od 5MB po datoteci. | x | x | x |
+| F-005 | Svako djelo može biti otvoreno za javnost ili skriveno privatno klikom na checkbox "Javno" unutar funkcionalnosti "Uredi" | x | x | x |
+| F-005 | Klikom na gumb "Preview" na kartici prikazuje se djelo u cjelosti - iz perspektive javnog, neprijavljenog korisnika | x | x | x |
+
+
+
+
+
 
 <details>
 <summary><strong>Izvori zahtjeva i kriteriji prihvaćanja</strong></summary>
