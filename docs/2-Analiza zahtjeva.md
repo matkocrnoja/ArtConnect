@@ -19,9 +19,8 @@ Primjeri koriste temu projekta CrisisMap. Neki namjerno sadrže korisne nedostat
 | F-001 | Registracija umjetnika i organizatora (nadalje: korisnika) putem vanjskog servisa OAuth 2.0 (Google) | Visok | ArtConnect.pdf | TBD |
 | F-002 | Prijava korisnika & administratora putem vanjskog servisa OAuth 2.0 (Google) | x | x | x |
 | F-003 | Odjava korisnika iz sesije klikom na gumb | x | x | x |
-| F-004 |Automatska odjava korisnika iz sesije po isteku vremena| x | x | Administratorska sesija traje nešto kraće |
-| F-005 |Prijavljeni korisnici s ovjerenom sesijom imaju pristup Dashboardu| x |x| x |
-
+| F-004 | Automatska odjava korisnika iz sesije po isteku vremena| x | x | Administratorska sesija traje nešto kraće |
+| F-005 | Prijavljeni korisnici s ovjerenom sesijom imaju pristup Dashboardu| x |x| x |
 
 #### F... - F...: Dashboard prijavljenog umjetnika
 | ID | Opis | Prioritet | Izvor | Kriteriji prihvaćanja |
@@ -36,7 +35,6 @@ Primjeri koriste temu projekta CrisisMap. Neki namjerno sadrže korisne nedostat
 | F-005 |Klikom na gumb "Preview" na kartici prikazuje se djelo u cjelosti - iz perspektive javnog, neprijavljenog korisnika| x | x | x |
 
 #### F... - F...: Dashboard prijavljenog organizatora
-
 |ID| Opis |Prioritet| Izvor | Kriteriji prihvaćanja |
 | --- | --- | --- | --- | --- |
 |F-XXX|Organizrator može urediti svoj profil kojeg su kreirali prilikom registracije klikom na "Postavke". Tu mogu promijeniti sliku, ime i opis profila.| x | x |x|
@@ -54,9 +52,15 @@ Primjeri koriste temu projekta CrisisMap. Neki namjerno sadrže korisne nedostat
 |F-XXX|Na organizatorovom profilu se pojavi kvačica pored imena ukoliko je taj organizrator potvrđen od strane administratora. (mislim da nema potrebe za posebne funkcionalnosti)|x|x|x|
 
 #### F... - F...: Dashboard neprijavljenog korisnika
-|ID| Opis | Prioritet | Izvor |Kriteriji prihvaćanja|
-| --- | --- | --- |---| --- |
-|F-XXX|Verylongtext|x| x ||
+| ID | Opis | Prioritet | Izvor | Kriteriji prihvaćanja |
+| --- | --- | --- | --- | --- |
+| F-XXX | Korisnik na direktoriju /art vidi zadnjih 20 objavljenih javnih djela u grid formatu | Visok | ArtConnect.pdf | Prikazuje se najviše 20 djela sortiranih od najnovijeg. Prikazuju se isključivo djela označena kao "Javno". Svaka kartica prikazuje sliku djela, naziv i ime umjetnika, a klikom se otvara stranica djela. |
+| F-XXX | Tražilica na direktoriju /art kojom se mogu pretraživati djela po nazivu djela | Srednji | Dogovor tima | Pretraga ne razlikuje velika i mala slova i pronalazi djela kojima naziv sadrži upisani pojam. Rezultati sadrže samo javna djela. Ako nema rezultata, prikazuje se poruka "Nema pronađenih djela". |
+| F-XXX | Korisnik na direktoriju /artists ima pristup tražilici umjetnika | Srednji | ArtConnect.pdf | Umjetnici se mogu pretraživati po imenu i filtrirati po području umjetnosti. Klikom na umjetnika otvara se njegov javni profil s biografijom, javnim djelima i sudjelovanjima. Privatna djela nisu vidljiva. |
+| F-XXX | Korisnik na direktoriju /opportunities vidi zadnjih 20 objavljenih prilika u grid formatu, isto kao umjetnici, ali se ne može na njih prijaviti | Visok | ArtConnect.pdf | Prikazuje se najviše 20 aktivnih prilika (statusi "Otvoreno za prijave", "Prijave zatvorene" i "U procesu odabira") sortiranih od najnovije. Prilike u statusu "Priprema" nisu vidljive. Umjesto gumba "Prijavi se" prikazuje se gumb "Prijavi se za sudjelovanje" koji vodi na prijavu u sustav. |
+| F-XXX | Korisnik na direktoriju /opportunities ima pristup tražilici objavljenih prilika | Visok | ArtConnect.pdf | Prilike se mogu pretraživati po nazivu i filtrirati po području umjetnosti, lokaciji, roku za prijavu i statusu. Filteri se mogu kombinirati. Ako nema rezultata, prikazuje se poruka "Nema pronađenih prilika". |
+| F-XXX | Korisnik na direktoriju /opportunities može prikazati završene prilike odabirom kartice "Završene" | Srednji | Dogovor tima | Kartica "Završene" prikazuje prilike u statusu "Završeno" sortirane od najnovije prema datumu završetka. Završene prilike prikazuju se odvojeno od aktivnih i jasno su označene oznakom "Završeno". Tražilica i filteri rade i nad završenim prilikama. |
+| F-XXX | Na stranici završene prilike korisnik vidi objavljene rezultate, odnosno pobjednike i sudionike | Srednji | ArtConnect.pdf | Rezultati su vidljivi tek nakon što ih organizator objavi; do tada se prikazuje poruka "Rezultati još nisu objavljeni". Pobjednici su istaknuti odvojeno od ostalih sudionika, uz osvojenu nagradu ako postoji. Ime svakog umjetnika poveznica je na njegov javni profil. |
 
 #### F... - F...: Prilike i natječaji
 |ID| Opis |Prioritet| Izvor | Kriteriji prihvaćanja |
@@ -67,6 +71,15 @@ Primjeri koriste temu projekta CrisisMap. Neki namjerno sadrže korisne nedostat
 | ID | Opis | Prioritet | Izvor | Kriteriji prihvaćanja |
 | --- | --- | --- | --- | --- |
 | F-XXX || x | x | x |
+| F-XXX | Umjetnik na direktoriju /opportunities vidi zadnjih 20 objavljenih prilika u grid formatu, a ispod svake prilike otvorene za prijave postoji gumb "Prijavi se" | Visok | ArtConnect.pdf | Prijavljeni umjetnik vidi najviše 20 prilika sortiranih od najnovije. Gumb "Prijavi se" prikazan je samo na prilikama u statusu "Otvoreno za prijave" kojima rok nije istekao. Prilike u ostalim statusima nisu vidljive. |
+| F-XAB | Klikom na "Prijavi se" umjetnik se prijavljuje na priliku ispunjavanjem formulara koji je oblikovan prema zahtjevima prilike (odabir djela iz portfolija, motivacijsko pismo, dodatne datoteke) | Visok | ArtConnect.pdf | Formular je standardiziran. Prijava se ne može poslati dok sva obavezna polja nisu ispunjena. Umjetnik može odabrati djela iz portfolija, uključujući privatna, koja su tada vidljiva samo organizatoru te prilike. Dodatne datoteke imaju ista ograničenja kao datoteke djela (.pdf, .jpg, .png, .gif, do 5MB). Nakon slanja prijava dobiva status "Predana" i prikazuje se poruka potvrde. |
+| F-XXX | Umjetnik se može prijaviti na istu priliku samo jednom, nakon čega gumb "Prijavi se" treba biti _locked_ | Visok | Dogovor tima | Nakon uspješne prijave gumb prikazuje tekst "Prijavljeno" i onemogućen je. Pokušaj ponovne prijave (npr. izravnim API pozivom) poslužitelj odbija s porukom o grešci. Povučena prijava se ne broji, pa se umjetnik može ponovno prijaviti dok je prilika otvorena. |
+| F-XXX | Umjetnik može vidjeti na koje se prilike prijavio i u kojem su statusu prijave na svom Dashboardu ("Moje prijave") | Visok | ArtConnect.pdf | Popis prikazuje naziv prilike, datum predaje, rok i trenutni status prijave. Status je jedan od: Predana, U pregledu, Potrebna dopuna, Prihvaćena, Odbijena. Promjena statusa koju napravi organizator vidljiva je umjetniku nakon osvježavanja stranice. |
+| F-XXX | Umjetnik može povući prijavu sve dok su prijave otvorene, nakon čega se prijava više ne može povući | Srednji | Dogovor tima | Gumb "Povuci prijavu" vidljiv je samo dok je prilika u statusu "Otvoreno za prijave" i rok nije istekao. Prije povlačenja traži se potvrda. Povučena prijava više nije vidljiva organizatoru. Nakon zatvaranja prijava gumb nije dostupan, a API zahtjev se odbija. |
+| F-XXX | Umjetnik može dopuniti prijavu kada organizator zatraži dopunu | Srednji | ArtConnect.pdf | Gumb "Dopuni prijavu" vidljiv je samo uz prijave u statusu "Potrebna dopuna", zajedno s porukom organizatora. Dopuna je moguća i nakon isteka roka za prijavu. Nakon slanja dopune status se mijenja u "U pregledu". |
+| F-XXX | Umjetnik vidi razlog odbijanja prijave | Srednji | ArtConnect.pdf | Uz prijavu u statusu "Odbijena" prikazuje se obavezan razlog koji je unio organizator. |
+| F-XXX | Umjetnik može dodati događanje na koje je prihvaćen u osobni kalendar putem Google Calendar integracije | Srednji | ArtConnect.pdf | Gumb "Dodaj u kalendar" prikazuje se samo uz prihvaćene prijave. Nakon autorizacije Google računa u kalendaru se stvara događaj s nazivom, datumom, vremenom i adresom prilike. Ako korisnik odbije autorizaciju, prikazuje se poruka o grešci, a prijava ostaje nepromijenjena. |
+| F-XXX | Sudjelovanja ostvarena putem platforme prikazuju se na javnom profilu umjetnika | Visok | ArtConnect.pdf | Kada organizator označi umjetnika kao sudionika završene prilike, sudjelovanje se automatski pojavljuje u sekciji "Sudjelovanja" na profilu umjetnika. Umjetnik može pojedino sudjelovanje sakriti s javnog profila. |
 
 #### F... - F...: Administrator
 | ID | Opis | Prioritet | Izvor | Kriteriji prihvaćanja |
