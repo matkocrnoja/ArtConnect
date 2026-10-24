@@ -19,11 +19,11 @@ Primjeri koriste temu projekta CrisisMap. Neki namjerno sadrže korisne nedostat
 | F-001 | Registracija umjetnika i organizatora (nadalje: korisnika) putem vanjskog servisa OAuth 2.0 (Google) | Visok | ArtConnect.pdf | TBD |
 | F-002 | Prijava korisnika & administratora putem vanjskog servisa OAuth 2.0 (Google) | x | x | x |
 | F-003 | Odjava korisnika iz sesije klikom na gumb | x | x | x |
-| F-004 | Automatska odjava korisnika iz sesije po isteku vremena | x | x | Administratorska sesija traje nešto kraće |
-| F-005 | Prijavljeni korisnici s ovjerenom sesijom imaju pristup Dashboardu | x | x | x |
+| F-004 |Automatska odjava korisnika iz sesije po isteku vremena| x | x | Administratorska sesija traje nešto kraće |
+| F-005 |Prijavljeni korisnici s ovjerenom sesijom imaju pristup Dashboardu| x |x| x |
 
 
-#### F6 - F...: Dashboard prijavljenog umjetnika
+#### F... - F...: Dashboard prijavljenog umjetnika
 | ID | Opis | Prioritet | Izvor | Kriteriji prihvaćanja |
 | --- | --- | --- | --- | --- |
 | F-005 | Umjetnici mogu urediti svoj profil koji su kreirali prilikom registracije klikom na "Postavke" | x | x | x |
@@ -35,10 +35,25 @@ Primjeri koriste temu projekta CrisisMap. Neki namjerno sadrže korisne nedostat
 | F-005 | Svako djelo može biti otvoreno za javnost ili skriveno privatno klikom na checkbox "Javno" unutar funkcionalnosti "Uredi" | x | x | x |
 | F-005 | Klikom na gumb "Preview" na kartici prikazuje se djelo u cjelosti - iz perspektive javnog, neprijavljenog korisnika | x | x | x |
 
+#### F... - F...: Dashboard neprijavljenog korisnika
+| ID | Opis | Prioritet | Izvor | Kriteriji prihvaćanja |
+| --- | --- | --- | --- | --- |
+| F-XXX | Verylongtext | x | x | x |
 
+#### F... - F...: Prilike i natječaji
+| ID | Opis | Prioritet | Izvor | Kriteriji prihvaćanja |
+| --- | --- | --- | --- | --- |
+| F-XXX | Verylongtext | x | x | x |
 
+#### F... - F...: Prijave na prilike
+| ID | Opis | Prioritet | Izvor | Kriteriji prihvaćanja |
+| --- | --- | --- | --- | --- |
+| F-XXX | Verylongtext | x | x | x |
 
-
+#### F... - F...: Administrator
+| ID | Opis | Prioritet | Izvor | Kriteriji prihvaćanja |
+| --- | --- | --- | --- | --- |
+| F-XXX | Verylongtext | x | x | x |
 
 <details>
 <summary><strong>Izvori zahtjeva i kriteriji prihvaćanja</strong></summary>
@@ -231,4 +246,13 @@ Ograničenje je uvjet koji tim mora poštovati; pretpostavka je uvjet na koji se
 ---
 
 >**Završna provjera:** Zahtjevi su aktualni, provjerljivi i povezani. Svaki važan zahtjev moguće je pratiti od njegova opisa i ponašanja preko mjesta realizacije u sustavu do odgovarajućeg ispitivanja ili druge provjere. Poveznice koriste stvarne identifikatore i nazive iz projektne dokumentacije.
+
+
+
+
+
+
+
+
+
 
