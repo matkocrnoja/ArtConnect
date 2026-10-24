@@ -26,29 +26,47 @@ Primjeri koriste temu projekta CrisisMap. Neki namjerno sadrže korisne nedostat
 #### F... - F...: Dashboard prijavljenog umjetnika
 | ID | Opis | Prioritet | Izvor | Kriteriji prihvaćanja |
 | --- | --- | --- | --- | --- |
-| F-005 | Umjetnici mogu urediti svoj profil koji su kreirali prilikom registracije klikom na "Postavke" | x | x | x |
-| F-005 | Umjetnici mogu vidjeti svoj portfolio klikom na "Moj portfolio" gdje su sva djela prikazana kao akrtice | x | x | x |
-| F-005 | Umjetnici mogu dodavati nova djela u svoj portfolio klikom na gumb "Dodaj" unutar "Moj portfolio"| x | x | x |
+| F-005 |Umjetnici mogu urediti svoj profil koji su kreirali prilikom registracije klikom na "Postavke"| x | x | x |
+| F-005 |Umjetnici mogu vidjeti svoj portfolio klikom na "Moj portfolio" gdje su sva djela prikazana kao kartice| x | x | x |
+| F-005 |Umjetnici mogu dodavati nova djela u svoj portfolio klikom na gumb "Dodaj" unutar "Moj portfolio"| x | x | x |
 | F-005 | Umjetnici mogu uređivati djela unutar portfolija klikom na gumb "Uredi" na kartici djela | x | x | x |
 | F-005 | Umjetnici mogu brisati djela unutar portfolija klikom na gumb "Obriši" na kartici djela | x | x | x |
 | F-005 | Svako djelo može sadržavati do 3 datoteke (.pdf, .jpg, .png, .gif) s ograničenjem od 5MB po datoteci. | x | x | x |
-| F-005 | Svako djelo može biti otvoreno za javnost ili skriveno privatno klikom na checkbox "Javno" unutar funkcionalnosti "Uredi" | x | x | x |
-| F-005 | Klikom na gumb "Preview" na kartici prikazuje se djelo u cjelosti - iz perspektive javnog, neprijavljenog korisnika | x | x | x |
+| F-005 |Svako djelo može biti otvoreno za javnost ili skriveno privatno klikom na checkbox "Javno" unutar funkcionalnosti "Uredi"| x | x |x|
+| F-005 |Klikom na gumb "Preview" na kartici prikazuje se djelo u cjelosti - iz perspektive javnog, neprijavljenog korisnika| x | x | x |
+
+#### F... - F...: Dashboard prijavljenog organizatora
+
+|ID| Opis |Prioritet| Izvor | Kriteriji prihvaćanja |
+| --- | --- | --- | --- | --- |
+|F-XXX|Organizrator može urediti svoj profil kojeg su kreirali prilikom registracije klikom na "Postavke". Tu mogu promijeniti sliku, ime i opis profila.| x | x |x|
+|F-XXX|Organizator može vidjeti svoje natječaje klikom na "Moji natječaji" gdje su svi natječaji prikazani kao kartice.|x|x|x|
+|F-XXX|Organizrator može filtrirati svoje natječaje po statusu, broju prijava i kronološki.|x|x|x|
+|F-XXX|Organizator može stvarati nove natječaje klkom na gumb "Novi natječaj" unutar "Moji natječaji".|x|x|x|
+|F-XXX|Organizator može brisati nove natječaje klikom na gumb "Obriši" na kartici natječaja.|x|x|x|
+|F-XXX|Organizator prije roka može prisilno zatvoriti natječaj klikom na gumb "Zatvori natječaj", te ga može ponovno otvoriti klikom na gumb "Otvori natječaj".|x|x|x|
+|F-XXX|Organizator može pregledati obavijesti o njihovim trenutno aktivnim natječajima klikom na gumb zvonca.|x|x|x|
+|F-XXX|Organizator može uređivati koje obavijesti dobiva klikom na "Postavke obavijesti" unutar izbornika "Postavke".|x|x|x|
+|F-XXX|Klikom na gumb "Preview" na kartici prikazuje se natječaj u cjelosti - iz perspektive javnog, neprijavljenog korisnika.|x|x|x|
+|F-XXX|Organizator gledajući profil umjetnika može pozvati umjetnika na sudjelovanje u njegovom natječaju klikom na gumb "Pozovi" te odabirujući željeni natječaj u izborniku.|x|x|x|
+|F-XXX|Organizator gledajući profil umjetnika može onemogućiti umjetniku prijave na njegove natječaje klikom na gumb "blokiraj".|x|x|x|
+|F-XXX|Organizator može uređivati blokirane korisnike klikom na "Blokirani umjetnici" unutar izbornika "Postavke".|x|x|x|
+|F-XXX|Na organizatorovom profilu se pojavi kvačica pored imena ukoliko je taj organizrator potvrđen od strane administratora. (mislim da nema potrebe za posebne funkcionalnosti)|x|x|x|
 
 #### F... - F...: Dashboard neprijavljenog korisnika
-| ID | Opis | Prioritet | Izvor | Kriteriji prihvaćanja |
-| --- | --- | --- | --- | --- |
-| F-XXX | Verylongtext | x | x | x |
+|ID| Opis | Prioritet | Izvor |Kriteriji prihvaćanja|
+| --- | --- | --- |---| --- |
+|F-XXX|Verylongtext|x| x ||
 
 #### F... - F...: Prilike i natječaji
-| ID | Opis | Prioritet | Izvor | Kriteriji prihvaćanja |
+|ID| Opis |Prioritet| Izvor | Kriteriji prihvaćanja |
 | --- | --- | --- | --- | --- |
-| F-XXX | Verylongtext | x | x | x |
+| F-XXX |Verylongtext| x | x |x|
 
 #### F... - F...: Prijave na prilike
 | ID | Opis | Prioritet | Izvor | Kriteriji prihvaćanja |
 | --- | --- | --- | --- | --- |
-| F-XXX | Verylongtext | x | x | x |
+| F-XXX || x | x | x |
 
 #### F... - F...: Administrator
 | ID | Opis | Prioritet | Izvor | Kriteriji prihvaćanja |
