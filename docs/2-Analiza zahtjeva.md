@@ -167,10 +167,21 @@ Za složenu interakciju kratak scenarij *Given / When / Then* može pojasniti kr
 
 **Cilj:** Odrediti važna svojstva kvalitete i uvjete rada odobrene aplikacije na način koji tim može razumno provjeriti.
 
+## 2.2 Nefunkcijski zahtjevi
+
 | ID | Opis | Prioritet | Izvor | Način provjere |
 | --- | --- | --- | --- | --- |
-| NF-01 | [Konkretan zahtjev (npr. odziv, sigurnost, pristupačnost)] | Visok / Srednji / Nizak | [Sigurnost / Uputa / SLA] | [Mjerenje / Testni scenarij / Pregled] |
-|  |  |  |  |  |
+| NF-01 | Sustav mora sve rokove za prijavu spremati u UTC-u, a korisnicima ih prikazivati po vremenskoj zoni Europe/Zagreb. Poslužitelj mora odbiti svaku prijavu poslanu nakon isteka roka ili na priliku čiji status nije "otvoreno za prijave", čak i ako je zahtjev poslan izravno, mimo sučelja. | Visok | Upute zadatka; odluka tima | Postupak: poslati prijavu minutu prije i minutu nakon roka te izravnim pozivom API-ja na priliku u statusu "priprema". Očekivani ishod: prihvaćena je samo prva prijava, ostale završavaju porukom o grešci bez promjene u bazi. |
+| NF-02 | Sustav mora za djela u portfoliju i materijale uz prijavu prihvaćati isključivo datoteke formata JPG, PNG i PDF veličine do 10 MB. Format se utvrđuje iz stvarnog sadržaja datoteke na poslužitelju, a ne iz nastavka u imenu. | Srednji | Odluka tima | Postupak: učitati datoteku od 12 MB, datoteku `.exe` preimenovanu u `.jpg` i ispravnu PNG sliku. Očekivani ishod: prihvaćena je samo PNG slika, za ostale korisnik dobiva razumljivu poruku. |
+| NF-03 | Sustav mora djela koja umjetnik nije označio kao javna, kao i materijale priložene uz prijave, učiniti nedostupnima svima osim vlasniku, organizatoru prilike kojoj je prijava namijenjena i administratoru. Ograničenje vrijedi i za izravne poveznice na datoteke. | Visok | Upute zadatka | Postupak: kopirati poveznicu na privatno djelo i otvoriti je bez prijave te kao drugi umjetnik. Očekivani ishod: sadržaj se ne prikazuje ni u jednom slučaju. |
+| NF-04 | Sustav mora prava pristupa provjeravati na poslužitelju pri svakom zahtjevu, prema ulozi korisnika (umjetnik, organizator, administrator) i vlasništvu nad podacima. Neautenticirani zahtjev odbija se statusom 401 Unauthorized, a zahtjev korisnika bez potrebne uloge ili vlasništva statusom 403 Forbidden. | Visok | Upute zadatka; odluka tima | Postupak: automatizirani testovi koji svaku zaštićenu krajnju točku pozivaju bez tokena i s tokenom svake uloge, uključujući organizatora koji pokušava mijenjati tuđu priliku. Očekivani ishod: statusi odgovaraju opisanim pravilima. |
+| NF-05 | Sustav mora identitet korisnika utvrđivati preko vanjskog pružatelja identiteta (Google) protokolom OAuth 2.0, bez vođenja vlastite evidencije lozinki. | Visok | Upute zadatka | Postupak: proći registraciju i prijavu kao umjetnik i kao organizator te pregledati shemu baze. Očekivani ishod: oba toka prolaze preko Googlea, a baza ne sadrži lozinke ni njihove sažetke. |
+| NF-06 | Sustav mora u statistikama organizatora i mjesečnim izvještajima administratora iskazivati samo zbirne vrijednosti, bez imena, kontakata ili drugih osobnih podataka pojedinih umjetnika. | Srednji | Odluka tima (GDPR) | Postupak: pregledati odgovore krajnjih točaka za statistike i izvještaje na testnim podacima. Očekivani ishod: odgovori sadrže samo brojeve i nazive kategorija. |
+| NF-07 | Ako Google Maps API ili Google Calendar API ne odgovore unutar 5 sekundi, sustav mora nastaviti s radom: lokacija prilike prikazuje se kao tekstualna adresa, a umjesto dodavanja u kalendar nudi se preuzimanje događaja u obliku `.ics` datoteke. | Srednji | Odluka tima | Postupak: na testnoj okolini preusmjeriti pozive prema Googleovim domenama na lažni poslužitelj koji ne odgovara. Očekivani ishod: pregled prilika i slanje prijava rade bez prekida, uz zamjenski prikaz. |
+| NF-08 | Sustav mora biti dostupan isključivo preko šifrirane veze (TLS), a obrada korisničkog unosa mora spriječiti napade iz skupine OWASP Top 10, posebno SQL injection, XSS i CSRF. Povjerljive konfiguracijske vrijednosti (OAuth client secret, ključevi API-ja) učitavaju se iz varijabli okruženja i ne smiju se pojaviti u povijesti repozitorija. | Visok | Sigurnosna praksa (OWASP) | Postupak: automatsko skeniranje produkcijske adrese alatom OWASP ZAP i pretraga repozitorija alatom gitleaks. Očekivani ishod: nema nalaza visoke razine rizika ni otkrivenih tajni. |
+| NF-09 | Sustav mora svake noći automatski izraditi sigurnosnu kopiju baze podataka, a kopije starije od 14 dana brišu se. Postupak vraćanja baze iz kopije mora biti zapisan u dokumentaciji. | Srednji | Odluka tima | Postupak: provjeriti popis izrađenih kopija i vratiti jednu od njih na zasebnu bazu prema zapisanom postupku. Očekivani ishod: vraćena baza sadrži podatke s dana izrade kopije. |
+| NF-10 | Spajanje promjena u glavnu granu mora biti dopušteno tek nakon uspješnog izvođenja testova te pregleda koda od strane barem jednog člana tima koji nije autor promjene. | Srednji | Odluka tima | Timska odgovornost i osobe zadužene za provođenje test caseova. |
+| NF-11 | Sustav mora sve tekstove sučelja, obavijesti i poruke o greškama prikazivati na hrvatskom jeziku, a datume u obliku dd.mm.gggg. | Nizak | Odluka tima | Postupak: proći glavne stranice i namjerno izazvati nekoliko grešaka pri unosu. Očekivani ishod: svi tekstovi i datumi su u zadanom jeziku i obliku. |
 
 <details>
 <summary><strong>Nefunkcijski zahtjevi za analizu</strong></summary>
@@ -203,7 +214,16 @@ Relevantna svojstva mogu se odnositi na uporabljivost, pristupačnost, sigurnost
 
 | ID uloge ili aktera | Odnos prema sustavu | Relevantni zahtjevi |
 | --- | --- | --- |
-|  |  |  |
+| A-01 Neprijavljeni posjetitelj | Primarni akter. Pregledava javna djela, umjetnike, aktivne i završene prilike te rezultate. Može se registrirati ili prijaviti u sustav, ali se ne može prijaviti na priliku. | F-NU-1 - F-NU-7; F-RL-1, F-RL-2 |
+| A-02 Umjetnik | Primarni akter. Uređuje profil i portfolio, vodi listu želja, prijavljuje se na prilike, povlači i dopunjuje prijave, prati njihov status, dodaje događanja u kalendar i prikazuje sudjelovanja na profilu. Ima i sve mogućnosti posjetitelja. | F-RL-1 - F-RL-5; F-UD-1 - F-UD-4; F-US-1 - F-US-4; F-UP-1 - F-UP-7; F-UW-1, F-UW-2; F-PP-1 - F-PP-8; F-NU-4 |
+| A-03 Organizator | Primarni akter (galerije, kulturne institucije i organizatori događanja). Stvara, objavljuje i uređuje prilike, upravlja njihovim životnim ciklusom, pregledava prijave, traži dopune, označava pobjednike, prati statistike te poziva ili blokira umjetnike. | F-RL-1 - F-RL-5; F-OD-1 - F-OD-3; F-OS-1 - F-OS-3; F-ON-1 - F-ON-4; F-OP-1 - F-OP-4; F-OU-1, F-OU-2; F-LC-1 - F-LC-5 |
+| A-04 Administrator | Primarni akter. Upravlja područjima umjetnosti i vrstama prilika, ovjerava organizatore, blokira i briše korisnike, uklanja neprimjeren sadržaj, mijenja postavke sustava i pregledava mjesečne izvještaje. Račun mu je unaprijed definiran u sustavu. | F-RL-2 - F-RL-5; F-AD-1 - F-AD-7 |
+| A-05 Google OAuth 2.0 | Sekundarni (vanjski) akter. Pružatelj identiteta koji potvrđuje Google račun pri registraciji i prijavi u sustav. | F-RL-1, F-RL-2 |
+| A-06 Google Maps API | Sekundarni (vanjski) akter. Provjerava unesenu adresu i prikazuje lokaciju prilike na karti. | F-ON-2 |
+| A-07 Google Calendar API | Sekundarni (vanjski) akter. Nakon autorizacije umjetnika stvara događaj u njegovom osobnom kalendaru. | F-PP-7 |
+| A-08 Vremenski okidač | Sekundarni akter. Pokreće radnje vezane uz protek vremena: automatsko zatvaranje prijava po isteku roka i istek sesije. | F-LC-1; F-RL-4 |
+| D-01 Nastavnici kolegija | Dionik, nije akter. Naručitelj projektnog zadatka: odobrava opseg i pregledava zahtjeve na kontrolnim točkama. | Svi zahtjevi s izvorom ArtConnect.pdf |
+| D-02 Razvojni tim | Dionik, nije akter. Definira, implementira i ispituje sustav te donosi odluke označene kao "Dogovor tima". | Svi zahtjevi s izvorom "Dogovor tima" |
 
 <details>
 <summary><strong>Akteri i povezani zahtjevi</strong></summary>
@@ -230,9 +250,21 @@ Relevantna svojstva mogu se odnositi na uporabljivost, pristupačnost, sigurnost
 
 | ID | Tip | Opis ograničenja ili pretpostavke | Izvor | Inženjerska posljedica / Provjera |
 | --- | --- | --- | --- | --- |
-| C-01 | Ograničenje | [Fiksni tehnički ili procesni uvjet] | [Zadatak / Pravila] | [Utjecaj na arhitekturu i oblikovanje] |
-| AS-01 | Pretpostavka | [Očekivani uvjet, npr. o podacima ili okolini] | [Procjena tima] | [Kako i kada će se provjeriti valjanost] |
-|  |  |  |  |  |
+| C-01 | Ograničenje | Sustav se izvodi kao web platforma. | ArtConnect.pdf | Arhitektura se sastoji od web-klijenta u pregledniku i poslužiteljskog API-ja. Izvorne mobilne aplikacije nisu u opsegu. Provjera ovlasti obavlja se na poslužitelju, ne samo u klijentu (F-RL-5). |
+| C-02 | Ograničenje | Registracija i prijava u sustav ostvaruju se isključivo putem vanjskog servisa OAuth 2.0; tim je odabrao Google kao pružatelja identiteta. | ArtConnect.pdf; Dogovor tima | Sustav ne pohranjuje lozinke i nema oporavak lozinke. Korisnik se u bazi identificira stabilnim Google identifikatorom računa, a e-adresa se samo preuzima (F-US-1). Jedan Google račun može imati više uloga (F-RL-1), pa se uloga čuva odvojeno od identiteta. Korisnik bez Google računa ne može koristiti platformu (vidi AS-01). |
+| C-03 | Ograničenje | Lokacija prilike prikazuje se putem vanjskog kartografskog servisa (Google Maps API). | ArtConnect.pdf | Potreban je API ključ koji se ne smije nalaziti u javnom repozitoriju i mora biti ograničen na domenu aplikacije. Adresa se pretvara u koordinate pri spremanju prilike i koordinate se pohranjuju, kako se servis ne bi pozivao pri svakom prikazu (F-ON-2). |
+| C-04 | Ograničenje | Dodavanje događanja u osobni kalendar ostvaruje se integracijom s vanjskim kalendarskim servisom (Google Calendar). | ArtConnect.pdf | Pristup kalendaru traži se zasebnom OAuth autorizacijom tek kada umjetnik klikne "Dodaj u kalendar", a ne pri prijavi u sustav, kako prijava ne bi tražila nepotrebne dozvole. Odbijanje autorizacije ne smije utjecati na prijavu (F-PP-7). |
+| C-05 | Ograničenje | Korištenje platforme besplatno je za sve korisnike. | ArtConnect.pdf | Sustav nema naplatu, pretplate ni ograničenja po paketima. Informacije o nagradi ili naknadi organizator unosi samo kao tekst prilike (F-ON-1), bez obrade plaćanja. |
+| C-06 | Ograničenje | Sustav razlikuje tri uloge: umjetnik, organizator i administrator. | ArtConnect.pdf | Kontrola pristupa temelji se na ulogama, a svaki API zahtjev provjerava i ulogu i vlasništvo nad podatkom (npr. organizator smije mijenjati samo svoje prilike). Administratorski računi ne nastaju registracijom (F-RL-2). |
+| C-07 | Ograničenje | Projekt se razvija unutar trajanja kolegija, s formalnim kontrolnim točkama. | Pravila kolegija | Zahtjevi prioriteta Visok implementiraju se prvi. Zahtjevi prioriteta Nizak (lista želja, pozivi, blokiranje, postavke obavijesti) mogu se odgoditi ili izbaciti iz opsega, uz zapis u odjeljku 2.5. |
+| AS-01 | Pretpostavka | Ciljni korisnici (umjetnici i organizatori) imaju Google račun i spremni su ga koristiti za prijavu u sustav. | Procjena tima | Osobe bez Google računa ne mogu pristupiti usluzi |
+| AS-02 | Pretpostavka | Besplatne kvote AWS-a, Google Maps i Google Calendar API-ja dovoljne su za razvoj, ispitivanje i demonstraciju. | Procjena tima | Pratiti potrošnju tijekom razvoja i postaviti eventualno ograničenje potrošnje. |
+| AS-03 | Pretpostavka | Organizatori unose stvarne adrese koje kartografski servis može prepoznati. | Procjena tima | Ispitati unos na uzorku stvarnih adresa (npr. galerije u Zagrebu) i na neispravnim adresama. Za neprepoznatu adresu sustav prikazuje poruku o grešci (F-ON-2). |
+| AS-04 | Pretpostavka | Sustav se koristi u opsegu studentske demonstracije: do oko 100 korisnika i nekoliko stotina djela. | Procjena tima | Dovoljna je jednostavna arhitektura s jednim poslužiteljem i jednom bazom. Najveća količina pohranjenih datoteka procjenjuje se iz zadanih ograničenja (npr. 300 djela x 3 datoteke x 5 MB = 4,5 GB) i provjerava prema kvoti odabranog hostinga prije postavljanja. |
+| AS-05 | Pretpostavka | Svi rokovi i datumi odnose se na vremensku zonu Europe/Zagreb. | Dogovor tima | Vremena se pohranjuju u UTC, a prikazuju i unose u vremenskoj zoni Europe/Zagreb. Ispitati automatsko zatvaranje prijava točno u trenutku roka (F-LC-1), uključujući prijelaz na ljetno i zimsko računanje vremena, te vremensku zonu događaja u Google Calendaru (F-PP-7). |
+| AS-06 | Pretpostavka | Obavijesti se isporučuju samo unutar aplikacije (Inbox), a korisnici aplikaciju otvaraju dovoljno često da ih pravovremeno vide. | Dogovor tima | Slanje e-pošte nije u opsegu. Provjeriti povratnim informacijama testnih korisnika; ako se obavijesti propuštaju, razmotriti slanje e-pošte kao promjenu zahtjeva (odjeljak 2.5). |
+| AS-07 | Pretpostavka | Korisnici objavljuju sadržaj u dobroj vjeri, pa je dovoljna naknadna moderacija bez odobravanja sadržaja prije objave. | Procjena tima | Djela i prilike objavljuju se bez čekanja, a administrator uklanja neprimjeren sadržaj (F-AD-5). |
+
 <details>
 <summary><strong>Ograničenja nasuprot pretpostavkama</strong></summary>
 
@@ -280,8 +312,71 @@ Ograničenje je uvjet koji tim mora poštovati; pretpostavka je uvjet na koji se
 
 | ID zahtjeva | Obrazac uporabe / modul | Arhitekturna realizacija | Ispitivanje ili provjera |
 | --- | --- | --- | --- |
-| F-001 | [UC-001] | [Komponenta, modul ili drugo mjesto realizacije] | [ST-01, CT-01 ili druga provjera] |
-|  |  |  |  |
+| F-RL-1 | UC-01 Registracija korisnika | Web-klijent; Modul autentifikacije (Google OAuth 2.0); Modul korisnika | ST-01 Registracija umjetnika; ST-02 Registracija organizatora; ST-03 Odbijena autorizacija na Googleu; CT-01 Ponovna registracija u postojećoj ulozi |
+| F-RL-2 | UC-02 Prijava u sustav | Web-klijent; Modul autentifikacije; Upravljanje sesijom | ST-04 Prijava registriranog korisnika; ST-05 Prijava neregistriranim računom; ST-06 Prijava blokiranog korisnika |
+| F-RL-3 | UC-03 Odjava iz sustava | Web-klijent; Upravljanje sesijom | ST-07 Odjava i pokušaj povratka gumbom "Natrag" |
+| F-RL-4 | Istek sesije (vremenski okidač, A-08) | Upravljanje sesijom; Modul postavki sustava | CT-02 Istek sesije po ulozi; CT-03 Produljenje sesije aktivnošću |
+| F-RL-5 | Kontrola pristupa (vrijedi za sve obrasce uporabe prijavljenih korisnika) | Autorizacijski filtar na poslužitelju | ST-08 Otvaranje Dashboarda bez prijave; CT-04 Otvaranje Dashboarda druge uloge (HTTP 403) |
+| F-NU-1 | UC-04 Pregled djela i umjetnika | Web-klijent; Modul portfolija | ST-09 Prikaz zadnjih 20 javnih djela |
+| F-NU-2 | UC-04 Pregled djela i umjetnika | Modul pretraživanja | CT-05 Pretraga djela po nazivu (velika i mala slova, samo javna djela, prazan rezultat) |
+| F-NU-3 | UC-04 Pregled djela i umjetnika | Modul pretraživanja; Modul korisnika | ST-10 Pretraga umjetnika i prikaz javnog profila |
+| F-NU-4 | UC-05 Pregled i pretraživanje prilika | Web-klijent; Modul prilika | ST-11 Popis aktivnih prilika za neprijavljenog i prijavljenog korisnika |
+| F-NU-5 | UC-05 Pregled i pretraživanje prilika | Modul pretraživanja | CT-06 Kombinirani filteri prilika |
+| F-NU-6 | UC-05 Pregled i pretraživanje prilika | Modul prilika; Modul pretraživanja | ST-12 Kartica "Završene" i sortiranje |
+| F-NU-7 | UC-05 Pregled i pretraživanje prilika | Modul prilika | ST-13 Javni rezultati završene prilike |
+| F-UD-1 | UC-06 Uređivanje profila umjetnika | Web-klijent (navigacija) | Pokriveno ispitivanjima zahtjeva F-US-1 - F-US-4 |
+| F-UD-2 | UC-07 Upravljanje portfolijem | Web-klijent; Modul portfolija | ST-14 Prikaz portfolija s javnim i privatnim djelima te praznog portfolija |
+| F-UD-3 | UC-10 Praćenje i povlačenje prijave | Web-klijent (navigacija) | Pokriveno ispitivanjima zahtjeva F-PP-4 |
+| F-UD-4 | UC-13 Pregled obavijesti | Web-klijent; Modul obavijesti | CT-07 Brojač nepročitanih obavijesti i označavanje pročitanom |
+| F-UP-1 | UC-06 Uređivanje profila umjetnika | Modul korisnika | CT-08 Ograničenje od 2000 znakova i skrivanje praznih polja |
+| F-UP-2 | UC-07 Upravljanje portfolijem | Modul portfolija; Pohrana datoteka | ST-15 Dodavanje djela; CT-09 Godina nastanka u budućnosti odbijena |
+| F-UP-3 | UC-07 Upravljanje portfolijem | Modul portfolija; Pohrana datoteka | ST-16 Uređivanje djela i odustajanje |
+| F-UP-4 | UC-07 Upravljanje portfolijem | Modul portfolija; Modul prijava | ST-17 Brisanje djela; CT-10 Brisanje djela iz aktivne prijave odbijeno |
+| F-UP-5 | UC-07 Upravljanje portfolijem | Pohrana datoteka; Modul postavki sustava | CT-11 Provjera formata, veličine i broja datoteka na poslužitelju |
+| F-UP-6 | UC-07 Upravljanje portfolijem | Modul portfolija; Autorizacijski filtar | CT-12 Vidljivost privatnog djela vlasniku, organizatoru prilike i javnosti |
+| F-UP-7 | UC-07 Upravljanje portfolijem | Web-klijent | ST-18 Preview javnog i privatnog djela |
+| F-US-1 | UC-06 Uređivanje profila umjetnika | Modul korisnika | ST-19 Uređivanje imena i prezimena |
+| F-US-2 | UC-06 Uređivanje profila umjetnika | Modul korisnika; Modul administracije (šifrarnik područja) | CT-13 Obavezno barem jedno aktivno područje |
+| F-US-3 | UC-06 Uređivanje profila umjetnika | Web-klijent; Modul korisnika | CT-14 Validacija URL-a i najviše 5 poveznica |
+| F-US-4 | UC-06 Uređivanje profila umjetnika | Modul obavijesti | CT-15 Obavijest isključene vrste se ne stvara |
+| F-UW-1 | UC-08 Upravljanje listom želja | Modul prilika (lista želja) | CT-16 Dodavanje, uklanjanje i automatsko uklanjanje nakon prijave na priliku |
+| F-UW-2 | UC-08 Upravljanje listom želja | Web-klijent; Modul prilika | ST-20 Prikaz liste želja sa zatvorenom prilikom i prazne liste |
+| F-OD-1 | UC-14 Uređivanje profila organizatora | Web-klijent (navigacija) | Pokriveno ispitivanjima zahtjeva F-OS-1 - F-OS-3 |
+| F-OD-2 | UC-15 Stvaranje i uređivanje prilike | Web-klijent; Modul prilika | ST-21 Popis vlastitih prilika s brojem prijava |
+| F-OD-3 | UC-13 Pregled obavijesti | Modul obavijesti | CT-17 Obavijesti organizatora (nova prijava, dopuna, povučena prijava) |
+| F-OU-1 | UC-19 Pozivanje i blokiranje umjetnika | Modul korisnika; Modul obavijesti | ST-22 Poziv umjetnika; CT-18 Ponovni poziv i poziv blokiranog umjetnika odbijeni |
+| F-OU-2 | UC-19 Pozivanje i blokiranje umjetnika | Modul korisnika; Modul prijava | ST-23 Blokirani umjetnik ne može se prijaviti na priliku |
+| F-OS-1 | UC-14 Uređivanje profila organizatora | Modul korisnika | ST-24 Uređivanje podataka organizatora |
+| F-OS-2 | UC-14 Uređivanje profila organizatora | Modul obavijesti | CT-15 Obavijest isključene vrste se ne stvara (zajednički s F-US-4) |
+| F-OS-3 | UC-19 Pozivanje i blokiranje umjetnika | Modul korisnika | ST-25 Odblokiranje umjetnika |
+| F-ON-1 | UC-15 Stvaranje i uređivanje prilike | Web-klijent; Modul prilika; Pohrana datoteka | ST-26 Stvaranje prilike; CT-19 Pravila datuma i obaveznih polja; CT-20 Markdown bez izvršavanja HTML-a i skripti |
+| F-ON-2 | UC-15 Stvaranje i uređivanje prilike | Modul prilika; Integracija Google Maps | ST-27 Prikaz lokacije na karti; CT-21 Neprepoznata adresa |
+| F-ON-3 | UC-15 Stvaranje i uređivanje prilike | Modul prilika | CT-22 Pravila promjene roka po statusu |
+| F-ON-4 | UC-15 Stvaranje i uređivanje prilike | Modul prilika | CT-23 Brisanje prilike s prijavama odbijeno |
+| F-OP-1 | UC-17 Pregled prijava | Modul prijava | ST-28 Pregled prijava na priliku; CT-24 Prijelaz "Predana" -> "U pregledu" pri prvom otvaranju |
+| F-OP-2 | UC-11 Dopuna prijave | Modul prijava; Modul obavijesti | ST-29 Zahtjev za dopunom i slanje dopune; CT-25 Zahtjev za dopunom nedostupan u procesu odabira |
+| F-OP-3 | UC-18 Odabir pobjednika | Modul prijava; Automat stanja prilike | ST-30 Označavanje pobjednika i upis obrazloženja; CT-26 Označavanje nije vidljivo umjetniku |
+| F-OP-4 | UC-17 Pregled prijava | Modul izvještaja (statistike) | CT-27 Statistike odgovaraju stanju baze |
+| F-LC-1 | Automat stanja prilike; automatsko zatvaranje (vremenski okidač, A-08) | Automat stanja prilike; Planer zadataka | CT-28 Dopušteni i nedopušteni prijelazi; CT-29 Automatsko zatvaranje po isteku roka |
+| F-LC-2 | UC-16 Upravljanje životnim ciklusom prilike | Automat stanja prilike | ST-31 Objava prilike; CT-30 Objava s isteklim rokom odbijena |
+| F-LC-3 | UC-16 Upravljanje životnim ciklusom prilike | Automat stanja prilike | ST-32 Zatvaranje i ponovno otvaranje prilike |
+| F-LC-4 | UC-18 Odabir pobjednika | Automat stanja prilike | ST-33 Pokretanje odabira |
+| F-LC-5 | UC-18 Odabir pobjednika | Automat stanja prilike; Modul prijava; Modul obavijesti | ST-34 Završetak odabira s pobjednicima i bez njih; CT-31 "Završi odabir" onemogućen dok nedostaju obrazloženja |
+| F-PP-1 | UC-09 Prijava na priliku | Web-klijent; Modul prijava; Pohrana datoteka | ST-35 Prijava na priliku; CT-32 Prijava bez odabranog djela odbijena |
+| F-PP-2 | UC-09 Prijava na priliku | Modul prijava | CT-33 Ponovna prijava izravnim API pozivom odbijena |
+| F-PP-3 | UC-10 Praćenje i povlačenje prijave | Modul prijava; Pohrana datoteka | ST-36 Povlačenje prijave; CT-34 Povlačenje nakon zatvaranja prijava odbijeno |
+| F-PP-4 | UC-10 Praćenje i povlačenje prijave | Web-klijent; Modul prijava | ST-37 Prikaz "Moje prijave" i sekcije "Povijest" |
+| F-PP-5 | UC-11 Dopuna prijave | Modul prijava | ST-29 Zahtjev za dopunom i slanje dopune (zajednički s F-OP-2) |
+| F-PP-6 | UC-10 Praćenje i povlačenje prijave | Modul prijava | ST-34 Završetak odabira (provjera prikaza obrazloženja odbijenom umjetniku) |
+| F-PP-7 | UC-12 Dodavanje događanja u kalendar | Integracija Google Calendar | ST-38 Stvaranje događaja u kalendaru; ST-39 Odbijena autorizacija kalendara |
+| F-PP-8 | UC-20 Prikaz sudjelovanja na profilu | Modul korisnika | ST-40 Sudjelovanje na profilu, skrivanje i isticanje |
+| F-AD-1 | UC-21 Upravljanje šifrarnicima | Modul administracije | CT-35 Jedinstven naziv i deaktivirana stavka nije ponuđena za nove unose |
+| F-AD-2 | UC-21 Upravljanje šifrarnicima | Modul administracije | CT-35 (isti test nad šifrarnikom vrsta prilika) |
+| F-AD-3 | UC-22 Upravljanje korisnicima | Modul administracije | ST-41 Ovjera i poništavanje ovjere organizatora |
+| F-AD-4 | UC-22 Upravljanje korisnicima | Modul administracije; Modul autentifikacije | ST-42 Blokiranje i brisanje korisnika; CT-36 Administrator ne može blokirati ni obrisati sebe |
+| F-AD-5 | UC-23 Moderacija sadržaja | Modul administracije; Modul obavijesti | ST-43 Uklanjanje djela i prilike s prijavama |
+| F-AD-6 | UC-24 Upravljanje postavkama sustava | Modul postavki sustava | CT-37 Primjena novih vrijednosti bez ponovnog pokretanja i odbijanje neispravnih vrijednosti |
+| F-AD-7 | UC-25 Pregled mjesečnih izvještaja | Modul izvještaja | CT-38 Brojevi u izvještaju odgovaraju bazi; ST-44 Preuzimanje izvještaja u CSV formatu |
 
 <details>
 <summary><strong>Sljedivost zahtjeva do obrazaca uporabe i ispitivanja</strong></summary>
@@ -303,11 +398,21 @@ Ograničenje je uvjet koji tim mora poštovati; pretpostavka je uvjet na koji se
 
 **Cilj:** Zabilježiti važne povratne informacije o zahtjevima i odluke koje iz njih proizlaze na dvije formalne kontrolne točke projekta, u 7. i 14. tjednu.
 
+| Kontrolna točka | Opseg koji se demonstrira | Obuhvaćeni zahtjevi |
+| --- | --- | --- |
+| Ciklus 1 (7. tjedan) | Pristup i uloge | F-RL-1 - F-RL-5; F-UD-1; F-US-1 - F-US-3; F-OD-1; F-OS-1 |
+| Ciklus 1 (7. tjedan) | Portfolio | F-UD-2; F-UP-1 - F-UP-7; F-NU-1 - F-NU-3 |
+| Ciklus 1 (7. tjedan) | Prilike | F-OD-2; F-ON-1 - F-ON-4; F-LC-1 - F-LC-3; F-NU-4, F-NU-5 |
+| Ciklus 1 (7. tjedan) | Administracija (preduvjeti) | F-AD-1, F-AD-2 (šifrarnici područja i vrsta potrebni za registraciju i stvaranje prilika); postavke sustava (F-AD-6) koriste zadane vrijednosti bez administratorskog sučelja |
+| Ciklus 2 (14. tjedan) | Prijave | F-UD-3, F-UD-4; F-PP-1 - F-PP-7; F-UW-1, F-UW-2; F-OD-3; F-US-4; F-OS-2 |
+| Ciklus 2 (14. tjedan) | Pregled za organizatora | F-OP-1 - F-OP-4; F-LC-4, F-LC-5; F-NU-6, F-NU-7; F-PP-8; F-OU-1, F-OU-2; F-OS-3 |
+| Ciklus 2 (14. tjedan) | Administracija | F-AD-3 - F-AD-7 |
+
 | Kontrolna točka | Povratna informacija ili nalaz | Odluka o zahtjevu ili opsegu |
 | --- | --- | --- |
-| Iteracija 1 | [Povratna informacija] | [Odluka; vidi odjeljak 2.5] |
-| Demo 2  | [Povratna informacija] | [Odluka; vidi odjeljak 2.5] |
-| Završni pregled | [Povratna informacija] | [Odluka; vidi odjeljak 2.5] |
+| Ciklus 1 (7. tjedan) | *Na čekanju:* pregled se održava u 7. tjednu. | *Na čekanju;* odluke će se zabilježiti u odjeljku 2.5. |
+| Ciklus 2 (14. tjedan) | *Na čekanju:* pregled se održava u 14. tjednu. | *Na čekanju;* odluke će se zabilježiti u odjeljku 2.5. |
+| Završni pregled | *Na čekanju:* pregled se održava pri završnoj predaji. | *Na čekanju;* odluke će se zabilježiti u odjeljku 2.5. |
 
 <details>
 <summary><strong>Odluke o zahtjevima nakon pregleda</strong></summary>
