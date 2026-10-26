@@ -61,7 +61,7 @@ npm install # ako se prvi put pokrece ili ako ima izmjena u package.json
 npm run dev # pokrece frontend na localhostu
 ```
 
-**Adresa:** [Stvarna adresa koju aplikacija ispiše nakon pokretanja.] (TODO)
+**Adresa:** localhost:5173 | http://16.171.251.208/
 
 **Konfiguracija:** [Navedite potrebne varijable okruženja (engl. environment variables) ili uputite na sigurnu datoteku `.env.example`; objasnite gdje se dobivaju vrijednosti. Nikada ne stavljajte stvarne pristupne podatke u ovu datoteku, primjer konfiguracije, snimke zaslona, zapise ni zapise promjena (engl. commits).] (TODO)
 
@@ -76,7 +76,6 @@ npm run dev # pokrece frontend na localhostu
 | Vite | Alat koji pretvara JSX i TypeScript u JavaScript te omogućuje brzo pokretanje i izgradnju web aplikacije | Brz odaziv na promjene zbog HMR (Hot Module Reload) |
 | Python | Progamski jezik za izradu backenda | Jednostavnost i široka primjena u industriji |
 | PostgreSQL | Baza podataka | Povezanost s kolegijem "Baze podataka" koji se predaje na fakultetu |
-| Docker | Izrada slika/containera za VPS | Prenosivost na različite sustave |
 
 
 <a id="team-members"></a>
@@ -105,10 +104,8 @@ Zadaci se evidentiraju pomoću GitHub Projects/Trello (TODO: Dogovoriti se).
 
 Ovaj projekt slijedi FER-ova [pravila o primjerenoj uporabi umjetne inteligencije](https://www.fer.unizg.hr/_download/repository/Policy%20on%20the%20appropriate%20use%20of%20artificial%20intelligence%20at%20the%20faculty%20of%20electrical%20engineering%20and%20computing%5B1%5D.pdf).
 
-TODO: Na kraju
-**Izjava:** [Navedite jesu li korišteni alati umjetne inteligencije. Ako jesu, navedite alate i njihove glavne namjene te objasnite kako je tim pregledao nastali kod ili tekst i kako može objasniti vlastiti doprinos. Ako nisu korišteni, to jasno navedite. U alate umjetne inteligencije nemojte unositi privatne podatke, pristupne podatke ni tuđe zaštićene materijale.]
-
-[Ako je za ovaj projekt potreban detaljniji zapis uporabe umjetne inteligencije, postavite poveznicu na njegovo jedinstveno mjerodavno mjesto u dokumentaciji.]
+**Izjava:**
+- Korišten je Claude Opus 5.5 za enumeraciju funkcionalnih zahtjeva, provjeru protiv proturječja i utvrđivanje konzistentnosti zahtjeva u dokumentu [2-Analiza zahtjeva.md](docs/2-Analiza%20zahtjeva.md)
 
 <a id="code-of-conduct-and-support"></a>
 ## Kodeks ponašanja i podrška [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
