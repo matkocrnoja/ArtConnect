@@ -4,6 +4,7 @@ import Home from './Stranice/Home';
 import ShowNumber from './Stranice/ShowNumber';
 import DashboardShell from './Stranice/DashboardShell';
 import ProtectedRoute from './Komponente/ProtectedRoute';
+import Registracija from './Stranice/Registracija';
 
 const Rute = createBrowserRouter([
   {
@@ -23,6 +24,10 @@ const Rute = createBrowserRouter([
         element: <ProtectedRoute>
                   <DashboardShell />
                 </ProtectedRoute>,
+      },
+      {
+        path: '/registracija',
+        element: <Registracija />,
       }
     ]}
 ]);
