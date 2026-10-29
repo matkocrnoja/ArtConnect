@@ -6,7 +6,6 @@ import ModalRegistracijaOrganizator from '../Komponente/ModalRegistracijaOrganiz
 type Uloga = 'umjetnik' | 'organizator' | null;
 
 function Registracija() {
-  // Za sada ručni odabir uloge; kasnije dolazi iz Google prijave/backenda
   const [uloga, setUloga] = useState<Uloga>(null);
   const zatvori = () => setUloga(null);
 
