@@ -26,13 +26,12 @@ from app.schemas import Registracija
 from app.sesija import (
     KOLACIC_REGISTRACIJE,
     KOLACIC_SESIJE,
-    TRAJANJE_KOLACICA_SESIJE_S,
     TRAJANJE_REGISTRACIJE_S,
     obrisi_kolacic,
     postavi_kolacic,
+    postavi_sesiju,
     procitaj_token_registracije,
     stvori_token_registracije,
-    stvori_token_sesije,
 )
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -113,23 +112,16 @@ def register(
     try:
         db.commit()
     except IntegrityError:
-        # Dva istovremena zahtjeva: oba su prošla provjeru, a UNIQUE u bazi je pustio samo jedan.
         db.rollback()
         raise HTTPException(status.HTTP_409_CONFLICT, "vec_registriran")
 
-    postavi_kolacic(
-        response,
-        KOLACIC_SESIJE,
-        stvori_token_sesije(korisnik.id, uloga),
-        TRAJANJE_KOLACICA_SESIJE_S,
-    )
+    postavi_sesiju(response, korisnik.id, uloga)
     obrisi_kolacic(response, KOLACIC_REGISTRACIJE)
     return {"id": korisnik.id, "uloga": uloga.value}
 
 
 @router.get("/google/login")
 async def google_login(request: Request, uloga: Uloga):
-    # Uloga putuje unutar state vrijednosti koju Authlib pri povratku provjerava prema sesiji.
     state = f"{uloga.value}.{secrets.token_urlsafe(24)}"
     return await oauth.google.authorize_redirect(
         request, get_settings().google_redirect_uri, state=state
@@ -152,7 +144,6 @@ async def google_callback(request: Request, db: Session = Depends(get_db)):
         return preusmjeri_s_greskom("neuspjela_prijava")
 
     uloga = Uloga(request.query_params["state"].split(".")[0])
-    # Baza je sinkrona, a ova funkcija asinkrona, pa upit ide u zasebnu dretvu.
     korisnik = await run_in_threadpool(pronadi_korisnika, db, uloga, sub)
 
     if korisnik is None:
@@ -173,12 +164,7 @@ async def google_callback(request: Request, db: Session = Depends(get_db)):
         return preusmjeri_s_greskom("racun_blokiran")
 
     odgovor = preusmjeri("/dashboard")
-    postavi_kolacic(
-        odgovor,
-        KOLACIC_SESIJE,
-        stvori_token_sesije(korisnik.id, uloga),
-        TRAJANJE_KOLACICA_SESIJE_S,
-    )
+    postavi_sesiju(odgovor, korisnik.id, uloga)
     obrisi_kolacic(odgovor, KOLACIC_REGISTRACIJE)
     return odgovor
 

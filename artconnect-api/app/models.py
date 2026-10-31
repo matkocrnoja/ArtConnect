@@ -7,7 +7,6 @@ from sqlalchemy.dialects.postgresql import ARRAY, ENUM
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
-# Modeli opisuju tablice koje već postoje u bazi. Shemu ne stvaramo iz koda (bez create_all).
 class Base(DeclarativeBase):
     type_annotation_map = {
         str: Text,
@@ -63,7 +62,6 @@ class Portfolio(Base):
 class Umjetnik(KorisnikMixin, Base):
     __tablename__ = "umjetnici"
 
-    # id je strani ključ na portfolio, pa se portfolio mora upisati prvi i on određuje id.
     id: Mapped[uuid.UUID] = mapped_column(ForeignKey("portfolio.umjetnik_id"), primary_key=True)
     poveznice: Mapped[list[str]] = mapped_column(ARRAY(Text), server_default=text("'{}'"))
     status_racuna: Mapped[StatusRacuna] = mapped_column(

@@ -17,10 +17,8 @@ from app.models import (
 )
 from app.sesija import (
     KOLACIC_SESIJE,
-    TRAJANJE_KOLACICA_SESIJE_S,
-    postavi_kolacic,
+    postavi_sesiju,
     procitaj_token_sesije,
-    stvori_token_sesije,
 )
 
 
@@ -61,14 +59,8 @@ def get_current_user(
     if je_blokiran(korisnik):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "racun_blokiran")
 
-    # Klizni istek: obnavlja se tek nakon pola trajanja, da se kolačić ne šalje pri svakom zahtjevu.
     if proteklo > trajanje / 2:
-        postavi_kolacic(
-            response,
-            KOLACIC_SESIJE,
-            stvori_token_sesije(korisnik.id, uloga),
-            TRAJANJE_KOLACICA_SESIJE_S,
-        )
+        postavi_sesiju(response, korisnik.id, uloga)
 
     return TrenutniKorisnik(korisnik, uloga)
 

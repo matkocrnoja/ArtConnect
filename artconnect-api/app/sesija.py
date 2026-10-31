@@ -11,8 +11,7 @@ KOLACIC_SESIJE = "sesija"
 KOLACIC_REGISTRACIJE = "registracija"
 ALGORITAM = "HS256"
 
-# Kolačić živi dulje od sesije: istek provjerava backend, a da bi mogao vratiti
-# "sesija_istekla", preglednik mu mora i dalje poslati istekli token.
+
 TRAJANJE_KOLACICA_SESIJE_S = 30 * 24 * 60 * 60
 TRAJANJE_REGISTRACIJE_S = 10 * 60
 
@@ -71,6 +70,15 @@ def postavi_kolacic(response: Response, naziv: str, vrijednost: str, max_age: in
         httponly=True,
         samesite="lax",
         secure=get_settings().cookie_secure,
+    )
+
+
+def postavi_sesiju(response: Response, korisnik_id: uuid.UUID, uloga: Uloga):
+    postavi_kolacic(
+        response,
+        KOLACIC_SESIJE,
+        stvori_token_sesije(korisnik_id, uloga),
+        TRAJANJE_KOLACICA_SESIJE_S,
     )
 
 
