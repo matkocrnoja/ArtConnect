@@ -1,15 +1,19 @@
 import secrets
+import uuid
 
+#library imports
 import httpx
 from authlib.common.errors import AuthlibBaseError
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import RedirectResponse
 from joserfc.errors import JoseError
+from pydantic import BaseModel, ConfigDict, HttpUrl, TypeAdapter, ValidationError
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+#importovi iz drugih fajlova
 from app.config import get_settings
 from app.database import get_db
 from app.dependencies import TrenutniKorisnik, get_current_user, je_blokiran
@@ -22,7 +26,6 @@ from app.models import (
     Uloga,
     Umjetnik,
 )
-from app.schemas import Registracija
 from app.sesija import (
     KOLACIC_REGISTRACIJE,
     KOLACIC_SESIJE,
@@ -35,6 +38,19 @@ from app.sesija import (
 )
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+
+MAKS_POVEZNICA = 5
+
+_provjera_url = TypeAdapter(HttpUrl)
+
+
+class Registracija(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    ime_prezime: str | None = None
+    naziv_organizacije: str | None = None
+    sifre_podrucja: list[uuid.UUID] = []
+    poveznice: list[str] = []
 
 
 def preusmjeri(putanja: str) -> RedirectResponse:
@@ -57,6 +73,20 @@ def aktivna_podrucja(db: Session, sifre: set) -> list[PodrucjeDjelovanja]:
     return list(db.scalars(upit))
 
 
+def ocisti_poveznice(vrijednosti: list[str]) -> list[str]:
+    poveznice = [poveznica for poveznica in vrijednosti if poveznica]
+    if len(poveznice) > MAKS_POVEZNICA:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "previse_poveznica")
+
+    try:
+        for poveznica in poveznice:
+            _provjera_url.validate_python(poveznica)
+    except ValidationError:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "neispravna_poveznica")
+
+    return poveznice
+
+
 def novi_umjetnik(db: Session, podaci: Registracija, zajednicko: dict) -> Umjetnik:
     sifre = set(podaci.sifre_podrucja)
     if not sifre:
@@ -68,7 +98,10 @@ def novi_umjetnik(db: Session, podaci: Registracija, zajednicko: dict) -> Umjetn
 
     # Portfolio mora postojati prije umjetnika jer je umjetnici.id strani ključ na njega.
     return Umjetnik(
-        **zajednicko, portfolio=Portfolio(), podrucja=podrucja, poveznice=podaci.poveznice
+        **zajednicko,
+        portfolio=Portfolio(),
+        podrucja=podrucja,
+        poveznice=ocisti_poveznice(podaci.poveznice),
     )
 
 
@@ -78,7 +111,7 @@ def novi_organizator(podaci: Registracija, zajednicko: dict) -> Organizator:
 
     return Organizator(**zajednicko, naziv_organizacije=podaci.naziv_organizacije)
 
-
+#3
 @router.post("/register", status_code=status.HTTP_201_CREATED)
 def register(
     podaci: Registracija,
@@ -119,7 +152,7 @@ def register(
     obrisi_kolacic(response, KOLACIC_REGISTRACIJE)
     return {"id": korisnik.id, "uloga": uloga.value}
 
-
+#1
 @router.get("/google/login")
 async def google_login(request: Request, uloga: Uloga):
     state = f"{uloga.value}.{secrets.token_urlsafe(24)}"
@@ -127,7 +160,7 @@ async def google_login(request: Request, uloga: Uloga):
         request, get_settings().google_redirect_uri, state=state
     )
 
-
+#2
 @router.get("/google/callback")
 async def google_callback(request: Request, db: Session = Depends(get_db)):
     if request.query_params.get("error") == "access_denied":
@@ -168,7 +201,7 @@ async def google_callback(request: Request, db: Session = Depends(get_db)):
     obrisi_kolacic(odgovor, KOLACIC_REGISTRACIJE)
     return odgovor
 
-
+#4
 @router.get("/me")
 def me(trenutni: TrenutniKorisnik = Depends(get_current_user)):
     korisnik = trenutni.korisnik
@@ -184,6 +217,7 @@ def me(trenutni: TrenutniKorisnik = Depends(get_current_user)):
 
 
 # Bez get_current_user: odjava mora proći i s isteklom sesijom, a obnova bi vratila kolačić.
+#5
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
 def logout(response: Response):
     obrisi_kolacic(response, KOLACIC_SESIJE)
