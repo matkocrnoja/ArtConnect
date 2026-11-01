@@ -1,12 +1,20 @@
 from functools import lru_cache
+from pathlib import Path
 
 from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+ENV_DATOTEKA = Path(__file__).resolve().parent.parent / ".env"
+
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore", env_ignore_empty=True)
+    model_config = SettingsConfigDict(
+        env_file=ENV_DATOTEKA, extra="ignore", env_ignore_empty=True
+    )
 
+    database_url: SecretStr
+    db_pool_size: int = 5
+    db_max_overflow: int = 10
     google_client_id: str
     google_client_secret: SecretStr
     google_redirect_uri: str

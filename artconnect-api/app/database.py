@@ -1,14 +1,16 @@
-import os
-
-from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-load_dotenv()
+from app.config import get_settings
 
-DATABASE_URL = os.environ["DATABASE_URL"]
+settings = get_settings()
 
-engine = create_engine(DATABASE_URL)
+engine = create_engine(
+    settings.database_url.get_secret_value(),
+    pool_size=settings.db_pool_size,
+    max_overflow=settings.db_max_overflow,
+    pool_pre_ping=True,
+)
 SessionLocal = sessionmaker(bind=engine, autoflush=False)
 
 
