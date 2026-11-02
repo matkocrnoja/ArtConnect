@@ -13,80 +13,77 @@ Primjeri koriste temu projekta CrisisMap. Neki namjerno sadrže korisne nedostat
  
 **Cilj:** Navesti što aplikacija mora omogućiti korisnicima, odakle pojedina mogućnost proizlazi i koji se opažljivi rezultat smatra prihvaćanjem.
   
+## 2.1 Funkcijski zahtjevi
+
+**Cilj:** Navesti što aplikacija mora omogućiti korisnicima, odakle pojedina mogućnost proizlazi i koji se opažljivi rezultat smatra prihvaćanjem.
+
 #### F-RL: Pristup usluzi (REGISTER/LOGIN)
 | ID | Opis | Prioritet | Izvor | Kriteriji prihvaćanja |
 | --- | --- | --- | --- | --- |
-| F-RL-1 | Sustav omogućuje registraciju i prijavu korisnika isključivo putem vanjskog servisa OAuth 2.0 (Google) te odabir uloge umjetnika ili organizatora.| Visok | ArtConnect.pdf | Korisnik se može registrirati i prijaviti Google računom te odabrati ulogu. Račun se kreira s odabranom ulogom. |
-| F-RL-2 | Sustav omogućuje odjavu korisnika gumbom "Odjava" te automatsku odjavu nakon isteka sesije.| Visok | Dogovor tima | Korisnik se može odjaviti klikom na gumb. Nakon isteka sesije automatski je odjavljen. |
-| F-RL-3 | Sustav omogućuje neprijavljenim korisnicima pristup javnim stranicama, a prijavljenima samo Dashboardu njihove uloge. | Visok | Dogovor tima | Neprijavljeni korisnik se pri otvaranju Dashboarda preusmjerava na prijavu. Dashboard druge uloge nije dostupan. |
-
+| F-RL-1 | Korisnici se mogu registrirati i prijaviti isključivo putem vanjskog servisa OAuth 2.0 | Visok | ArtConnect.pdf | Korisnik može odabrati željenu ulogu i registrirati/prijaviti se putem svog Google računa. |
+| F-RL-2 | Korisnici se mogu odjaviti i biti automatski odjavljeni | Visok | Dogovor tima | Korisnik se može odjaviti klikom na gumb "Odjava" te je automatski odjavljen nakon isteka sesije. |
+| F-RL-3 | Neprijavljeni korisnici mogu pristupiti javnim stranicama, a prijavljeni samo Dashboardu svoje uloge | Visok | Dogovor tima | Neprijavljeni korisnik može koristiti javni dio platforme, a ako pokuša otvoriti Dashboard, preusmjeren je na prijavu. Dashboard druge uloge nije dostupan. |
 
 #### F-NU: Javni prikaz aplikacije (za neregistrirane korisnike) (NO USER)
 | ID | Opis | Prioritet | Izvor | Kriteriji prihvaćanja |
 | --- | --- | --- | --- | --- |
-| F-NU-1 | Sustav omogućuje posjetitelju pregled i pretragu javnih djela te pregled javnih profila umjetnika.| Visok | ArtConnect.pdf; Dogovor tima | Posjetitelj može pretraživati djela i umjetnike. Privatna djela nisu vidljiva. |
-| F-NU-2 | Sustav omogućuje posjetitelju pregled aktivnih prilika te njihovu pretragu i filtriranje po području, lokaciji, roku i statusu.| Visok | ArtConnect.pdf | Posjetitelj vidi samo prilike koje zadovoljavaju zadane kriterije. Prilike u pripremi nisu vidljive. |
-| F-NU-3 |Sustav omogućuje posjetitelju pregled završenih prilika i njihovih pobjednika.| Srednji | ArtConnect.pdf;Dogovor tima | Završene prilike se prikazuju zasebno s popisom pobjednika. |
+| F-NU-1 | Posjetitelji mogu pregledavati i pretraživati javna djela i profile umjetnika | Visok | ArtConnect.pdf; Dogovor tima | Posjetitelj može pretraživati djela i umjetnike, a privatna djela mu nisu vidljiva. |
+| F-NU-2 | Posjetitelji mogu pregledavati, pretraživati i filtrirati aktivne prilike | Visok | ArtConnect.pdf | Posjetitelj može filtrirati prilike po području, lokaciji, roku i statusu. Prilike u pripremi nisu vidljive. |
+| F-NU-3 | Posjetitelji mogu pregledavati završene prilike i njihove pobjednike | Srednji | ArtConnect.pdf; Dogovor tima | Završene prilike prikazuju se zasebno s popisom pobjednika. |
 
-  
 #### F-UP: Umjetnik - profil i portfolio (UMJETNIK PORTFOLIO)
 | ID | Opis | Prioritet | Izvor | Kriteriji prihvaćanja |
 | --- | --- | --- | --- | --- |
-| F-UP-1 | Sustav omogućuje umjetniku uređivanje profila: imena, područja djelovanja, poveznica te biografije i opisa rada.| Visok | ArtConnect.pdf | Umjetnik može izmijeniti navedene podatke. Izmjene su odmah vidljive na javnom profilu.. |
-| F-UP-2 |Sustav omogućuje umjetniku dodavanje, uređivanje i brisanje djela s nazivom, godinom, tehnikom, dimenzijama, opisom i datotekama.| Visok | ArtConnect.pdf; Dogovor tima | Umjetnik može dodati djelo te ga urediti i obrisati. Novo djelo je zadano privatno. |
-| F-UP-3 | Sustav omogućuje umjetniku da za svako djelo odredi je li javno ili privatno te da ga pregleda kao javni korisnik.| Visok | ArtConnect.pdf; Dogovor tima | Privatno djelo nije javno vidljivo. Pregled prikazuje djelo kakvim ga vidi javni korisnik. |
-
+| F-UP-1 | Umjetnici mogu uređivati svoj profil | Visok | ArtConnect.pdf | Umjetnik može izmijeniti ime, područje djelovanja, poveznice, biografiju i opis rada, a izmjene su vidljive na javnom profilu. |
+| F-UP-2 | Umjetnici mogu dodavati, uređivati i brisati djela u portfoliju | Visok | ArtConnect.pdf; Dogovor tima | Umjetnik može dodati djelo s osnovnim podacima i datotekama te ga urediti ili obrisati. Novo djelo je zadano privatno. |
+| F-UP-3 | Umjetnici mogu odrediti vidljivost svojih djela | Visok | ArtConnect.pdf; Dogovor tima | Umjetnik može označiti djelo kao javno ili privatno i pregledati ga kao javni korisnik. Privatno djelo nije javno vidljivo. |
 
 #### F-OB: Obavijesti (UMJETNIK i ORGANIZATOR)
 | ID | Opis | Prioritet | Izvor | Kriteriji prihvaćanja |
 | --- | --- | --- | --- | --- |
-| F-OB-1 |  Sustav omogućuje korisniku pregled obavijesti o relevantnim događajima (prijave, dopune, pozivi) u Inboxu.| Srednji | Dogovor tima | Korisnik vidi obavijesti i broj nepročitanih. Klikom se obavijest označava pročitanom. |
-| F-OB-2 | Sustav omogućuje korisniku odabir vrsta obavijesti koje želi primati.| Nizak | Dogovor tima | Korisnik može isključiti pojedinu vrstu obavijesti. Isključene obavijesti više ne prima.|
- 
+| F-OB-1 | Korisnici mogu pregledavati obavijesti u Inboxu | Srednji | Dogovor tima | Korisnik vidi obavijesti (prijave, dopune, pozivi) i broj nepročitanih, a klikom obavijest postaje pročitana. |
+| F-OB-2 | Korisnici mogu odabrati koje vrste obavijesti žele primati | Nizak | Dogovor tima | Korisnik može isključiti pojedinu vrstu obavijesti i više je ne prima. |
+
 #### F-UW: Umjetnik - Lista želja (UMJETNIK WISHLIST)
 | ID | Opis | Prioritet | Izvor | Kriteriji prihvaćanja |
 | --- | --- | --- | --- | --- |
-| F-UW-1 | Sustav omogućuje umjetniku spremanje prilika otvorenih za prijave na listu želja i prijavu na njih izravno s liste. | Nizak | Dogovor tima | Umjetnik može dodati priliku na listu želja i ukloniti je.|
- 
+| F-UW-1 | Umjetnici mogu spremati otvorene prilike na listu želja | Nizak | Dogovor tima | Umjetnik dok priprema potrebnu dokumentaciju može dodati priliku na listu želja, ukloniti je i prijaviti se na nju izravno s liste kada pripremi sve što mu treba. |
 
- #### F-PP: Umjetnik - prijave na prilike (PRIJAVE PRILIKE)
+#### F-PP: Umjetnik - prijave na prilike (PRIJAVE PRILIKE)
 | ID | Opis | Prioritet | Izvor | Kriteriji prihvaćanja |
 | --- | --- | --- | --- | --- |
-| F-PP-1 | Sustav omogućuje umjetniku prijavu na otvorenu priliku odabirom djela iz portfolija, uz opcionalnu poruku i privitke. | Visok | ArtConnect.pdf, Dogovor tima | Umjetnik može predati prijavu, koja dobiva status "Predana". Ponovna prijava na istu priliku nije moguća. |
-| F-PP-2 | Sustav omogućuje umjetniku praćenje statusa svojih prijava i njihovo povlačenje dok je prilika otvorena za prijave.| Visok | ArtConnect.pdf, Dogovor tima | Umjetnik za svaku prijavu vidi trenutni status i može je povući. |
-| F-PP-3 | Sustav omogućuje umjetniku da na zahtjev organizatora dopuni prijavu te da vidi razlog odbijanja prijave.| Visok|  ArtConnect.pdf | Umjetnik može dodati materijale, nakon čega prijava ponovno prelazi u pregled. Uz odbijenu prijavu vidi razlog. |
-| F-PP-4 | Sustav omogućuje umjetniku čija je prijava prihvaćena dodavanje događanja u osobni Google Calendar.| Srednji| ArtConnect.pdf | Umjetnik može dodati događanje u svoj kalendar s ispravnim nazivom, datumom i mjestom.  |
-| F-PP-5 | Sustav nakon završetka odabira prikazuje sudjelovanje pobjednika na njegovu javnom profilu.| Visok | ArtConnect.pdf | Umjetnik pobjednik vidi sudjelovanje na svom profilu. Može ga sakriti ili istaknuti. |
+| F-PP-1 | Umjetnici se mogu prijaviti na otvorene prilike | Visok | ArtConnect.pdf; Dogovor tima | Umjetnik može predati prijavu s djelima iz portfolija, uz poruku i privitke. Prijava dobiva status "Predana", a ponovna prijava na istu priliku nije moguća. |
+| F-PP-2 | Umjetnici mogu pratiti i povlačiti svoje prijave | Visok | ArtConnect.pdf; Dogovor tima | Umjetnik vidi status svake prijave i može je povući dok je prilika otvorena za prijave. |
+| F-PP-3 | Umjetnici mogu dopuniti prijavu i vidjeti razlog odbijanja | Visok | ArtConnect.pdf | Na zahtjev organizatora umjetnik može dodati materijale, nakon čega se prijava vraća u pregled. Uz odbijenu prijavu vidi razlog. |
+| F-PP-4 | Umjetnici mogu dodati događanje u Google Calendar | Srednji | ArtConnect.pdf | Nakon prihvaćanja prijave umjetnik može dodati događanje u svoj kalendar s ispravnim podacima. |
+| F-PP-5 | Sudjelovanja se prikazuju na profilu umjetnika | Visok | ArtConnect.pdf | Nakon završetka odabira pobjednik vidi sudjelovanje na svom profilu te ga može sakriti ili istaknuti. |
 
-
-#### F-OU: Organizator - pozivanje i blokiranje umjetnika(ORGANIZATOR UMJETNICI)
+#### F-OU: Organizator - pozivanje i blokiranje umjetnika (ORGANIZATOR UMJETNICI)
 | ID | Opis | Prioritet | Izvor | Kriteriji prihvaćanja |
 | --- | --- | --- | --- | --- |
-| F-OU-1 | Sustav omogućuje organizatoru da umjetnika pozove na otvorenu priliku ili ga blokira i odblokira.| Nizak | Dogovor tima | Umjetnik dobiva poziv kao obavijest. Blokirani umjetnik ne može se prijaviti na prilike tog organizatora.|
+| F-OU-1 | Organizatori mogu pozivati i blokirati umjetnike | Nizak | Dogovor tima | Organizator može pozvati umjetnika na otvorenu priliku te ga blokirati ili odblokirati. Pozvani umjetnik dobiva obavijest, a blokirani se ne može prijaviti na prilike tog organizatora. |
 
 #### F-OS: Organizator - postavke (ORGANIZATOR SETTINGS)
 | ID | Opis | Prioritet | Izvor | Kriteriji prihvaćanja |
 | --- | --- | --- | --- | --- |
-| F-OS-1 | Sustav omogućuje organizatoru uređivanje vlastitog profila: imena, prezimena i naziva organizacije.| Visok | Dogovor tima | Organizator može izmijeniti navedene podatke. Izmjene su odmah vidljive na javnom profilu. |
+| F-OS-1 | Organizatori mogu uređivati svoj profil | Visok | Dogovor tima | Organizator može izmijeniti ime, prezime i naziv organizacije, a izmjene su vidljive na javnom profilu. |
 
- 
 #### F-ON: Organizatori - prilike (ORGANIZATOR NATJEČAJI)
 | ID | Opis | Prioritet | Izvor | Kriteriji prihvaćanja |
 | --- | --- | --- | --- | --- |
-| F-ON-1 | Sustav omogućuje organizatoru objavu nove prilike s naslovom, opisom, vrstom, područjem, rokom za prijavu, vremenom događanja i adresom, uz prikaz lokacije na karti.| Visok | ArtConnect.pdf | Organizator može unijeti navedene podatke i spremiti priliku. Uz unesenu adresu prikazuje se karta. |
-| F-ON-2 | Sustav omogućuje organizatoru pregled, uređivanje i brisanje vlastitih prilika, pri čemu se rok nakon objave može samo produžiti.| Visok| ArtConnect.pdf; Dogovor tima | Organizator vidi samo svoje prilike. Priliku s prijavama nije moguće obrisati. |
-| F-ON-3 | Sustav vodi status prilike (priprema, otvoreno za prijave, prijave zatvorene, u procesu odabira, završeno) i omogućuje organizatoru promjenu statusa.| Visok | ArtConnect.pdf; Dogovor tima | Organizator može promijeniti status prilike. Po isteku roka prilika se automatski zatvara za prijave. |
-| F-ON-4 | Sustav omogućuje organizatoru pregled pristiglih prijava te slanje zahtjeva za dopunu uz poruku umjetniku.| Visok | ArtConnect.pdf | Organizator vidi sve prijave na svoje prilike. Nakon zahtjeva za dopunu prijava dobiva status "Potrebna dopuna".  |
-| F-ON-5| Sustav omogućuje organizatoru da označi pobjednike, upiše razlog odbijanja ostalih i završi odabir.| Visok | ArtConnect.pdf | Nakon završetka odabira rezultati su objavljeni, a umjetnici obaviješteni.|
-|F-ON-6| Sustav organizatoru prikazuje osnovne statistike: broj prijava po području umjetnosti i po prilici te broj pobjednika.| Srednji| ArtConnect.pdf | Organizator vidi navedene brojeve za svoje prilike i oni odgovaraju stvarnim podacima. |
+| F-ON-1 | Organizatori mogu objavljivati nove prilike | Visok | ArtConnect.pdf | Organizator može unijeti osnovne podatke o prilici i spremiti je, a uz unesenu adresu lokacija se prikazuje na karti. |
+| F-ON-2 | Organizatori mogu upravljati svojim prilikama | Visok | ArtConnect.pdf; Dogovor tima | Organizator vidi, uređuje i briše samo svoje prilike. Rok se nakon objave može samo produžiti, a priliku s prijavama nije moguće obrisati. |
+| F-ON-3 | Organizatori mogu mijenjati status prilike | Visok | ArtConnect.pdf; Dogovor tima | Organizator može mijenjati status prilike, a po isteku roka prilika se automatski zatvara za prijave. |
+| F-ON-4 | Organizatori mogu pregledavati prijave i tražiti dopunu | Visok | ArtConnect.pdf | Organizator vidi prijave na svoje prilike i može zatražiti dopunu porukom, nakon čega prijava dobiva status "Potrebna dopuna". |
+| F-ON-5 | Organizatori mogu odabrati pobjednike | Visok | ArtConnect.pdf | Organizator može označiti pobjednike, upisati razlog odbijanja ostalih i završiti odabir, nakon čega su rezultati objavljeni, a umjetnici obaviješteni. |
+| F-ON-6 | Organizatori mogu pregledavati osnovne statistike | Srednji | ArtConnect.pdf | Organizator za svoje prilike vidi točan broj prijava po području i prilici te broj pobjednika. |
 
-  
 #### F-AD: Administrator (ADMIN)
 | ID | Opis | Prioritet | Izvor | Kriteriji prihvaćanja |
 | --- | --- | --- | --- | --- |
-| F-AD-1 | Sustav omogućuje administratoru upravljanje područjima umjetnosti, vrstama prilika i osnovnim postavkama sustava (ograničenja datoteka, trajanje sesije).| Visok | ArtConnect.pdf | Administrator može dodavati, preimenovati i deaktivirati područja i vrste te mijenjati postavke. Nove vrijednosti vrijede za nove unose. |
-| F-AD-2 | Sustav omogućuje administratoru blokiranje i brisanje korisnika, ovjeru organizatora i uklanjanje neprimjerenog sadržaja uz unos razloga.| Visok | ArtConnect.pdf | Sustav omogućuje administratoru blokiranje i brisanje korisnika, ovjeru organizatora i uklanjanje neprimjerenog sadržaja uz unos razloga. |
-| F-AD-3 | Sustav omogućuje administratoru pregled i preuzimanje mjesečnih izvještaja o broju registriranih umjetnika, objavljenih prilika i predanih prijava.| Srednji | ArtConnect.pdf | Za odabrani mjesec administrator vidi točne brojeve i može ih preuzeti kao CSV. |
+| F-AD-1 | Administrator može upravljati šifrarnicima i postavkama sustava | Visok | ArtConnect.pdf | Administrator može dodavati, preimenovati i deaktivirati područja umjetnosti i vrste prilika te mijenjati osnovne postavke sustava. |
+| F-AD-2 | Administrator može upravljati korisnicima i sadržajem | Visok | ArtConnect.pdf | Administrator može ovjeriti organizatora, blokirati i brisati korisnike te uklanjati neprimjeren sadržaj uz unos razloga. |
+| F-AD-3 | Administrator može pregledavati mjesečne izvještaje | Srednji | ArtConnect.pdf | Za odabrani mjesec administrator vidi broj registriranih umjetnika, objavljenih prilika i predanih prijava te ih može preuzeti kao CSV. |
  
 
 <details>
