@@ -13,10 +13,11 @@
     "@mantine/core": "^9.7.4",
     "@mantine/form": "^9.7.4",
     "@mantine/hooks": "^9.7.4",
-    "@tabler/icons-react": "^3.49.0",
+    "@tabler/icons-react": "^3.50.0",
+    "clsx": "^2.1.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "react-router-dom": "^7.18.4"
+    "react-router-dom": "^7.18.5"
   },
   "devDependencies": {
     "@babel/core": "^7.29.7",
@@ -32,7 +33,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.6",
     "globals": "^17.12.0",
-    "postcss": "^8.5.30",
+    "postcss": "^8.5.32",
     "postcss-preset-mantine": "^1.18.0",
     "postcss-simple-vars": "^7.0.1",
     "typescript": "~6.0.2",
