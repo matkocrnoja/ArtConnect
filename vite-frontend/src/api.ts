@@ -2,7 +2,9 @@ export const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000';
 
 const PORUKE: Record<string, string> = {
   registracija_istekla: 'Registracija je istekla. Ponovno se prijavi preko Googlea.',
-  vec_registriran: 'Ovaj Google račun je već registriran.',
+  ime_obavezno: 'Ime je obavezno.',
+  prezime_obavezno: 'Prezime je obavezno.',
+  vec_registriran:'Ovaj Google račun je već registriran.',
   podrucje_obavezno: 'Odaberi barem jedno područje.',
   neispravno_podrucje: 'Odabrano područje više nije dostupno.',
   previse_poveznica: 'Dopušteno je najviše 5 poveznica.',

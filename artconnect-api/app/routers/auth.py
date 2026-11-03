@@ -47,7 +47,8 @@ _provjera_url = TypeAdapter(HttpUrl)
 class Registracija(BaseModel):
     model_config = ConfigDict(str_strip_whitespace=True)
 
-    ime_prezime: str | None = None
+    ime: str = ""
+    prezime: str = ""
     naziv_organizacije: str | None = None
     sifre_podrucja: list[uuid.UUID] = []
     poveznice: list[str] = []
@@ -131,10 +132,15 @@ def register(
     if pronadi_korisnika(db, uloga, identitet["sub"]) is not None:
         raise HTTPException(status.HTTP_409_CONFLICT, "vec_registriran")
 
+    if not podaci.ime:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "ime_obavezno")
+    if not podaci.prezime:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "prezime_obavezno")
+
     zajednicko = {
         "google_subject_id": identitet["sub"],
         "email": identitet["email"],
-        "ime_prezime": podaci.ime_prezime or identitet["ime_prezime"],
+        "ime_prezime": f"{podaci.ime} {podaci.prezime}",
     }
     if uloga == Uloga.umjetnik:
         korisnik = novi_umjetnik(db, podaci, zajednicko)
@@ -184,11 +190,10 @@ async def google_callback(request: Request, db: Session = Depends(get_db)):
             return preusmjeri_s_greskom("nije_administrator")
 
         odgovor = preusmjeri(f"/registracija?uloga={uloga.value}")
-        ime_prezime = podaci.get("name") or email
         postavi_kolacic(
             odgovor,
             KOLACIC_REGISTRACIJE,
-            stvori_token_registracije(sub, email, ime_prezime, uloga),
+            stvori_token_registracije(sub, email, uloga),
             TRAJANJE_REGISTRACIJE_S,
         )
         return odgovor

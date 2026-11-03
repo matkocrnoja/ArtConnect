@@ -31,7 +31,8 @@ function ModalRegistracijaOrganizator({ opened, onClose }: Props) {
         setSalje(true);
         setGreska(null);
         const poruka = await registriraj({
-            ime_prezime: `${values.ime.trim()} ${values.prezime.trim()}`,
+            ime: values.ime,
+            prezime: values.prezime,
             naziv_organizacije: values.nazivOrganizacije,
         });
         setSalje(false);

@@ -30,12 +30,11 @@ def stvori_token_sesije(korisnik_id: uuid.UUID, uloga: Uloga) -> str:
     })
 
 
-def stvori_token_registracije(sub: str, email: str, ime_prezime: str, uloga: Uloga) -> str:
+def stvori_token_registracije(sub: str, email: str, uloga: Uloga) -> str:
     return _potpisi({
         "svrha": "registracija",
         "sub": sub,
         "email": email,
-        "ime_prezime": ime_prezime,
         "uloga": uloga.value,
         "exp": int(time.time()) + TRAJANJE_REGISTRACIJE_S,
     })
