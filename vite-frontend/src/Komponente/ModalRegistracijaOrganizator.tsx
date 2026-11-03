@@ -1,5 +1,8 @@
-import { Modal, TextInput, Button, Stack, Fieldset } from "@mantine/core";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Alert, Modal, TextInput, Button, Stack, Fieldset } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { registriraj } from "../api";
 
 interface Props {
     opened: boolean;
@@ -7,6 +10,10 @@ interface Props {
 }
 
 function ModalRegistracijaOrganizator({ opened, onClose }: Props) {
+    const navigate = useNavigate();
+    const [greska, setGreska] = useState<string | null>(null);
+    const [salje, setSalje] = useState(false);
+
     const form = useForm({
         initialValues: {
             ime: "",
@@ -21,13 +28,16 @@ function ModalRegistracijaOrganizator({ opened, onClose }: Props) {
     });
 
     const handleSubmit = async (values: typeof form.values) => {
-        console.log("POST /register/organizator", values);
-        // await fetch('/register/organizator', {
-        //   method: 'POST',
-        //   headers: { 'Content-Type': 'application/json' },
-        //   body: JSON.stringify(values),
-        // });
-        onClose();
+        setSalje(true);
+        setGreska(null);
+        const poruka = await registriraj({
+            ime_prezime: `${values.ime.trim()} ${values.prezime.trim()}`,
+            naziv_organizacije: values.nazivOrganizacije,
+        });
+        setSalje(false);
+
+        if (poruka) setGreska(poruka);
+        else navigate("/dashboard");
     };
 
     return (
@@ -51,7 +61,8 @@ function ModalRegistracijaOrganizator({ opened, onClose }: Props) {
                             required
                         />
                     </Fieldset>
-                    <Button type="submit">Podnesi registraciju</Button>
+                    {greska && <Alert color="red">{greska}</Alert>}
+                    <Button type="submit" loading={salje}>Podnesi registraciju</Button>
                 </Stack>
             </form>
         </Modal>

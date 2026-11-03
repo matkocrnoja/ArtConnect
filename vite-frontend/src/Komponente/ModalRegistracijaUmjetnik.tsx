@@ -1,16 +1,13 @@
-import { useState } from "react";
-import { Modal, TextInput, MultiSelect, Button, Stack, Group, Fieldset } from "@mantine/core";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Alert, Modal, TextInput, MultiSelect, Button, Stack, Group, Fieldset } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { API_URL, registriraj } from "../api";
 
-const PODRUCJA = [
-    "Glazba",
-    "Ples",
-    "Kazalište",
-    "Vizualna umjetnost",
-    "Film",
-    "Književnost",
-    "Fotografija",
-];
+interface Podrucje {
+    sifra_podrucja: string;
+    naziv_podrucja: string;
+}
 
 interface Props {
     opened: boolean;
@@ -19,6 +16,20 @@ interface Props {
 
 function ModalRegistracijaUmjetnik({ opened, onClose }: Props) {
     const [maxBrPoveznica] = useState(5);
+    const navigate = useNavigate();
+    const [podrucja, setPodrucja] = useState<Podrucje[]>([]);
+    const [greska, setGreska] = useState<string | null>(null);
+    const [salje, setSalje] = useState(false);
+
+    useEffect(() => {
+        fetch(`${API_URL}/podrucja`)
+            .then((odgovor) => {
+                if (!odgovor.ok) throw new Error();
+                return odgovor.json();
+            })
+            .then(setPodrucja)
+            .catch(() => setGreska("Područja nije moguće učitati. Osvježi stranicu."));
+    }, []);
 
     const form = useForm({
         initialValues: {
@@ -36,14 +47,17 @@ function ModalRegistracijaUmjetnik({ opened, onClose }: Props) {
     });
 
     const handleSubmit = async (values: typeof form.values) => {
-        const podaci = { ...values, poveznice: values.poveznice.filter((p) => p.trim()) };
-        console.log("POST /register/umjetnik", podaci);
-        // await fetch('/register/umjetnik', {
-        //   method: 'POST',
-        //   headers: { 'Content-Type': 'application/json' },
-        //   body: JSON.stringify(podaci),
-        // });
-        onClose();
+        setSalje(true);
+        setGreska(null);
+        const poruka = await registriraj({
+            ime_prezime: `${values.ime.trim()} ${values.prezime.trim()}`,
+            sifre_podrucja: values.podrucja,
+            poveznice: values.poveznice.map((p) => p.trim()).filter(Boolean),
+        });
+        setSalje(false);
+
+        if (poruka) setGreska(poruka);
+        else navigate("/dashboard");
     };
 
     return (
@@ -64,7 +78,10 @@ function ModalRegistracijaUmjetnik({ opened, onClose }: Props) {
                     <Fieldset legend="Umjetničko djelovanje">
                         <MultiSelect
                             label="Područja umjetničkog djelovanja"
-                            data={PODRUCJA}
+                            data={podrucja.map((p) => ({
+                                value: p.sifra_podrucja,
+                                label: p.naziv_podrucja,
+                            }))}
                             searchable
                             required
                             {...form.getInputProps("podrucja")}
@@ -98,7 +115,8 @@ function ModalRegistracijaUmjetnik({ opened, onClose }: Props) {
                         </Button>
                     </Fieldset>
 
-                    <Button type="submit">Podnesi registraciju</Button>
+                    {greska && <Alert color="red">{greska}</Alert>}
+                    <Button type="submit" loading={salje}>Podnesi registraciju</Button>
                 </Stack>
             </form>
         </Modal>
