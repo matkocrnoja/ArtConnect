@@ -46,7 +46,8 @@ function HeaderTabs() {
     <div className={classes.header}>
       <Container className={classes.mainSection} size="md">
         <Group justify="space-between">
-          logo
+          
+          <img src="/images/logo.svg" alt="Logo" style={{ height: '32px', width: 'auto' }} />
 
           <Burger
             opened={opened}
