@@ -9,27 +9,20 @@ from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import RedirectResponse
 from joserfc.errors import JoseError
 from pydantic import BaseModel, ConfigDict, HttpUrl, TypeAdapter, ValidationError
-from sqlalchemy import select
+from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 #importovi iz drugih fajlova
 from app.config import get_settings
 from app.database import get_db
-from app.dependencies import TrenutniKorisnik, get_current_user, je_blokiran
+from app.dependencies import TABLICE_ULOGA, TrenutniKorisnik, get_current_user, je_blokiran
 from app.google import oauth
-from app.models import (
-    MODELI_ULOGA,
-    Organizator,
-    PodrucjeDjelovanja,
-    Portfolio,
-    Uloga,
-    Umjetnik,
-)
 from app.sesija import (
     KOLACIC_REGISTRACIJE,
     KOLACIC_SESIJE,
     TRAJANJE_REGISTRACIJE_S,
+    Uloga,
     obrisi_kolacic,
     postavi_kolacic,
     postavi_sesiju,
@@ -63,15 +56,20 @@ def preusmjeri_s_greskom(kod: str) -> RedirectResponse:
 
 
 def pronadi_korisnika(db: Session, uloga: Uloga, sub: str):
-    model = MODELI_ULOGA[uloga]
-    return db.scalar(select(model).where(model.google_subject_id == sub))
+    return db.execute(
+        text(f"SELECT * FROM {TABLICE_ULOGA[uloga]} WHERE google_subject_id = :sub"),
+        {"sub": sub},
+    ).first()
 
 
-def aktivna_podrucja(db: Session, sifre: set) -> list[PodrucjeDjelovanja]:
-    upit = select(PodrucjeDjelovanja).where(
-        PodrucjeDjelovanja.sifra_podrucja.in_(sifre), PodrucjeDjelovanja.aktivno
-    )
-    return list(db.scalars(upit))
+def aktivna_podrucja(db: Session, sifre: set) -> list:
+    return list(db.execute(
+        text("""
+            SELECT * FROM podrucja_djelovanja
+            WHERE sifra_podrucja = ANY(:sifre) AND aktivno
+        """),
+        {"sifre": list(sifre)},
+    ))
 
 
 def ocisti_poveznice(vrijednosti: list[str]) -> list[str]:
@@ -88,7 +86,7 @@ def ocisti_poveznice(vrijednosti: list[str]) -> list[str]:
     return poveznice
 
 
-def novi_umjetnik(db: Session, podaci: Registracija, zajednicko: dict) -> Umjetnik:
+def novi_umjetnik(db: Session, podaci: Registracija, zajednicko: dict) -> uuid.UUID:
     sifre = set(podaci.sifre_podrucja)
     if not sifre:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "podrucje_obavezno")
@@ -97,20 +95,41 @@ def novi_umjetnik(db: Session, podaci: Registracija, zajednicko: dict) -> Umjetn
     if len(podrucja) != len(sifre):
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "neispravno_podrucje")
 
+    poveznice = ocisti_poveznice(podaci.poveznice)
+
     # Portfolio mora postojati prije umjetnika jer je umjetnici.id strani ključ na njega.
-    return Umjetnik(
-        **zajednicko,
-        portfolio=Portfolio(),
-        podrucja=podrucja,
-        poveznice=ocisti_poveznice(podaci.poveznice),
+    korisnik_id = db.execute(
+        text("INSERT INTO portfolio (umjetnik_id) VALUES (gen_random_uuid()) RETURNING umjetnik_id")
+    ).scalar_one()
+    db.execute(
+        text("""
+            INSERT INTO umjetnici (id, google_subject_id, email, ime_prezime, poveznice)
+            VALUES (:id, :google_subject_id, :email, :ime_prezime, :poveznice)
+        """),
+        {"id": korisnik_id, **zajednicko, "poveznice": poveznice},
     )
+    db.execute(
+        text("""
+            INSERT INTO umjetnici_podrucja (umjetnik_id, sifra_podrucja)
+            VALUES (:umjetnik_id, :sifra_podrucja)
+        """),
+        [{"umjetnik_id": korisnik_id, "sifra_podrucja": p.sifra_podrucja} for p in podrucja],
+    )
+    return korisnik_id
 
 
-def novi_organizator(podaci: Registracija, zajednicko: dict) -> Organizator:
+def novi_organizator(db: Session, podaci: Registracija, zajednicko: dict) -> uuid.UUID:
     if not podaci.naziv_organizacije:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "naziv_organizacije_obavezan")
 
-    return Organizator(**zajednicko, naziv_organizacije=podaci.naziv_organizacije)
+    return db.execute(
+        text("""
+            INSERT INTO organizatori (id, google_subject_id, email, ime_prezime, naziv_organizacije)
+            VALUES (gen_random_uuid(), :google_subject_id, :email, :ime_prezime, :naziv_organizacije)
+            RETURNING id
+        """),
+        {**zajednicko, "naziv_organizacije": podaci.naziv_organizacije},
+    ).scalar_one()
 
 #3
 @router.post("/register", status_code=status.HTTP_201_CREATED)
@@ -142,21 +161,19 @@ def register(
         "email": identitet["email"],
         "ime_prezime": f"{podaci.ime} {podaci.prezime}",
     }
-    if uloga == Uloga.umjetnik:
-        korisnik = novi_umjetnik(db, podaci, zajednicko)
-    else:
-        korisnik = novi_organizator(podaci, zajednicko)
-
-    db.add(korisnik)
     try:
+        if uloga == Uloga.umjetnik:
+            korisnik_id = novi_umjetnik(db, podaci, zajednicko)
+        else:
+            korisnik_id = novi_organizator(db, podaci, zajednicko)
         db.commit()
     except IntegrityError:
         db.rollback()
         raise HTTPException(status.HTTP_409_CONFLICT, "vec_registriran")
 
-    postavi_sesiju(response, korisnik.id, uloga)
+    postavi_sesiju(response, korisnik_id, uloga)
     obrisi_kolacic(response, KOLACIC_REGISTRACIJE)
-    return {"id": korisnik.id, "uloga": uloga.value}
+    return {"id": korisnik_id, "uloga": uloga.value}
 
 #1
 @router.get("/google/login")

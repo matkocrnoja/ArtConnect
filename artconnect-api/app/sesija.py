@@ -1,3 +1,4 @@
+import enum
 import time
 import uuid
 
@@ -5,7 +6,13 @@ import jwt
 from fastapi import Response
 
 from app.config import get_settings
-from app.models import Uloga
+
+# dodana tu jer je najniza kaj se tice nasljedivanja
+class Uloga(enum.Enum):
+    umjetnik = "umjetnik"
+    organizator = "organizator"
+    administrator = "administrator"
+
 
 KOLACIC_SESIJE = "sesija"
 KOLACIC_REGISTRACIJE = "registracija"

@@ -1,5 +1,31 @@
 export const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000';
 
+export interface Korisnik {
+  id: string;
+  ime_prezime: string;
+  email: string;
+  uloga: 'umjetnik' | 'organizator' | 'administrator';
+  ovjeren?: boolean; // samo za organizatora
+}
+
+// Vraća prijavljenog korisnika, ili null ako nitko nije prijavljen.
+export async function dohvatiKorisnika(): Promise<Korisnik | null> {
+  try {
+    const odgovor = await fetch(`${API_URL}/auth/me`, { credentials: 'include' });
+    return odgovor.ok ? await odgovor.json() : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function odjavi(): Promise<void> {
+  try {
+    await fetch(`${API_URL}/auth/logout`, { method: 'POST', credentials: 'include' });
+  } catch {
+    // Ako backend nije dostupan, korisnika svejedno vodimo na početnu.
+  }
+}
+
 const PORUKE: Record<string, string> = {
   registracija_istekla: 'Registracija je istekla. Ponovno se prijavi preko Googlea.',
   ime_obavezno: 'Ime je obavezno.',

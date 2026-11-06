@@ -3,39 +3,41 @@ import uuid
 from dataclasses import dataclass
 
 from fastapi import Depends, HTTPException, Request, Response, status
+from sqlalchemy import Row, text
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.models import (
-    MODELI_ULOGA,
-    Administrator,
-    Organizator,
-    PostavkaSustava,
-    StatusRacuna,
-    Uloga,
-    Umjetnik,
-)
 from app.sesija import (
     KOLACIC_SESIJE,
+    Uloga,
     postavi_sesiju,
     procitaj_token_sesije,
 )
 
+TABLICE_ULOGA = {
+    Uloga.umjetnik: "umjetnici",
+    Uloga.organizator: "organizatori",
+    Uloga.administrator: "administratori",
+}
+
 
 @dataclass
 class TrenutniKorisnik:
-    korisnik: Umjetnik | Organizator | Administrator
+    korisnik: Row
     uloga: Uloga
 
 
 def je_blokiran(korisnik) -> bool:
-    # Administratori nemaju status_racuna.
-    return getattr(korisnik, "status_racuna", None) == StatusRacuna.blokiran
+    # administrator nema status_racuna
+    return getattr(korisnik, "status_racuna", None) == "blokiran"
 
 
 def trajanje_sesije_s(db: Session, uloga: Uloga) -> int:
-    postavka = db.get(PostavkaSustava, f"trajanje_sesije_{uloga.value}_h")
-    return int(postavka.vrijednost) * 60 * 60
+    vrijednost = db.execute(
+        text("SELECT vrijednost FROM postavke_sustava WHERE kljuc = :kljuc"),
+        {"kljuc": f"trajanje_sesije_{uloga.value}_h"},      # za sql injection
+    ).scalar_one()
+    return int(vrijednost) * 60 * 60
 
 
 def get_current_user(
@@ -53,7 +55,10 @@ def get_current_user(
     if proteklo > trajanje:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "sesija_istekla")
 
-    korisnik = db.get(MODELI_ULOGA[uloga], uuid.UUID(sesija["sub"]))
+    korisnik = db.execute(
+        text(f"SELECT * FROM {TABLICE_ULOGA[uloga]} WHERE id = :id"),
+        {"id": uuid.UUID(sesija["sub"])},
+    ).first()
     if korisnik is None:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "nije_prijavljen")
     if je_blokiran(korisnik):
