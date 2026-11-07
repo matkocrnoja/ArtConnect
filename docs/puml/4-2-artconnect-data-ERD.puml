@@ -1,0 +1,360 @@
+' ==============================================================================
+' 4-Artconnect-data-ERD.puml
+'
+' Svrha:    Prikazuje trajne entitete sustava za povezivanje umjetnika i
+'           organizatora prilika (korisnici, portfolio i djela, prilike,
+'           prijave, pozivi, obavijesti, šifrarnici i postavke sustava),
+'           njihove ključeve, reprezentativne atribute i kardinalnosti.
+'           Fizička implementacija baze (indeksi, CHECK ograničenja, bucketi
+'           za datoteke) nije obuhvaćena, osim kratkih napomena.
+' Autor:    Leon Sabljak, kolegij Programsko inženjerstvo
+' AI:       Prvu inačicu izradio je AI prema shemi baze; autor ju je pregledao,
+'           uskladio s funkcijskim zahtjevima i odgovara za konačni sadržaj.
+' Praćenje: Entiteti, atributi i veze trebaju ostati usklađeni sa shemom baze;
+'           pri promjeni sheme ažurirati model.
+'
+' Diagram level: Logical data model
+' Diagram type:  Entity-Relationship Diagram (ERD), crow's foot
+' Version:       1.0
+' ==============================================================================
+
+@startuml
+title Sustav Artconnect – logički podatkovni model
+left to right direction
+
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam ArrowColor #212529
+
+skinparam entity {
+    BackgroundColor #E7F1FF
+    BorderColor #0D6EFD
+    FontColor #212529
+}
+
+skinparam note {
+    BackgroundColor #FFF8E1
+    BorderColor #FFC107
+}
+
+' ==============================================================================
+' Korisnici
+' ==============================================================================
+
+entity "Umjetnik" as Umjetnik {
+    * id : ID <<PK>>
+    --
+    * google_subject_id : text <<unique>>
+    email : text
+    ime_prezime : text
+    poveznice : text[]
+    status_racuna : enum
+    trenutak_izrade : datetime
+}
+
+entity "Organizator" as Organizator {
+    * id : ID <<PK>>
+    --
+    * google_subject_id : text <<unique>>
+    email : text
+    ime_prezime : text
+    naziv_organizacije : text
+    ovjeren : boolean
+    status_racuna : enum
+    trenutak_izrade : datetime
+}
+
+' Administratori se ne registriraju sami, nego se unose ručno (seed).
+entity "Administrator" as Administrator {
+    * id : ID <<PK>>
+    --
+    * google_subject_id : text <<unique>>
+    email : text
+    ime_prezime : text
+    trenutak_izrade : datetime
+}
+
+' Organizator može blokirati umjetnika (asocijativni entitet).
+entity "Blokirani umjetnik" as BlokiraniUmjetnik {
+    * organizator_id : ID <<PK, FK>>
+    * umjetnik_id : ID <<PK, FK>>
+    --
+    trenutak_blokiranja : datetime
+}
+
+' ==============================================================================
+' Šifrarnici
+' ==============================================================================
+
+entity "Područje djelovanja" as Podrucje {
+    * sifra_podrucja : ID <<PK>>
+    --
+    naziv_podrucja : text <<unique>>
+    aktivno : boolean
+}
+
+entity "Vrsta prilike" as VrstaPrilike {
+    * sifra_vrste : ID <<PK>>
+    --
+    naziv_vrste : text <<unique>>
+    aktivno : boolean
+}
+
+' Umjetnik ima jedno ili više područja djelovanja.
+entity "Područje umjetnika" as UmjetnikPodrucje {
+    * umjetnik_id : ID <<PK, FK>>
+    * sifra_podrucja : ID <<PK, FK>>
+}
+
+' ==============================================================================
+' Portfolio i djela
+' ==============================================================================
+
+entity "Portfolio" as Portfolio {
+    * umjetnik_id : ID <<PK, FK>>
+    --
+    biografija : text
+    opis : text
+}
+
+entity "Djelo" as Djelo {
+    * id : ID <<PK>>
+    --
+    * umjetnik_id : ID <<FK>>
+    naziv : text
+    godina_nastanka : integer
+    tehnika : text
+    dimenzije : text
+    opis : text
+    javno : boolean
+    trenutak_izrade : datetime
+    uklonjeno_u : datetime
+    razlog_uklanjanja : text
+}
+
+entity "Datoteka djela" as DatotekaDjela {
+    * id : ID <<PK>>
+    --
+    * djelo_id : ID <<FK>>
+    mime_tip : text
+    trenutak_prijenosa : datetime
+}
+
+' ==============================================================================
+' Prilike
+' ==============================================================================
+
+entity "Prilika" as Prilika {
+    * id : ID <<PK>>
+    --
+    * organizator_id : ID <<FK>>
+    * sifra_vrste : ID <<FK>>
+    * sifra_podrucja : ID <<FK>>
+    naziv : text
+    opis : text (Markdown)
+    rok_prijave : datetime
+    pocetak_dogadanja : datetime
+    zavrsetak_dogadanja : datetime
+    mjesto : text
+    adresa : text
+    status : enum
+    trenutak_izrade : datetime
+    objavljeno_u : datetime
+    zavrseno_u : datetime
+    uklonjeno_u : datetime
+    razlog_uklanjanja : text
+}
+
+entity "Materijal prilike" as MaterijalPrilike {
+    * id : ID <<PK>>
+    --
+    * prilika_id : ID <<FK>>
+    naziv_datoteke : text
+    mime_tip : text
+}
+
+' Organizator poziva umjetnika na priliku (najviše jedan poziv po paru).
+entity "Poziv" as Poziv {
+    * id : ID <<PK>>
+    --
+    * prilika_id : ID <<FK>>
+    * umjetnik_id : ID <<FK>>
+    trenutak_poziva : datetime
+}
+
+entity "Lista želja" as ListaZelja {
+    * umjetnik_id : ID <<PK, FK>>
+    * prilika_id : ID <<PK, FK>>
+    --
+    trenutak_dodavanja : datetime
+}
+
+' ==============================================================================
+' Prijave
+' ==============================================================================
+
+' Umjetnik se na pojedinu priliku može prijaviti najviše jednom;
+' portfolio se šalje referencom, ne kopijom.
+entity "Prijava" as Prijava {
+    * id : ID <<PK>>
+    --
+    * prilika_id : ID <<FK>>
+    * umjetnik_id : ID <<FK>>
+    status : enum
+    poruka : text
+    oznacena_kao_pobjednik : boolean
+    razlog_odbijanja : text
+    sudjelovanje_skriveno : boolean
+    sudjelovanje_istaknuto : boolean
+    trenutak_prijave : datetime
+}
+
+' Asocijativni entitet: djela koja je umjetnik odabrao u prijavi.
+' Djelo mora pripadati istom umjetniku koji je podnio prijavu.
+entity "Djelo u prijavi" as PrijavaDjelo {
+    * prijava_id : ID <<PK, FK>>
+    * djelo_id : ID <<PK, FK>>
+    --
+    * umjetnik_id : ID <<FK>>
+}
+
+entity "Materijal prijave" as MaterijalPrijave {
+    * id : ID <<PK>>
+    --
+    * prijava_id : ID <<FK>>
+    naziv_datoteke : text
+    mime_tip : text
+}
+
+' Prijava može imati više zahtjeva, ali samo jedan otvoren istodobno.
+entity "Zahtjev za dopunu" as ZahtjevDopuna {
+    * id : ID <<PK>>
+    --
+    * prijava_id : ID <<FK>>
+    poruka : text
+    trenutak_zahtjeva : datetime
+    trenutak_dopune : datetime
+}
+
+' ==============================================================================
+' Obavijesti
+' ==============================================================================
+
+' Primatelj je točno jedan: umjetnik ILI organizator.
+entity "Obavijest" as Obavijest {
+    * id : ID <<PK>>
+    --
+    umjetnik_id : ID <<FK>>
+    organizator_id : ID <<FK>>
+    prilika_id : ID <<FK>>
+    vrsta : enum
+    poruka : text
+    procitana : boolean
+    trenutak_izrade : datetime
+}
+
+' Vlasnik postavke je točno jedan: umjetnik ILI organizator.
+' Ako redak ne postoji, obavijest je uključena (zadano).
+entity "Postavka obavijesti" as PostavkaObavijesti {
+    * id : ID <<PK>>
+    --
+    umjetnik_id : ID <<FK>>
+    organizator_id : ID <<FK>>
+    vrsta : enum
+    ukljuceno : boolean
+}
+
+' ==============================================================================
+' Postavke sustava
+' ==============================================================================
+
+entity "Postavka sustava" as PostavkaSustava {
+    * kljuc : text <<PK>>
+    --
+    vrijednost : text
+}
+
+' ==============================================================================
+' Veze između entiteta
+' ==============================================================================
+
+' Korisnici i šifrarnici
+Umjetnik ||--o| Portfolio : ima ►
+Umjetnik ||--|{ UmjetnikPodrucje : djeluje u ►
+Podrucje ||--o{ UmjetnikPodrucje : obuhvaća ►
+
+Organizator ||--o{ BlokiraniUmjetnik : blokira ►
+Umjetnik ||--o{ BlokiraniUmjetnik : blokiran je ►
+
+' Portfolio i djela
+Portfolio ||--o{ Djelo : sadrži ►
+Djelo ||--|{ DatotekaDjela : ima ►
+
+' Prilike
+Organizator ||--o{ Prilika : objavljuje ►
+VrstaPrilike ||--o{ Prilika : klasificira ►
+Podrucje ||--o{ Prilika : obuhvaća ►
+Prilika ||--o{ MaterijalPrilike : ima ►
+
+Prilika ||--o{ Poziv : sadrži ►
+Umjetnik ||--o{ Poziv : prima ►
+
+Umjetnik ||--o{ ListaZelja : sprema ►
+Prilika ||--o{ ListaZelja : nalazi se na ►
+
+' Prijave
+Prilika ||--o{ Prijava : prima ►
+Portfolio ||--o{ Prijava : podnosi ►
+Prijava ||--|{ PrijavaDjelo : uključuje ►
+Djelo ||--o{ PrijavaDjelo : prijavljeno je u ►
+Prijava ||--o{ MaterijalPrijave : ima ►
+Prijava ||--o{ ZahtjevDopuna : dobiva ►
+
+' Obavijesti (isključive veze: točno jedan primatelj / vlasnik)
+Umjetnik |o--o{ Obavijest : prima ►
+Organizator |o--o{ Obavijest : prima ►
+Prilika |o--o{ Obavijest : odnosi se na ►
+
+Umjetnik |o--o{ PostavkaObavijesti : postavlja ►
+Organizator |o--o{ PostavkaObavijesti : postavlja ►
+
+' ==============================================================================
+' Napomene
+' ==============================================================================
+
+note as NapomenaEnum
+  **Vrijednosti enumeracija**
+  status_racuna: aktivan, blokiran
+  status_prilike: priprema, otvoreno_za_prijave,
+    prijave_zatvorene, u_procesu_odabira, zavrseno
+  status_prijave: predana, u_pregledu,
+    potrebna_dopuna, prihvacena, odbijena
+  vrsta_obavijesti: promjena_statusa_prijave,
+    zahtjev_za_dopunu, poziv_na_priliku, odabir_zavrsen,
+    sadrzaj_uklonjen, nova_prijava, poslana_dopuna,
+    povucena_prijava
+end note
+
+note as NapomenaPravila
+  **Ključna pravila integriteta**
+  • Obavijest / Postavka obavijesti: točno jedno od
+    umjetnik_id i organizator_id.
+  • Prijava: odbijena prijava mora imati razlog;
+    pobjednik nema razlog odbijanja.
+  • Zahtjev za dopunu: najviše jedan otvoren
+    (trenutak_dopune = NULL) po prijavi.
+  • Prilika: pocetak_dogadanja ≥ rok_prijave,
+    zavrsetak_dogadanja ≥ pocetak_dogadanja.
+  • Uklonjen sadržaj (djelo, prilika) mora imati razlog.
+  • Brisanjem prilike obavijesti ostaju (prilika_id = NULL).
+  • „Barem jedan” (područje umjetnika, datoteka djela,
+    djelo u prijavi) su poslovna pravila (F-US-2,
+    F-UP-2, F-PP-1) i provjerava ih aplikacija.
+end note
+
+note bottom of PostavkaSustava
+  max_velicina_datoteke_mb, max_datoteka_po_djelu,
+  max_privitaka_po_prilici, trajanje_sesije_*_h
+end note
+
+@enduml

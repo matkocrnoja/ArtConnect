@@ -31,7 +31,7 @@ Primjeri koriste temu projekta CrisisMap. Neki namjerno sadrže korisne nedostat
 | ID | Opis | Prioritet | Izvor | Kriteriji prihvaćanja |
 | --- | --- | --- | --- | --- |
 | F-UP-1 | Umjetnici mogu uređivati svoj profil | Visok | ArtConnect.pdf | Umjetnik može izmijeniti ime, područje djelovanja, poveznice, biografiju i opis rada, a izmjene su vidljive na javnom profilu. |
-| F-UP-2 | Umjetnici mogu dodavati, uređivati i brisati djela u portfoliju | Visok | ArtConnect.pdf; Dogovor tima | Umjetnik može dodati djelo s osnovnim podacima i datotekama te ga urediti ili obrisati. Novo djelo je zadano privatno. |
+| F-UP-2 | Umjetnici mogu dodavati, uređivati i brisati djela u portfoliju | Visok | ArtConnect.pdf; Dogovor tima | Umjetnik može dodati djelo s osnovnim podacima i datotekama te ga urediti ili obrisati. Novo djelo je zadano privatno. Naziv i barem jedna datoteka su obavezni.|
 | F-UP-3 | Umjetnici mogu odrediti vidljivost svojih djela | Visok | ArtConnect.pdf; Dogovor tima | Umjetnik može označiti djelo kao javno ili privatno i pregledati ga kao javni korisnik. Privatno djelo nije javno vidljivo. |
 
 #### F-OB: Obavijesti (UMJETNIK i ORGANIZATOR)
