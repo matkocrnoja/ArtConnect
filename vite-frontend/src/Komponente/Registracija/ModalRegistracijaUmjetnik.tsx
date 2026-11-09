@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Alert, Modal, TextInput, MultiSelect, Button, Stack, Group, Fieldset } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { API_URL, registriraj } from "../api";
+import { registriraj } from "../../api/auth";
+import { req } from "../../api/client";
 
 interface Podrucje {
     sifra_podrucja: string;
@@ -22,7 +23,7 @@ function ModalRegistracijaUmjetnik({ opened, onClose }: Props) {
     const [salje, setSalje] = useState(false);
 
     useEffect(() => {
-        fetch(`${API_URL}/podrucja`)
+        req('/podrucja')
             .then((odgovor) => {
                 if (!odgovor.ok) throw new Error();
                 return odgovor.json();
@@ -65,9 +66,10 @@ function ModalRegistracijaUmjetnik({ opened, onClose }: Props) {
         <Modal
             opened={opened}
             onClose={onClose}
-            title="Registracija umjetnika" // withCloseButton={false}
-            // closeOnClickOutside={false}
-            // closeOnEscape={false}
+            title="Registracija umjetnika" 
+            withCloseButton={false}
+            closeOnClickOutside={false}
+            closeOnEscape={false}
             centered
         >
             <form onSubmit={form.onSubmit(handleSubmit)}>
