@@ -1,10 +1,11 @@
 import { createBrowserRouter } from 'react-router-dom';
 import App from './App';
-import Home from './Stranice/Home';
 import ShowNumber from './Stranice/ShowNumber';
 import DashboardShell from './Stranice/DashboardShell';
 import ProtectedRoute from './Komponente/ProtectedRoute';
 import Registracija from './Stranice/Registracija';
+import Prijava from './Stranice/Prijava';
+import Home from './Stranice/Home/Home';
 
 const Rute = createBrowserRouter([
   {
@@ -13,7 +14,7 @@ const Rute = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <Home />,
+        element: <Home/>,
       },
       {
         path: '/prikazi-broj/:id?',
@@ -28,6 +29,10 @@ const Rute = createBrowserRouter([
       {
         path: '/registracija',
         element: <Registracija />,
+      },
+      {
+        path: '/prijava',
+        element: <Prijava />,
       }
     ]}
 ]);

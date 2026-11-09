@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Alert, Modal, TextInput, Button, Stack, Fieldset } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { registriraj } from "../api";
+import { registriraj } from "../../api/auth";
 
 interface Props {
     opened: boolean;
@@ -44,9 +44,9 @@ function ModalRegistracijaOrganizator({ opened, onClose }: Props) {
     return (
         <Modal
             opened={opened}
-            // withCloseButton={false}
-            // closeOnClickOutside={false}
-            // closeOnEscape={false}
+            withCloseButton={false}
+            closeOnClickOutside={false}
+            closeOnEscape={false}
             onClose={onClose}
             title="Registracija organizatora"
             centered

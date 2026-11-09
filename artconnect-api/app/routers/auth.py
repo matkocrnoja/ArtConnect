@@ -47,6 +47,10 @@ class Registracija(BaseModel):
     poveznice: list[str] = []
 
 
+class Prijava(BaseModel):
+    uloga: Uloga
+
+
 def preusmjeri(putanja: str) -> RedirectResponse:
     return RedirectResponse(f"{get_settings().frontend_url}{putanja}", status_code=302)
 
@@ -183,6 +187,17 @@ async def google_login(request: Request, uloga: Uloga):
         request, get_settings().google_redirect_uri, state=state
     )
 
+# Prijava postojećeg korisnika. Ide preko Googlea kao i registracija, pa POST samo priprema
+# odlazak i vraća adresu na koju frontend preusmjerava preglednik. Oznaka "prijava" u stateu
+# govori callbacku da nepoznati račun ne vodi na registraciju.
+@router.post("/prijava")
+async def prijava(podaci: Prijava, request: Request):
+    state = f"{podaci.uloga.value}.prijava.{secrets.token_urlsafe(24)}"
+    odlazak = await oauth.google.authorize_redirect(
+        request, get_settings().google_redirect_uri, state=state
+    )
+    return {"url": odlazak.headers["location"]}
+
 #2
 @router.get("/google/callback")
 async def google_callback(request: Request, db: Session = Depends(get_db)):
@@ -199,12 +214,17 @@ async def google_callback(request: Request, db: Session = Depends(get_db)):
     if not sub or not email:
         return preusmjeri_s_greskom("neuspjela_prijava")
 
-    uloga = Uloga(request.query_params["state"].split(".")[0])
+    # State je "uloga.nasumicno" (registracija) ili "uloga.prijava.nasumicno" (samo prijava).
+    dijelovi_statea = request.query_params["state"].split(".")
+    uloga = Uloga(dijelovi_statea[0])
+    samo_prijava = len(dijelovi_statea) == 3 and dijelovi_statea[1] == "prijava"
     korisnik = await run_in_threadpool(pronadi_korisnika, db, uloga, sub)
 
     if korisnik is None:
         if uloga == Uloga.administrator:
             return preusmjeri_s_greskom("nije_administrator")
+        if samo_prijava:
+            return preusmjeri("/prijava?greska=nije_registriran")
 
         odgovor = preusmjeri(f"/registracija?uloga={uloga.value}")
         postavi_kolacic(
