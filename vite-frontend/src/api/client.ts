@@ -1,4 +1,5 @@
-export const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000';
+// Dev: Vite dev server + uvicorn on :8000. Prod: nginx serves the app and proxies /api to uvicorn.
+export const API_URL = import.meta.env.DEV ? 'http://localhost:8000' : '/api';
 
 interface RequestOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
