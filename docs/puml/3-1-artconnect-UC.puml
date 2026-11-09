@@ -1,0 +1,78 @@
+@startuml ArtConnect_UC
+left to right direction
+skinparam packageStyle rectangle
+
+actor "A-04 Administrator" as A04
+actor "A-03 Organizator" as A03
+actor "A-02 Umjetnik" as A02
+actor "Prijavljeni korisnik" as User
+actor "A-01 Neprijavljeni posjetitelj" as A01
+
+actor "A-06 Google Maps API" as A06
+actor "A-08 Vremenski okidač" as A08
+actor "A-07 Google Calendar API" as A07
+actor "A-05 Google OAuth 2.0" as A05
+
+' Nasljedstva za prijavljenog korisnika
+A04 -|> User
+A03 -|> User
+A02 -|> User
+
+rectangle "ArtConnect" {
+  rectangle "Administracija platforme" {
+    usecase "UC-25\nPregled mjesečnih izvještaja" as UC25
+    usecase "UC-21\nUpravljanje šifarnicima" as UC21
+  }
+
+  rectangle "Organizator: prilike i odabir" {
+    usecase "UC-19\nPozivanje i blokiranje umjetnika" as UC19
+    usecase "UC-15\nStvaranje i uređivanje prilike" as UC15
+    usecase "UC-16\nUpravljanje životnim ciklusom prilike" as UC16
+  }
+
+  rectangle "Obavijesti" {
+    usecase "UC-13\nPregled obavijesti" as UC13
+  }
+
+  rectangle "Umjetnik: profil, portfolio, prijave" {
+    usecase "UC-12\nDodavanje događanja u kalendar" as UC12
+    usecase "UC-10\nPraćenje i povlačenje prijave" as UC10
+    usecase "UC-11\nDopuna prijave" as UC11
+    
+    UC12 .up.> UC10 : <<extend>>
+    UC11 .up.> UC10 : <<extend>>
+  }
+
+  rectangle "Pristup i javni pregled" {
+    usecase "UC-03\nOdjava iz sustava" as UC03
+    usecase "UC-05\nPregled i pretraživanje prilika" as UC05
+    usecase "UC-02\nPrijava u sustav" as UC02
+  }
+}
+
+' Veze aktera s use case-ovima
+A04 --> UC25
+A04 --> UC21
+
+A03 --> UC19
+A03 --> UC15
+A03 --> UC16
+A03 --> UC13
+
+A02 --> UC13
+A02 --> UC10
+
+User --> UC03
+User --> UC05
+
+A01 --> UC05
+A01 --> UC02
+
+' Veze s vanjskim sustavima
+A06 --> UC15 : <<vanjski sustav>>
+A08 --> UC16 : <<vremenski okidač>>
+A08 --> UC03 : <<vremenski okidač>>
+A07 --> UC12 : <<vanjski sustav>>
+A05 --> UC02 : <<vanjski sustav>>
+
+@enduml

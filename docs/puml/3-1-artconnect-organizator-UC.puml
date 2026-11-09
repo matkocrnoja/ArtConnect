@@ -1,0 +1,26 @@
+@startuml 3-1-artconnect-organizator-UC
+left to right direction
+
+rectangle ArtConnect {
+    rectangle "Organizator: prilike i odabir" {
+    ("UC-19\nPozivanje i blokiranje\numjetnika") 
+    ("UC-18\nOdabir pobjednika") 
+    ("UC-17\nPregled prijava") 
+    ("UC-16\nUpravljanje životnim\nciklusom prilike") 
+    ("UC-15\nStvaranje i uređivanje \nprilike") 
+    ("UC-14\nUređivanje profila\norganizatora") 
+    }
+}
+
+:"A-03 Organizator": 
+:"A-06 Google Maps API": 
+:"A-08 Vremenski okidač": 
+:"A-03 Organizator": --> ("UC-19\nPozivanje i blokiranje\numjetnika")
+:"A-03 Organizator": --> ("UC-18\nOdabir pobjednika")
+:"A-03 Organizator": --> ("UC-17\nPregled prijava")
+:"A-03 Organizator": --> ("UC-16\nUpravljanje životnim\nciklusom prilike")
+:"A-03 Organizator": --> ("UC-15\nStvaranje i uređivanje \nprilike")
+:"A-03 Organizator": --> ("UC-14\nUređivanje profila\norganizatora")
+:"A-06 Google Maps API": -- ("UC-15\nStvaranje i uređivanje \nprilike")
+:"A-08 Vremenski okidač": -- ("UC-16\nUpravljanje životnim\nciklusom prilike")
+@enduml

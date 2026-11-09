@@ -1,0 +1,34 @@
+@startuml 3-1-artconnect-umjetnik-UC
+left to right direction
+skinparam packageStyle rectangle
+
+actor "A-02 Umjetnik" as A02
+actor "A-07 Google Calendar API" as A07
+
+rectangle "ArtConnect" {
+  rectangle "Umjetnik: profil, portfolio, prijave" {
+    usecase "UC-20\nPrikaz sudjelovanja na profilu" as UC20
+    usecase "UC-10\nPraćenje i povlačenje prijava" as UC10
+    usecase "UC-09\nPrijava na priliku" as UC09
+    usecase "UC-08\nUpravljanje listom želja" as UC08
+    usecase "UC-07\nUpravljanje portfolijem" as UC07
+    usecase "UC-06\nUređivanje profila umjetnika" as UC06
+    
+    usecase "UC-11\nDopuna prijave" as UC11
+    usecase "UC-12\nDodavanje događanja u kalendar" as UC12
+    
+    UC11 .up.> UC10 : <<extend>>
+    UC12 .up.> UC10 : <<extend>>
+  }
+}
+
+A02 --> UC20
+A02 --> UC10
+A02 --> UC09
+A02 --> UC08
+A02 --> UC07
+A02 --> UC06
+
+A07 --> UC12 : <<vanjski sustav>>
+
+@enduml
