@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { IconLogout, IconSettings, IconChevronDown } from '@tabler/icons-react';
 import cx from 'clsx';
-import { Avatar, Badge, Burger, Container, Divider, Drawer, Flex, Group, Menu, ScrollArea, Stack, Tabs, Text, UnstyledButton, } from '@mantine/core';
+import { Avatar, Badge, Burger, Container, Divider, Drawer, Flex, Group, Menu, ScrollArea, Tabs, Text, UnstyledButton, } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import classes from './HeaderTabs.module.css';
 import { useLocation, useNavigate } from 'react-router-dom';

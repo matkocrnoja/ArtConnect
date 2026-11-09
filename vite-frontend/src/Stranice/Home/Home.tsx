@@ -1,4 +1,4 @@
-import { IconCheck, IconMacro, IconStarFilled, IconZoom } from '@tabler/icons-react';
+import { IconStarFilled, IconZoom } from '@tabler/icons-react';
 import { Link } from 'react-router-dom';
 import { Button, Container, Divider, Group, List, Text, ThemeIcon, Title, Image } from '@mantine/core';
 import classes from './Home.module.css';
