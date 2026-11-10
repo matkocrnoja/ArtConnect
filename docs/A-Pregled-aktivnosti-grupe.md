@@ -4,14 +4,12 @@
 
 ## A.1 Evidencija sastanaka
 
-**Cilj:** Voditi kratak zapis projektnih sastanaka i tjedne koordinacije: tko je sudjelovao, što je odlučeno i koja je radnja uslijedila. Raspravu koja nije dovela do odluke zabilježite samo ako je važno pitanje ostalo otvoreno.
-
->Definirati prije prve uporabe:
-`[Inicijali/Kratica] = [Ime i prezime]` (npr. *AK = Ana Kovač; LM = Luka Marić; EP = Ema Petrović; NK = Nika Kralj*).																														
+Kratice članova tima: MB = Mia Barada, VC = Vilim Crčić, MC = Matko Crnoja, AD = Ana Dumbović, BJ = Borna Janežić, LK = Luka Kauzlarić, LS = Leon Sabljak																												
 
 | Datum i sudionici | Glavna tema | Donesena odluka ili zadatak  | Poveznica na zadatak ili  rezultat, ako postoji |
 | --- | --- | --- | --- |
-|  |  |  |  |
+| 19.10.2026.; MB, VC,  MC, AD, BJ, LK, LS | Dogovor i organizacija rada za prvi ciklus|  Tim se odlučio prvo na izradu autentifikacije pa portofolija. Donesena je podjela: VC i BJ rade backend, MC i LS bazu, MB i AD frontend te LK dokumentaciju.|                                             |
+| 3.11.2026.; MB, VC,  MC, AD, BJ, LK, LS | Usklađivanje frontenda i backenda te ostvarivanje registracije korisnika |  Odlučeno je da se pri registraciji na formi provjerava samo jesu li ispunjeni ime i prezime; ti se podaci ne povlače iz Google računa|                                           |
 
 Za svaki relevantan sastanak ili zapis tjedne koordinacije upišite jedan sažet redak. Dodijeljeni zadatak treba imati odgovornu osobu; za neriješeno pitanje treba navesti tko će ga dalje obraditi. Sam naslov sastanka ne pokazuje što se promijenilo. U ovu evidenciju nemojte kopirati cijeli popis issuea ni prijepis razgovora.
 
