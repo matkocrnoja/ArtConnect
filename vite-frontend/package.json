@@ -13,6 +13,7 @@
     "@mantine/core": "^9.7.4",
     "@mantine/form": "^9.7.4",
     "@mantine/hooks": "^9.7.4",
+    "@mantine/notifications": "^9.8.0",
     "@tabler/icons-react": "^3.50.0",
     "clsx": "^2.1.1",
     "react": "^19.2.8",

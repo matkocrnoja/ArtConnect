@@ -7,11 +7,17 @@ import classes from './HeaderTabs.module.css';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useKorisnik, useOdjava } from '../../context/KorisnikContext';
 
-const tabovi = [
+const taboviUmjetnik = [
   { label: 'Moj portfolio', path: '/moj-portfolio', value: '/moj-portfolio' },
   { label: 'Moje prijave', path: '/moje-prijave', value: '/moje-prijave' },
   { label: 'Inbox', value: 'inbox' }
 ];
+
+const taboviOrganizator = [
+  { label: 'Moje prilike', path: '/moje-prilike', value: '/moje-prilike' },
+  { label: 'Inbox', value: 'inbox' }
+];
+
 
 const brojNeprocitanih = 9;
 
@@ -25,6 +31,8 @@ function HeaderTabs() {
 
   const { pathname } = useLocation();
   //const aktivniTab = tabovi.find((tab) => pathname.startsWith(tab.path))?.path ?? null;
+  const tabovi = korisnik.uloga == "organizator" ? taboviOrganizator : taboviUmjetnik;
+
   const aktivniTab = tabovi.find((tab) => tab.path && pathname.startsWith(tab.path))?.value ?? null;
 
   const items = tabovi.map((tab) => (

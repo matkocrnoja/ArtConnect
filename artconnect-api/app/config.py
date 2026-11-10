@@ -22,6 +22,14 @@ class Settings(BaseSettings):
     secret_key: SecretStr = Field(min_length=32)
     cookie_secure: bool = True
 
+    # S3 je opcionalan da aplikacija radi i bez njega; rute za slike tada vraćaju 503.
+    s3_bucket: str | None = None
+    s3_region: str = "eu-central-1"
+    s3_access_key_id: str | None = None
+    s3_secret_access_key: SecretStr | None = None
+    # Za S3-kompatibilne servise (MinIO, Cloudflare R2...); prazno = AWS
+    s3_endpoint_url: str | None = None
+
     @field_validator("frontend_url")
     @classmethod
     def bez_kose_crte_na_kraju(cls, vrijednost: str) -> str:

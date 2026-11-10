@@ -1,9 +1,10 @@
 import { createContext, useContext } from 'react';
 import { odjavi } from '../api/auth';
-import type { Korisnik } from '../api/types';
+import type { Korisnik, PostavkeMedia } from '../api/types';
 
 interface VrijednostKonteksta {
   korisnik: Korisnik;
+  postavkeDatoteke: PostavkeMedia | null;
   ocistiKorisnika: () => void;
 }
 
@@ -17,6 +18,11 @@ function useKontekst(): VrijednostKonteksta {
 
 export function useKorisnik(): Korisnik {
   return useKontekst().korisnik;
+}
+
+// Limiti za upload datoteka iz postavki sustava; null ako ih backend nije uspio vratiti.
+export function usePostavkeMedia(): PostavkeMedia | null {
+  return useKontekst().postavkeDatoteke;
 }
 
 // Vraća funkciju koja odjavljuje korisnika na backendu i briše ga iz konteksta.
