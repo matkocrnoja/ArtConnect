@@ -1,8 +1,16 @@
-from fastapi import FastAPI
+import uuid
+
+from fastapi import Depends, FastAPI, Form, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import Row, text
+from sqlalchemy.orm import Session
 from starlette.middleware.sessions import SessionMiddleware
 
 from app.config import get_settings
+from app.database import get_db
+from app.dependencies import TrenutniKorisnik, get_current_user, require_role
+from app.s3storage import kljuc_datoteke_djela
+from app.sesija import Uloga
 
 
 def setup_cors(app: FastAPI):
@@ -26,3 +34,49 @@ def setup_session(app: FastAPI):
         same_site="lax",
         https_only=settings.cookie_secure,
     )
+
+
+def provjeri_vlasnistvo_djela(
+    djelo_id: uuid.UUID = Form(),
+    trenutni: TrenutniKorisnik = Depends(require_role(Uloga.umjetnik)),
+    db: Session = Depends(get_db),
+) -> Row:
+    djelo = db.execute(
+        text("""
+            SELECT id, umjetnik_id FROM djela
+            WHERE id = :djelo_id AND umjetnik_id = :umjetnik_id
+        """),
+        {"djelo_id": djelo_id, "umjetnik_id": trenutni.korisnik.id},
+    ).first()
+    if djelo is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "djelo_ne_postoji")
+    return djelo
+
+
+def provjeri_pristup_datoteci(
+    umjetnik_id: uuid.UUID,
+    djelo_id: uuid.UUID,
+    datoteka_id: uuid.UUID,
+    trenutni: TrenutniKorisnik = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> str:
+    datoteka = db.execute(
+        text("""
+            SELECT dd.mime_tip, d.javno, d.uklonjeno_u
+            FROM datoteke_djela dd
+            JOIN djela d ON d.id = dd.djelo_id
+            WHERE dd.id = :datoteka_id
+              AND d.id = :djelo_id
+              AND d.umjetnik_id = :umjetnik_id
+        """),
+        {"datoteka_id": datoteka_id, "djelo_id": djelo_id, "umjetnik_id": umjetnik_id},
+    ).first()
+    if datoteka is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "datoteka_ne_postoji")
+
+    vlasnik = trenutni.uloga == Uloga.umjetnik and trenutni.korisnik.id == umjetnik_id
+    javno_dostupno = datoteka.javno and datoteka.uklonjeno_u is None
+    if not vlasnik and not javno_dostupno:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "zabranjen_pristup")
+
+    return kljuc_datoteke_djela(umjetnik_id, djelo_id, datoteka_id, datoteka.mime_tip)
