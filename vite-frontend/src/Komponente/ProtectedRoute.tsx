@@ -19,8 +19,15 @@ export default function ProtectedRoute({ children }: { children: ReactNode }) {
 
     if (korisnik === undefined || postavkeDatoteke === undefined) return null;
     if (korisnik === null) return <Navigate to="/" replace />;
+    const vrijednost = {
+        korisnik,
+        postavkeDatoteke,
+        ocistiKorisnika: () => setKorisnik(null),
+        azurirajKorisnika: (promjene: Partial<Korisnik>) =>
+            setKorisnik((k) => (k ? { ...k, ...promjene } : k)),
+    };
     return (
-        <KorisnikContext.Provider value={{ korisnik, postavkeDatoteke, ocistiKorisnika: () => setKorisnik(null) }}>
+        <KorisnikContext.Provider value={vrijednost}>
             {children}
         </KorisnikContext.Provider>
     );
