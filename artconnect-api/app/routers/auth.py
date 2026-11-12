@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import RedirectResponse
 from joserfc.errors import JoseError
-from pydantic import BaseModel, ConfigDict, HttpUrl, TypeAdapter, ValidationError
+from pydantic import BaseModel, ConfigDict
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -18,6 +18,12 @@ from app.config import get_settings
 from app.database import get_db
 from app.dependencies import TABLICE_ULOGA, TrenutniKorisnik, get_current_user, je_blokiran
 from app.google import oauth
+from app.profil import (
+    ocisti_poveznice,
+    provjeri_ime_prezime,
+    provjeri_podrucja,
+    spoji_ime_prezime,
+)
 from app.sesija import (
     KOLACIC_REGISTRACIJE,
     KOLACIC_SESIJE,
@@ -31,10 +37,6 @@ from app.sesija import (
 )
 
 router = APIRouter(prefix="/auth", tags=["auth"])
-
-MAKS_POVEZNICA = 5
-
-_provjera_url = TypeAdapter(HttpUrl)
 
 
 class Registracija(BaseModel):
@@ -66,39 +68,8 @@ def pronadi_korisnika(db: Session, uloga: Uloga, sub: str):
     ).first()
 
 
-def aktivna_podrucja(db: Session, sifre: set) -> list:
-    return list(db.execute(
-        text("""
-            SELECT * FROM podrucja_djelovanja
-            WHERE sifra_podrucja = ANY(:sifre) AND aktivno
-        """),
-        {"sifre": list(sifre)},
-    ))
-
-
-def ocisti_poveznice(vrijednosti: list[str]) -> list[str]:
-    poveznice = [poveznica for poveznica in vrijednosti if poveznica]
-    if len(poveznice) > MAKS_POVEZNICA:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "previse_poveznica")
-
-    try:
-        for poveznica in poveznice:
-            _provjera_url.validate_python(poveznica)
-    except ValidationError:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "neispravna_poveznica")
-
-    return poveznice
-
-
 def novi_umjetnik(db: Session, podaci: Registracija, zajednicko: dict) -> uuid.UUID:
-    sifre = set(podaci.sifre_podrucja)
-    if not sifre:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "podrucje_obavezno")
-
-    podrucja = aktivna_podrucja(db, sifre)
-    if len(podrucja) != len(sifre):
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "neispravno_podrucje")
-
+    podrucja = provjeri_podrucja(db, set(podaci.sifre_podrucja))
     poveznice = ocisti_poveznice(podaci.poveznice)
 
     # Portfolio mora postojati prije umjetnika jer je umjetnici.id strani ključ na njega.
@@ -155,15 +126,12 @@ def register(
     if pronadi_korisnika(db, uloga, identitet["sub"]) is not None:
         raise HTTPException(status.HTTP_409_CONFLICT, "vec_registriran")
 
-    if not podaci.ime:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "ime_obavezno")
-    if not podaci.prezime:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "prezime_obavezno")
+    provjeri_ime_prezime(podaci.ime, podaci.prezime)
 
     zajednicko = {
         "google_subject_id": identitet["sub"],
         "email": identitet["email"],
-        "ime_prezime": f"{podaci.ime} {podaci.prezime}",
+        "ime_prezime": spoji_ime_prezime(podaci.ime, podaci.prezime),
     }
     try:
         if uloga == Uloga.umjetnik:

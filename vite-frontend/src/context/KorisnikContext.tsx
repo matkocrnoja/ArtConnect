@@ -6,6 +6,7 @@ interface VrijednostKonteksta {
   korisnik: Korisnik;
   postavkeDatoteke: PostavkeMedia | null;
   ocistiKorisnika: () => void;
+  azurirajKorisnika: (promjene: Partial<Korisnik>) => void;
 }
 
 export const KorisnikContext = createContext<VrijednostKonteksta | null>(null);
@@ -18,6 +19,12 @@ function useKontekst(): VrijednostKonteksta {
 
 export function useKorisnik(): Korisnik {
   return useKontekst().korisnik;
+}
+
+// Vraća funkciju koja mijenja podatke prijavljenog korisnika u kontekstu (npr. ime nakon
+// spremanja postavki), pa se promjena odmah vidi svugdje gdje se koristi useKorisnik().
+export function useAzurirajKorisnika(): (promjene: Partial<Korisnik>) => void {
+  return useKontekst().azurirajKorisnika;
 }
 
 // Limiti za upload datoteka iz postavki sustava; null ako ih backend nije uspio vratiti.

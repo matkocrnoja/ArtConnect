@@ -6,6 +6,32 @@ export interface Korisnik {
   ovjeren?: boolean; // samo za organizatora
 }
 
+export interface Podrucje {
+  sifra_podrucja: string;
+  naziv_podrucja: string;
+  aktivno?: boolean; // samo u profilu umjetnika (GET /artists/me)
+}
+
+// Odgovor GET/PUT /artists/me
+export interface ProfilUmjetnika {
+  id: string;
+  ime: string;
+  prezime: string;
+  email: string;
+  podrucja: Podrucje[];
+  poveznice: string[];
+}
+
+// Odgovor GET/PUT /organizers/me
+export interface ProfilOrganizatora {
+  id: string;
+  ime: string;
+  prezime: string;
+  email: string;
+  naziv_organizacije: string;
+  ovjeren: boolean;
+}
+
 export interface PostavkeMedia {
   mime_types: string[];
   max_velicina_datoteke_mb: number,
