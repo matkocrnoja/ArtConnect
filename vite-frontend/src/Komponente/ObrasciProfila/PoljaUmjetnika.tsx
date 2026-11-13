@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { Button, Fieldset, Group, MultiSelect, TextInput } from "@mantine/core";
 import type { FormArrayElement, UseFormReturnType } from "@mantine/form";
 import type { Podrucje } from "../../api/types";
-import { MAKS_POVEZNICA } from "./obrasciProfila";
+import { MAKS_PODRUCJA, MAKS_POVEZNICA } from "./obrasciProfila";
 
 // Generički tip: registracija i postavke imaju različita osobna polja, ali obje imaju
 // podrucja i poveznice, pa ova komponenta radi s bilo kojim obrascem koji ih sadrži.
@@ -28,6 +28,9 @@ function PoljaUmjetnika<T extends { podrucja: string[]; poveznice: string[] }>({
                         value: p.sifra_podrucja,
                         label: p.naziv_podrucja,
                     }))}
+                    description={`Najviše ${MAKS_PODRUCJA} područja`}
+                    // maxValues ne dopušta odabir više od MAKS_PODRUCJA; validacija ostaje kao zaštita.
+                    maxValues={MAKS_PODRUCJA}
                     searchable
                     required
                     {...form.getInputProps("podrucja")}

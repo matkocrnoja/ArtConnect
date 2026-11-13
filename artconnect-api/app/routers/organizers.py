@@ -1,13 +1,13 @@
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.dependencies import TrenutniKorisnik, require_role
-from app.profil import provjeri_puno_ime
+from app.profil import provjeri_naziv_organizacije, provjeri_puno_ime
 from app.sesija import Uloga
 
 router = APIRouter(prefix="/organizers", tags=["organizers"])
@@ -53,8 +53,7 @@ def spremi_moj_profil(
     db: Session = Depends(get_db),
 ):
     ime_prezime = provjeri_puno_ime(podaci.ime_prezime)
-    if not podaci.naziv_organizacije:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "naziv_organizacije_obavezan")
+    naziv = provjeri_naziv_organizacije(podaci.naziv_organizacije)
 
     organizator_id = trenutni.korisnik.id
     # UPDATE namjerno ne sadrži stupac email.
@@ -67,7 +66,7 @@ def spremi_moj_profil(
         {
             "id": organizator_id,
             "ime_prezime": ime_prezime,
-            "naziv_organizacije": podaci.naziv_organizacije,
+            "naziv_organizacije": naziv,
         },
     )
     db.commit()

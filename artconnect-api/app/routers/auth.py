@@ -21,6 +21,7 @@ from app.google import oauth
 from app.profil import (
     ocisti_poveznice,
     provjeri_ime_prezime,
+    provjeri_naziv_organizacije,
     provjeri_podrucja,
     spoji_ime_prezime,
 )
@@ -94,8 +95,7 @@ def novi_umjetnik(db: Session, podaci: Registracija, zajednicko: dict) -> uuid.U
 
 
 def novi_organizator(db: Session, podaci: Registracija, zajednicko: dict) -> uuid.UUID:
-    if not podaci.naziv_organizacije:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "naziv_organizacije_obavezan")
+    naziv = provjeri_naziv_organizacije(podaci.naziv_organizacije)
 
     return db.execute(
         text("""
@@ -103,7 +103,7 @@ def novi_organizator(db: Session, podaci: Registracija, zajednicko: dict) -> uui
             VALUES (gen_random_uuid(), :google_subject_id, :email, :ime_prezime, :naziv_organizacije)
             RETURNING id
         """),
-        {**zajednicko, "naziv_organizacije": podaci.naziv_organizacije},
+        {**zajednicko, "naziv_organizacije": naziv},
     ).scalar_one()
 
 #3

@@ -11,12 +11,15 @@ const PORUKE: Record<string, string> = {
   prezime_neispravno: 'Prezime smije sadržavati samo slova i razmake.',
   ime_prezime_obavezno: 'Ime i prezime je obavezno.',
   ime_prezime_neispravno: 'Ime i prezime smije sadržavati samo slova i razmake.',
+  ime_prezime_predugo: 'Ime i prezime smije imati najviše 100 znakova.',
   vec_registriran: 'Ovaj Google račun je već registriran.',
   podrucje_obavezno: 'Odaberi barem jedno područje.',
   neispravno_podrucje: 'Odabrano područje više nije dostupno.',
+  previse_podrucja: 'Dopušteno je najviše 20 područja.',
   previse_poveznica: 'Dopušteno je najviše 5 poveznica.',
   neispravna_poveznica: 'Poveznica mora biti puna adresa, npr. https://primjer.hr.',
   naziv_organizacije_obavezan: 'Naziv organizacije je obavezan.',
+  naziv_organizacije_predug: 'Naziv organizacije smije imati najviše 200 znakova.',
 };
 
 // Iz neuspjelog odgovora pročita kod greške i vrati poruku (ili zadanu ako je kod nepoznat).

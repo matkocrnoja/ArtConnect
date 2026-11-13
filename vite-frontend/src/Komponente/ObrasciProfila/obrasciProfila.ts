@@ -4,12 +4,17 @@ import type { PodaciOrganizatora, PodaciUmjetnika } from "../../api/profil";
 // Pravila obrazaca profila za registraciju i stranicu Postavke.
 // Backend provjerava ista pravila (app/profil.py); ovdje služe za brzu povratnu informaciju.
 
-export const MAKS_POVEZNICA = 5; // mora odgovarati MAKS_POVEZNICA na backendu
+// Moraju odgovarati istoimenim konstantama u app/profil.py.
+export const MAKS_POVEZNICA = 5;
+export const MAKS_PODRUCJA = 20;
+export const MAKS_DULJINA_IMENA = 100; // cijeli ime_prezime (pri registraciji: ime + razmak + prezime)
+export const MAKS_DULJINA_NAZIVA = 200; // naziv organizacije
 
-// ---------- ime ----------
+// ---------- ime i naziv organizacije ----------
 
 // Isto kao backend: NFC spaja rastavljene znakove (c + kvačica -> č), razmaci se svode na jedan.
-export function normalizirajIme(vrijednost: string): string {
+// Koristi se za ime i prezime i za naziv organizacije.
+export function normalizirajTekst(vrijednost: string): string {
     return vrijednost.normalize("NFC").trim().replace(/\s+/g, " ");
 }
 
@@ -17,12 +22,46 @@ export function normalizirajIme(vrijednost: string): string {
 const SAMO_SLOVA = /^\p{L}+( \p{L}+)*$/u;
 
 export function jeIspravnoIme(vrijednost: string): boolean {
-    return SAMO_SLOVA.test(normalizirajIme(vrijednost));
+    return SAMO_SLOVA.test(normalizirajTekst(vrijednost));
 }
 
 function provjeriIme(vrijednost: string, porukaPrazno: string): string | null {
-    if (!normalizirajIme(vrijednost)) return porukaPrazno;
+    if (!normalizirajTekst(vrijednost)) return porukaPrazno;
     if (!jeIspravnoIme(vrijednost)) return "Dozvoljena su samo slova i razmaci";
+    return null;
+}
+
+// Duljina nakon normalizacije, u Unicode znakovima kao Pythonov len().
+// (.length broji UTF-16 jedinice, pa bi npr. emoji u nazivu brojao kao dva znaka.)
+function duljina(vrijednost: string): number {
+    return [...normalizirajTekst(vrijednost)].length;
+}
+
+const PREDUGO_IME = `Ime i prezime smije imati najviše ${MAKS_DULJINA_IMENA} znakova`;
+
+// Postavke: jedno polje "Ime i prezime".
+function provjeriPunoIme(vrijednost: string): string | null {
+    const greska = provjeriIme(vrijednost, "Ime i prezime je obavezno");
+    if (greska) return greska;
+    return duljina(vrijednost) > MAKS_DULJINA_IMENA ? PREDUGO_IME : null;
+}
+
+// Registracija: ograničenje vrijedi za spojeni "ime prezime" (tako se sprema u bazu),
+// a greška se prikazuje uz polje Prezime.
+function validirajImeIPrezime(v: { ime: string; prezime: string }, greske: FormErrors) {
+    dodaj(greske, "ime", provjeriIme(v.ime, "Ime je obavezno"));
+    dodaj(greske, "prezime", provjeriIme(v.prezime, "Prezime je obavezno"));
+    if (!greske.ime && !greske.prezime && duljina(`${v.ime} ${v.prezime}`) > MAKS_DULJINA_IMENA) {
+        greske.prezime = `Ime i prezime zajedno smiju imati najviše ${MAKS_DULJINA_IMENA} znakova`;
+    }
+}
+
+// Naziv smije sadržavati brojeve i znakove ("Studio 54"), pa nema pravila "samo slova".
+function provjeriNazivOrganizacije(vrijednost: string): string | null {
+    if (!normalizirajTekst(vrijednost)) return "Naziv organizacije je obavezan";
+    if (duljina(vrijednost) > MAKS_DULJINA_NAZIVA) {
+        return `Naziv organizacije smije imati najviše ${MAKS_DULJINA_NAZIVA} znakova`;
+    }
     return null;
 }
 
@@ -50,6 +89,7 @@ export function jeIspravanUrl(vrijednost: string): boolean {
 // Ključ "poveznice.2" prikazuje grešku točno uz treću poveznicu. Prazna polja se preskaču.
 function validirajDjelovanje(v: Djelovanje, greske: FormErrors) {
     if (v.podrucja.length === 0) greske.podrucja = "Odaberi barem jedno područje";
+    else if (v.podrucja.length > MAKS_PODRUCJA) greske.podrucja = `Odaberi najviše ${MAKS_PODRUCJA} područja`;
     v.poveznice.forEach((poveznica, i) => {
         const p = poveznica.trim();
         if (p && !jeIspravanUrl(p)) greske[`poveznice.${i}`] = "Unesi punu adresu, npr. https://primjer.hr";
@@ -78,25 +118,23 @@ export const prazanOrganizator: VrijednostiOrganizatora = { ime: "", prezime: ""
 
 export function validirajUmjetnika(v: VrijednostiUmjetnika): FormErrors {
     const greske: FormErrors = {};
-    dodaj(greske, "ime", provjeriIme(v.ime, "Ime je obavezno"));
-    dodaj(greske, "prezime", provjeriIme(v.prezime, "Prezime je obavezno"));
+    validirajImeIPrezime(v, greske);
     validirajDjelovanje(v, greske);
     return greske;
 }
 
 export function validirajOrganizatora(v: VrijednostiOrganizatora): FormErrors {
     const greske: FormErrors = {};
-    dodaj(greske, "ime", provjeriIme(v.ime, "Ime je obavezno"));
-    dodaj(greske, "prezime", provjeriIme(v.prezime, "Prezime je obavezno"));
-    if (!v.nazivOrganizacije.trim()) greske.nazivOrganizacije = "Naziv organizacije je obavezan";
+    validirajImeIPrezime(v, greske);
+    dodaj(greske, "nazivOrganizacije", provjeriNazivOrganizacije(v.nazivOrganizacije));
     return greske;
 }
 
 // Tijelo zahtjeva POST /auth/register
 export function uPodatkeUmjetnika(v: VrijednostiUmjetnika) {
     return {
-        ime: normalizirajIme(v.ime),
-        prezime: normalizirajIme(v.prezime),
+        ime: normalizirajTekst(v.ime),
+        prezime: normalizirajTekst(v.prezime),
         sifre_podrucja: v.podrucja,
         poveznice: ocistiPoveznice(v.poveznice),
     };
@@ -104,9 +142,9 @@ export function uPodatkeUmjetnika(v: VrijednostiUmjetnika) {
 
 export function uPodatkeOrganizatora(v: VrijednostiOrganizatora) {
     return {
-        ime: normalizirajIme(v.ime),
-        prezime: normalizirajIme(v.prezime),
-        naziv_organizacije: v.nazivOrganizacije,
+        ime: normalizirajTekst(v.ime),
+        prezime: normalizirajTekst(v.prezime),
+        naziv_organizacije: normalizirajTekst(v.nazivOrganizacije),
     };
 }
 
@@ -123,22 +161,22 @@ export interface VrijednostiPostavkiOrganizatora {
 
 export function validirajPostavkeUmjetnika(v: VrijednostiPostavkiUmjetnika): FormErrors {
     const greske: FormErrors = {};
-    dodaj(greske, "imePrezime", provjeriIme(v.imePrezime, "Ime i prezime je obavezno"));
+    dodaj(greske, "imePrezime", provjeriPunoIme(v.imePrezime));
     validirajDjelovanje(v, greske);
     return greske;
 }
 
 export function validirajPostavkeOrganizatora(v: VrijednostiPostavkiOrganizatora): FormErrors {
     const greske: FormErrors = {};
-    dodaj(greske, "imePrezime", provjeriIme(v.imePrezime, "Ime i prezime je obavezno"));
-    if (!v.nazivOrganizacije.trim()) greske.nazivOrganizacije = "Naziv organizacije je obavezan";
+    dodaj(greske, "imePrezime", provjeriPunoIme(v.imePrezime));
+    dodaj(greske, "nazivOrganizacije", provjeriNazivOrganizacije(v.nazivOrganizacije));
     return greske;
 }
 
 // Tijela zahtjeva PUT /artists/me i PUT /organizers/me
 export function uPodatkePostavkiUmjetnika(v: VrijednostiPostavkiUmjetnika): PodaciUmjetnika {
     return {
-        ime_prezime: normalizirajIme(v.imePrezime),
+        ime_prezime: normalizirajTekst(v.imePrezime),
         sifre_podrucja: v.podrucja,
         poveznice: ocistiPoveznice(v.poveznice),
     };
@@ -146,7 +184,7 @@ export function uPodatkePostavkiUmjetnika(v: VrijednostiPostavkiUmjetnika): Poda
 
 export function uPodatkePostavkiOrganizatora(v: VrijednostiPostavkiOrganizatora): PodaciOrganizatora {
     return {
-        ime_prezime: normalizirajIme(v.imePrezime),
-        naziv_organizacije: v.nazivOrganizacije,
+        ime_prezime: normalizirajTekst(v.imePrezime),
+        naziv_organizacije: normalizirajTekst(v.nazivOrganizacije),
     };
 }
