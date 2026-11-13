@@ -256,34 +256,34 @@ Ograničenje je uvjet koji tim mora poštovati; pretpostavka je uvjet na koji se
 
 | ID zahtjeva | Obrazac uporabe / modul | Arhitekturna realizacija | Ispitivanje ili provjera |
 | --- | --- | --- | --- |
-| F-RL-1 | UC-01 Registracija korisnika; UC-02 Prijava u sustav | Web-klijent; Modul autentifikacije (Google OAuth 2.0); Modul korisnika | ST-01 Registracija umjetnika; ST-02 Registracija organizatora; ST-03 Odbijena autorizacija na Googleu; CT-01 Ponovna registracija u postojećoj ulozi; ST-04 Prijava registriranog korisnika; ST-05 Prijava neregistriranim računom; ST-06 Prijava blokiranog korisnika |
-| F-RL-2 | UC-03 Odjava iz sustava; istek sesije (vremenski okidač, A-08) | Web-klijent; Upravljanje sesijom; Modul postavki sustava| ST-07 Odjava i povratak gumbom "Natrag"; CT-02 Istek sesije; CT-03 Produljenje sesije aktivnošću |
+| F-RL-1 | UC-01 Registracija i prijava korisnika | Web-klijent; Modul autentifikacije (Google OAuth 2.0); Modul korisnika | ST-01 Registracija umjetnika; ST-02 Registracija organizatora; ST-03 Odbijena autorizacija na Googleu; CT-01 Ponovna registracija u postojećoj ulozi; ST-04 Prijava registriranog korisnika; ST-05 Prijava neregistriranim računom; ST-06 Prijava blokiranog korisnika |
+| F-RL-2 | UC-02 Odjava korisnika| Web-klijent; Upravljanje sesijom; Modul postavki sustava| ST-07 Odjava i povratak gumbom "Natrag"; CT-02 Istek sesije; CT-03 Produljenje sesije aktivnošću |
 | F-RL-3 | Kontrola pristupa (vrijedi za sve obrasce uporabe prijavljenih korisnika) | Autorizacijski filtar na poslužitelju| ST-08 Dashboard bez prijave; CT-04 Dashboard druge uloge |
-| F-NU-1 | UC-04 Pregled djela i umjetnika| Web-klijent; Modul portfolija; Modul pretraživanja; Modul korisnika| ST-09 Prikaz javnih djela; CT-05 Pretraga djela; ST-10 Pretraga umjetnika i javni profil |
-| F-NU-2 | UC-05 Pregled i pretraživanje prilika| Web-klijent; Modul prilika; Modul pretraživanja| ST-11 Popis aktivnih prilika; CT-06 Pretraga i filtriranje prilika |
-| F-NU-3 | UC-05 Pregled i pretraživanje prilika | Modul prilika; Modul pretraživanja | ST-12 Popis završenih prilika; ST-13 Pobjednici završene prilike |
-| F-UP-1 | UC-06 Uređivanje profila umjetnika | Web-klijent; Modul korisnika; Modul administracije (šifrarnik područja) | CT-08 Prazna polja profila; ST-19 Uređivanje profila; CT-13 Profil bez područja djelovanja; CT-14 Neispravna poveznica |
-| F-UP-2 | UC-07 Upravljanje portfolijem | Web-klijent; Modul portfolija; Pohrana datoteka; Modul prijava; Modul postavki sustava | ST-14 Prikaz portfolija; ST-15 Dodavanje djela; CT-09 Neispravna godina nastanka; ST-16 Uređivanje djela; ST-17 Brisanje djela; CT-10 Brisanje djela iz aktivne prijave; CT-11 Neispravna datoteka |
-| F-UP-3 | UC-07 Upravljanje portfolijem | Web-klijent; Modul portfolija; Autorizacijski filtar | CT-12 Vidljivost privatnog djela; ST-18 Pregled djela kao javni korisnik |
-| F-OB-1 | UC-13 Pregled obavijesti | Web-klijent; Modul obavijesti | CT-07 Nepročitane obavijesti; CT-17 Obavijesti organizatora |
-| F-OB-2 | UC-06 Uređivanje profila umjetnika; UC-14 Uređivanje profila organizatora | Modul obavijesti | CT-15 Isključena vrsta obavijesti |
-| F-UW-1 | UC-08 Upravljanje listom želja | Web-klijent; Modul prilika (lista želja) | CT-16 Dodavanje i uklanjanje s liste želja; ST-20 Prikaz liste želja |
-| F-PP-1 | UC-09 Prijava na priliku | Web-klijent; Modul prijava; Pohrana datoteka | ST-35 Prijava na priliku; CT-32 Prijava bez odabranog djela; CT-33 Ponovna prijava na istu priliku |
-| F-PP-2 | UC-10 Praćenje i povlačenje prijave | Web-klijent; Modul prijava; Pohrana datoteka | ST-36 Povlačenje prijave; CT-34 Povlačenje nakon zatvaranja prijava; ST-37 Pregled prijava i povijesti |
-| F-PP-3 | UC-11 Dopuna prijave; UC-10 Praćenje i povlačenje prijave | Modul prijava; Modul obavijesti | ST-29 Zahtjev za dopunom i slanje dopune; ST-34 Završetak odabira i razlog odbijanja |
-| F-PP-4 | UC-12 Dodavanje događanja u kalendar | Integracija Google Calendar | ST-38 Dodavanje događanja u kalendar; ST-39 Odbijena autorizacija kalendara |
-| F-PP-5 | UC-20 Prikaz sudjelovanja na profilu | Modul korisnika | ST-40 Prikaz, skrivanje i isticanje sudjelovanja |
-| F-ON-1 | UC-15 Stvaranje i uređivanje prilike | Web-klijent; Modul prilika; Pohrana datoteka; Integracija Google Maps | ST-26 Stvaranje prilike; CT-19 Neispravni datumi i prazna obavezna polja; CT-20 Sigurnost unesenog opisa; ST-27 Prikaz lokacije na karti; CT-21 Neprepoznata adresa |
-| F-ON-2 | UC-15 Stvaranje i uređivanje prilike | Web-klijent; Modul prilika | ST-21 Popis vlastitih prilika; CT-22 Promjena roka; CT-23 Brisanje prilike s prijavama |
-| F-ON-3 | UC-16 Upravljanje životnim ciklusom prilike; automatsko zatvaranje (A-08) | Automat stanja prilike; Planer zadataka | CT-28 Nedopuštena promjena statusa; CT-29 Automatsko zatvaranje po isteku roka; ST-31 Objava prilike; CT-30 Objava s isteklim rokom; ST-32 Zatvaranje i ponovno otvaranje; ST-33 Pokretanje odabira |
-| F-ON-4 | UC-17 Pregled prijava; UC-11 Dopuna prijave | Modul prijava; Modul obavijesti | ST-28 Pregled prijava; CT-24 Promjena statusa pri prvom otvaranju; ST-29 Zahtjev za dopunom i slanje dopune; CT-25 Dopuna u procesu odabira |
-| F-ON-5 | UC-18 Odabir pobjednika | Automat stanja prilike; Modul prijava; Modul obavijesti | ST-30 Označavanje pobjednika i razlog odbijanja; CT-26 Označavanje skriveno od umjetnika; ST-34 Završetak odabira i razlog odbijanja; CT-31 Završetak odabira bez razloga odbijanja |
-| F-ON-6 | UC-17 Pregled prijava | Modul izvještaja (statistike) | CT-27 Točnost statistika |
-| F-OS-1 | UC-14 Uređivanje profila organizatora | Web-klijent; Modul korisnika | ST-24 Uređivanje podataka organizatora |
-| F-OU-1 | UC-19 Pozivanje i blokiranje umjetnika | Modul korisnika; Modul obavijesti; Modul prijava | ST-22 Poziv umjetnika; CT-18 Ponovni poziv i poziv blokiranog umjetnika; ST-23 Prijava blokiranog umjetnika; ST-25 Odblokiranje umjetnika |
-| F-AD-1 | UC-21 Upravljanje šifrarnicima; UC-24 Upravljanje postavkama sustava | Modul administracije; Modul postavki sustava | CT-35 Upravljanje područjima i vrstama; CT-37 Promjena postavki sustava |
-| F-AD-2 | UC-22 Upravljanje korisnicima; UC-23 Moderacija sadržaja | Modul administracije; Modul autentifikacije; Modul obavijesti | ST-41 Ovjera organizatora; ST-42 Blokiranje i brisanje korisnika; CT-36 Blokiranje i brisanje vlastitog računa; ST-43 Uklanjanje djela i prilike |
-| F-AD-3 | UC-25 Pregled mjesečnih izvještaja | Modul izvještaja | CT-38 Točnost izvještaja; ST-44 Preuzimanje izvještaja |
+| F-NU-1 | UC-03 Pregled javnog sadržaja| Web-klijent; Modul portfolija; Modul pretraživanja; Modul korisnika| ST-09 Prikaz javnih djela; CT-05 Pretraga djela; ST-10 Pretraga umjetnika i javni profil |
+| F-NU-2 | UC-03 Pregled javnog sadržaja| Web-klijent; Modul prilika; Modul pretraživanja| ST-11 Popis aktivnih prilika; CT-06 Pretraga i filtriranje prilika |
+| F-NU-3 | UC-03 Pregled javnog sadržaja | Modul prilika; Modul pretraživanja | ST-12 Popis završenih prilika; ST-13 Pobjednici završene prilike |
+| F-UP-1 | UC-04 Upravljanje profilom i obavijestima | Web-klijent; Modul korisnika; Modul administracije (šifrarnik područja) | CT-08 Prazna polja profila; ST-19 Uređivanje profila; CT-13 Profil bez područja djelovanja; CT-14 Neispravna poveznica |
+| F-UP-2 | UC-05 Upravljanje portfolijem| Web-klijent; Modul portfolija; Pohrana datoteka; Modul prijava; Modul postavki sustava | ST-14 Prikaz portfolija; ST-15 Dodavanje djela; CT-09 Neispravna godina nastanka; ST-16 Uređivanje djela; ST-17 Brisanje djela; CT-10 Brisanje djela iz aktivne prijave; CT-11 Neispravna datoteka |
+| F-UP-3 | UC-05 Upravljanje portfolijem | Web-klijent; Modul portfolija; Autorizacijski filtar | CT-12 Vidljivost privatnog djela; ST-18 Pregled djela kao javni korisnik |
+| F-OB-1 | UC-04 Upravljanje profilom i obavijestima| Web-klijent; Modul obavijesti | CT-07 Nepročitane obavijesti; CT-17 Obavijesti organizatora |
+| F-OB-2 | UC-04 Upravljanje profilom i obavijestima| Modul obavijesti | CT-15 Isključena vrsta obavijesti |
+| F-UW-1 | UC-06 Prijava na priliku| Web-klijent; Modul prilika (lista želja) | CT-16 Dodavanje i uklanjanje s liste želja; ST-20 Prikaz liste želja |
+| F-PP-1 | UC-06 Prijava na priliku | Web-klijent; Modul prijava; Pohrana datoteka | ST-35 Prijava na priliku; CT-32 Prijava bez odabranog djela; CT-33 Ponovna prijava na istu priliku |
+| F-PP-2 | UC-07 Praćenje i dopuna prijava | Web-klijent; Modul prijava; Pohrana datoteka | ST-36 Povlačenje prijave; CT-34 Povlačenje nakon zatvaranja prijava; ST-37 Pregled prijava i povijesti |
+| F-PP-3 | UC-07 Praćenje i dopuna prijava | Modul prijava; Modul obavijesti | ST-29 Zahtjev za dopunom i slanje dopune; ST-34 Završetak odabira i razlog odbijanja |
+| F-PP-4 | UC-08 Dodavanje događanja u kalendar | Integracija Google Calendar | ST-38 Dodavanje događanja u kalendar; ST-39 Odbijena autorizacija kalendara |
+| F-PP-5 | UC-07 Praćenje i dopuna prijava | Modul korisnika | ST-40 Prikaz, skrivanje i isticanje sudjelovanja |
+| F-ON-1 | UC-09 Upravljanje prilikama | Web-klijent; Modul prilika; Pohrana datoteka; Integracija Google Maps | ST-26 Stvaranje prilike; CT-19 Neispravni datumi i prazna obavezna polja; CT-20 Sigurnost unesenog opisa; ST-27 Prikaz lokacije na karti; CT-21 Neprepoznata adresa |
+| F-ON-2 | UC-09 Upravljanje prilikama | Web-klijent; Modul prilika | ST-21 Popis vlastitih prilika; CT-22 Promjena roka; CT-23 Brisanje prilike s prijavama |
+| F-ON-3 | UC-09 Upravljanje prilikama; automatsko zatvaranje (A-08) | Automat stanja prilike; Planer zadataka | CT-28 Nedopuštena promjena statusa; CT-29 Automatsko zatvaranje po isteku roka; ST-31 Objava prilike; CT-30 Objava s isteklim rokom; ST-32 Zatvaranje i ponovno otvaranje; ST-33 Pokretanje odabira |
+| F-ON-4 | UC-10 Pregled prijava i odabir pobjednika; UC-06 Praćenje i dopuna prijave (dopuna) | Modul prijava; Modul obavijesti | ST-28 Pregled prijava; CT-24 Promjena statusa pri prvom otvaranju; ST-29 Zahtjev za dopunom i slanje dopune; CT-25 Dopuna u procesu odabira |
+| F-ON-5 | UC-10 Pregled prijava i odabir pobjednika | Automat stanja prilike; Modul prijava; Modul obavijesti | ST-30 Označavanje pobjednika i razlog odbijanja; CT-26 Označavanje skriveno od umjetnika; ST-34 Završetak odabira i razlog odbijanja; CT-31 Završetak odabira bez razloga odbijanja |
+| F-ON-6 | UC-10 Pregled prijava i odabir pobjednika | Modul izvještaja (statistike) | CT-27 Točnost statistika |
+| F-OS-1 | UC-03 Upravljanje profilom i obavijstima | Web-klijent; Modul korisnika | ST-24 Uređivanje podataka organizatora |
+| F-OU-1 | UC-11 Pozivanje i blokiranje umjetnika | Modul korisnika; Modul obavijesti; Modul prijava | ST-22 Poziv umjetnika; CT-18 Ponovni poziv i poziv blokiranog umjetnika; ST-23 Prijava blokiranog umjetnika; ST-25 Odblokiranje umjetnika |
+| F-AD-1 | UC-12 Upravljanje platformom | Modul administracije; Modul postavki sustava | CT-35 Upravljanje područjima i vrstama; CT-37 Promjena postavki sustava |
+| F-AD-2 | UC-12 Upravljanje platformom | Modul administracije; Modul autentifikacije; Modul obavijesti | ST-41 Ovjera organizatora; ST-42 Blokiranje i brisanje korisnika; CT-36 Blokiranje i brisanje vlastitog računa; ST-43 Uklanjanje djela i prilike |
+| F-AD-3 | UC-13 Pregled mjesečnih izvještaja | Modul izvještaja | CT-38 Točnost izvještaja; ST-44 Preuzimanje izvještaja |
 
 <details>
 <summary><strong>Sljedivost zahtjeva do obrazaca uporabe i ispitivanja</strong></summary>
