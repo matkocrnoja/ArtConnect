@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.dependencies import TrenutniKorisnik, require_role
-from app.profil import provjeri_ime_prezime, razdvoji_ime_prezime, spoji_ime_prezime
+from app.profil import provjeri_puno_ime
 from app.sesija import Uloga
 
 router = APIRouter(prefix="/organizers", tags=["organizers"])
@@ -17,8 +17,7 @@ class ProfilOrganizatoraUlaz(BaseModel):
     # extra="forbid": e-adresa (i svako drugo nepoznato polje) ne smije se poslati.
     model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
 
-    ime: str = ""
-    prezime: str = ""
+    ime_prezime: str = ""  # jedno polje, sprema se izravno u stupac ime_prezime
     naziv_organizacije: str = ""
 
 
@@ -30,11 +29,9 @@ def dohvati_profil_organizatora(db: Session, organizator_id: uuid.UUID) -> dict:
         """),
         {"id": organizator_id},
     ).one()
-    ime, prezime = razdvoji_ime_prezime(organizator.ime_prezime)
     return {
         "id": organizator.id,
-        "ime": ime,
-        "prezime": prezime,
+        "ime_prezime": organizator.ime_prezime or "",
         "email": organizator.email,
         "naziv_organizacije": organizator.naziv_organizacije or "",
         "ovjeren": organizator.ovjeren,
@@ -55,7 +52,7 @@ def spremi_moj_profil(
     trenutni: TrenutniKorisnik = Depends(require_role(Uloga.organizator)),
     db: Session = Depends(get_db),
 ):
-    provjeri_ime_prezime(podaci.ime, podaci.prezime)
+    ime_prezime = provjeri_puno_ime(podaci.ime_prezime)
     if not podaci.naziv_organizacije:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "naziv_organizacije_obavezan")
 
@@ -69,7 +66,7 @@ def spremi_moj_profil(
         """),
         {
             "id": organizator_id,
-            "ime_prezime": spoji_ime_prezime(podaci.ime, podaci.prezime),
+            "ime_prezime": ime_prezime,
             "naziv_organizacije": podaci.naziv_organizacije,
         },
     )

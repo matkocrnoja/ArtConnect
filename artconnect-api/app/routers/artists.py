@@ -7,13 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.dependencies import TrenutniKorisnik, require_role
-from app.profil import (
-    ocisti_poveznice,
-    provjeri_ime_prezime,
-    provjeri_podrucja,
-    razdvoji_ime_prezime,
-    spoji_ime_prezime,
-)
+from app.profil import ocisti_poveznice, provjeri_podrucja, provjeri_puno_ime
 from app.sesija import Uloga
 
 router = APIRouter(prefix="/artists", tags=["artists"])
@@ -24,8 +18,7 @@ class ProfilUmjetnikaUlaz(BaseModel):
     # nepoznatog) završava s 422. E-adresa dolazi iz Google računa i ne mijenja se.
     model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
 
-    ime: str = ""
-    prezime: str = ""
+    ime_prezime: str = ""  # jedno polje, sprema se izravno u stupac ime_prezime
     sifre_podrucja: list[uuid.UUID] = []
     poveznice: list[str] = []
 
@@ -45,11 +38,9 @@ def dohvati_profil_umjetnika(db: Session, umjetnik_id: uuid.UUID) -> dict:
         """),
         {"id": umjetnik_id},
     )
-    ime, prezime = razdvoji_ime_prezime(umjetnik.ime_prezime)
     return {
         "id": umjetnik.id,
-        "ime": ime,
-        "prezime": prezime,
+        "ime_prezime": umjetnik.ime_prezime or "",
         "email": umjetnik.email,
         "podrucja": [
             {
@@ -78,7 +69,7 @@ def spremi_moj_profil(
     db: Session = Depends(get_db),
 ):
     # Sve provjere prije prvog pisanja u bazu.
-    provjeri_ime_prezime(podaci.ime, podaci.prezime)
+    ime_prezime = provjeri_puno_ime(podaci.ime_prezime)
     podrucja = provjeri_podrucja(db, set(podaci.sifre_podrucja))
     poveznice = ocisti_poveznice(podaci.poveznice)
 
@@ -92,7 +83,7 @@ def spremi_moj_profil(
         """),
         {
             "id": umjetnik_id,
-            "ime_prezime": spoji_ime_prezime(podaci.ime, podaci.prezime),
+            "ime_prezime": ime_prezime,
             "poveznice": poveznice,
         },
     )

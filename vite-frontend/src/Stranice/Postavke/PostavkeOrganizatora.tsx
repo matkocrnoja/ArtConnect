@@ -1,21 +1,22 @@
 import { useEffect, useState } from "react";
-import { Alert, Button, Group, Loader, Stack, TextInput } from "@mantine/core";
+import { Alert, Button, Group, Loader, Stack } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { dohvatiProfilOrganizatora, spremiProfilOrganizatora } from "../../api/profil";
 import type { ProfilOrganizatora } from "../../api/types";
 import { useAzurirajKorisnika } from "../../context/KorisnikContext";
 import { showSuccess } from "../../KorisnickeNotifikacije/KorisnickeNotifikacije";
 import PoljaOrganizatora from "../../Komponente/ObrasciProfila/PoljaOrganizatora";
+import PoljaPostavkiOsobno from "../../Komponente/ObrasciProfila/PoljaPostavkiOsobno";
 import {
-    uPodatkeOrganizatora,
-    validirajOrganizatora,
-    type VrijednostiOrganizatora,
+    uPodatkePostavkiOrganizatora,
+    validirajPostavkeOrganizatora,
+    type VrijednostiPostavkiOrganizatora,
 } from "../../Komponente/ObrasciProfila/obrasciProfila";
 
-function uVrijednosti(profil: ProfilOrganizatora): VrijednostiOrganizatora {
+// ime_prezime ide u jedno polje, bez dijeljenja na ime i prezime.
+function uVrijednosti(profil: ProfilOrganizatora): VrijednostiPostavkiOrganizatora {
     return {
-        ime: profil.ime,
-        prezime: profil.prezime,
+        imePrezime: profil.ime_prezime,
         nazivOrganizacije: profil.naziv_organizacije,
     };
 }
@@ -42,15 +43,15 @@ function ObrazacOrganizatora({ profil }: { profil: ProfilOrganizatora }) {
     const [greska, setGreska] = useState<string | null>(null);
     const [salje, setSalje] = useState(false);
 
-    const form = useForm<VrijednostiOrganizatora>({
+    const form = useForm<VrijednostiPostavkiOrganizatora>({
         initialValues: uVrijednosti(profil),
-        validate: validirajOrganizatora,
+        validate: validirajPostavkeOrganizatora,
     });
 
-    const handleSubmit = async (values: VrijednostiOrganizatora) => {
+    const handleSubmit = async (values: VrijednostiPostavkiOrganizatora) => {
         setSalje(true);
         setGreska(null);
-        const rezultat = await spremiProfilOrganizatora(uPodatkeOrganizatora(values));
+        const rezultat = await spremiProfilOrganizatora(uPodatkePostavkiOrganizatora(values));
         setSalje(false);
 
         if ("greska" in rezultat) {
@@ -60,7 +61,7 @@ function ObrazacOrganizatora({ profil }: { profil: ProfilOrganizatora }) {
         const spremljeno = uVrijednosti(rezultat.profil);
         form.setInitialValues(spremljeno);
         form.setValues(spremljeno);
-        azurirajKorisnika({ ime_prezime: `${rezultat.profil.ime} ${rezultat.profil.prezime}` });
+        azurirajKorisnika({ ime_prezime: rezultat.profil.ime_prezime });
         showSuccess("Promjene su spremljene.");
     };
 
@@ -69,15 +70,7 @@ function ObrazacOrganizatora({ profil }: { profil: ProfilOrganizatora }) {
             <Stack>
                 <PoljaOrganizatora
                     form={form}
-                    dodatak={
-                        <TextInput
-                            label="E-adresa"
-                            value={profil.email}
-                            description="E-adresa se preuzima iz Google računa i ne može se mijenjati."
-                            disabled
-                            readOnly
-                        />
-                    }
+                    osobnaPolja={<PoljaPostavkiOsobno form={form} email={profil.email} />}
                 />
                 {greska && <Alert color="red">{greska}</Alert>}
                 <Group justify="flex-end">

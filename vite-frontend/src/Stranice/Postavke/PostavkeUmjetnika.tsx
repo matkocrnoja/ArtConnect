@@ -1,25 +1,25 @@
 import { useEffect, useState } from "react";
-import { Alert, Button, Group, Loader, Stack, TextInput } from "@mantine/core";
+import { Alert, Button, Group, Loader, Stack } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { dohvatiProfilUmjetnika, spremiProfilUmjetnika } from "../../api/profil";
 import type { Podrucje, ProfilUmjetnika } from "../../api/types";
 import { useAzurirajKorisnika } from "../../context/KorisnikContext";
 import { showSuccess } from "../../KorisnickeNotifikacije/KorisnickeNotifikacije";
 import PoljaUmjetnika from "../../Komponente/ObrasciProfila/PoljaUmjetnika";
+import PoljaPostavkiOsobno from "../../Komponente/ObrasciProfila/PoljaPostavkiOsobno";
 import { usePodrucja } from "../../Komponente/ObrasciProfila/usePodrucja";
 import {
-    uPodatkeUmjetnika,
-    validirajUmjetnika,
-    type VrijednostiUmjetnika,
+    uPodatkePostavkiUmjetnika,
+    validirajPostavkeUmjetnika,
+    type VrijednostiPostavkiUmjetnika,
 } from "../../Komponente/ObrasciProfila/obrasciProfila";
 
-// Profil s backenda -> vrijednosti obrasca. Zadržavaju se samo područja koja su
-// i dalje aktivna, jer se odabire isključivo iz popisa aktivnih područja.
-function uVrijednosti(profil: ProfilUmjetnika, aktivna: Podrucje[]): VrijednostiUmjetnika {
+// Profil s backenda -> vrijednosti obrasca. ime_prezime ide u jedno polje, bez dijeljenja.
+// Zadržavaju se samo područja koja su i dalje aktivna, jer se odabire isključivo iz tog popisa.
+function uVrijednosti(profil: ProfilUmjetnika, aktivna: Podrucje[]): VrijednostiPostavkiUmjetnika {
     const aktivneSifre = new Set(aktivna.map((p) => p.sifra_podrucja));
     return {
-        ime: profil.ime,
-        prezime: profil.prezime,
+        imePrezime: profil.ime_prezime,
         podrucja: profil.podrucja
             .map((p) => p.sifra_podrucja)
             .filter((sifra) => aktivneSifre.has(sifra)),
@@ -57,15 +57,15 @@ function ObrazacUmjetnika({ profil, podrucja }: { profil: ProfilUmjetnika; podru
     const [greska, setGreska] = useState<string | null>(null);
     const [salje, setSalje] = useState(false);
 
-    const form = useForm<VrijednostiUmjetnika>({
+    const form = useForm<VrijednostiPostavkiUmjetnika>({
         initialValues: uVrijednosti(profil, podrucja),
-        validate: validirajUmjetnika,
+        validate: validirajPostavkeUmjetnika,
     });
 
-    const handleSubmit = async (values: VrijednostiUmjetnika) => {
+    const handleSubmit = async (values: VrijednostiPostavkiUmjetnika) => {
         setSalje(true);
         setGreska(null);
-        const rezultat = await spremiProfilUmjetnika(uPodatkeUmjetnika(values));
+        const rezultat = await spremiProfilUmjetnika(uPodatkePostavkiUmjetnika(values));
         setSalje(false);
 
         if ("greska" in rezultat) {
@@ -76,7 +76,7 @@ function ObrazacUmjetnika({ profil, podrucja }: { profil: ProfilUmjetnika; podru
         const spremljeno = uVrijednosti(rezultat.profil, podrucja);
         form.setInitialValues(spremljeno);
         form.setValues(spremljeno);
-        azurirajKorisnika({ ime_prezime: `${rezultat.profil.ime} ${rezultat.profil.prezime}` });
+        azurirajKorisnika({ ime_prezime: rezultat.profil.ime_prezime });
         showSuccess("Promjene su spremljene.");
     };
 
@@ -86,15 +86,7 @@ function ObrazacUmjetnika({ profil, podrucja }: { profil: ProfilUmjetnika; podru
                 <PoljaUmjetnika
                     form={form}
                     podrucja={podrucja}
-                    dodatak={
-                        <TextInput
-                            label="E-adresa"
-                            value={profil.email}
-                            description="E-adresa se preuzima iz Google računa i ne može se mijenjati."
-                            disabled
-                            readOnly
-                        />
-                    }
+                    osobnaPolja={<PoljaPostavkiOsobno form={form} email={profil.email} />}
                 />
                 {greska && <Alert color="red">{greska}</Alert>}
                 <Group justify="flex-end">

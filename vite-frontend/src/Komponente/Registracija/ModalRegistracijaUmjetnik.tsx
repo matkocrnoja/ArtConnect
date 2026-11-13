@@ -4,6 +4,7 @@ import { Alert, Modal, Button, Stack } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { registriraj } from "../../api/auth";
 import PoljaUmjetnika from "../ObrasciProfila/PoljaUmjetnika";
+import PoljaImenaIPrezimena from "../ObrasciProfila/PoljaImenaIPrezimena";
 import { usePodrucja } from "../ObrasciProfila/usePodrucja";
 import {
     prazanUmjetnik,
@@ -52,7 +53,11 @@ function ModalRegistracijaUmjetnik({ opened, onClose }: Props) {
         >
             <form onSubmit={form.onSubmit(handleSubmit)}>
                 <Stack>
-                    <PoljaUmjetnika form={form} podrucja={podrucja ?? []} />
+                    <PoljaUmjetnika
+                        form={form}
+                        podrucja={podrucja ?? []}
+                        osobnaPolja={<PoljaImenaIPrezimena form={form} />}
+                    />
 
                     {prikazanaGreska && <Alert color="red">{prikazanaGreska}</Alert>}
                     <Button type="submit" loading={salje}>Podnesi registraciju</Button>

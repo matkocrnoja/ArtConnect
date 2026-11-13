@@ -126,12 +126,12 @@ def register(
     if pronadi_korisnika(db, uloga, identitet["sub"]) is not None:
         raise HTTPException(status.HTTP_409_CONFLICT, "vec_registriran")
 
-    provjeri_ime_prezime(podaci.ime, podaci.prezime)
+    ime, prezime = provjeri_ime_prezime(podaci.ime, podaci.prezime)
 
     zajednicko = {
         "google_subject_id": identitet["sub"],
         "email": identitet["email"],
-        "ime_prezime": spoji_ime_prezime(podaci.ime, podaci.prezime),
+        "ime_prezime": spoji_ime_prezime(ime, prezime),
     }
     try:
         if uloga == Uloga.umjetnik:

@@ -24,16 +24,15 @@ export async function dohvatiPodrucja(): Promise<Podrucje[]> {
   return odgovor.json();
 }
 
+// Tijela PUT zahtjeva. ime_prezime se sprema izravno, bez dijeljenja na ime i prezime.
 export interface PodaciUmjetnika {
-  ime: string;
-  prezime: string;
+  ime_prezime: string;
   sifre_podrucja: string[];
   poveznice: string[];
 }
 
 export interface PodaciOrganizatora {
-  ime: string;
-  prezime: string;
+  ime_prezime: string;
   naziv_organizacije: string;
 }
 

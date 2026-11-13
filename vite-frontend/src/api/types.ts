@@ -15,8 +15,7 @@ export interface Podrucje {
 // Odgovor GET/PUT /artists/me
 export interface ProfilUmjetnika {
   id: string;
-  ime: string;
-  prezime: string;
+  ime_prezime: string;
   email: string;
   podrucja: Podrucje[];
   poveznice: string[];
@@ -25,8 +24,7 @@ export interface ProfilUmjetnika {
 // Odgovor GET/PUT /organizers/me
 export interface ProfilOrganizatora {
   id: string;
-  ime: string;
-  prezime: string;
+  ime_prezime: string;
   email: string;
   naziv_organizacije: string;
   ovjeren: boolean;

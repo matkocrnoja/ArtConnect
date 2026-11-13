@@ -1,24 +1,26 @@
 import type { ReactNode } from "react";
 import { Button, Fieldset, Group, MultiSelect, TextInput } from "@mantine/core";
-import type { UseFormReturnType } from "@mantine/form";
+import type { FormArrayElement, UseFormReturnType } from "@mantine/form";
 import type { Podrucje } from "../../api/types";
-import { MAKS_POVEZNICA, type VrijednostiUmjetnika } from "./obrasciProfila";
+import { MAKS_POVEZNICA } from "./obrasciProfila";
 
-interface Props {
-    form: UseFormReturnType<VrijednostiUmjetnika>;
+// Generički tip: registracija i postavke imaju različita osobna polja, ali obje imaju
+// podrucja i poveznice, pa ova komponenta radi s bilo kojim obrascem koji ih sadrži.
+interface Props<T extends { podrucja: string[]; poveznice: string[] }> {
+    form: UseFormReturnType<T>;
     podrucja: Podrucje[];
-    dodatak?: ReactNode; // dodatno polje u osobnim informacijama (npr. e-adresa u postavkama)
+    osobnaPolja: ReactNode; // registracija: Ime + Prezime; postavke: Ime i prezime + e-adresa
 }
 
 // Polja umjetnika iz modala za registraciju; koriste ih i registracija i Postavke.
-function PoljaUmjetnika({ form, podrucja, dodatak }: Props) {
+function PoljaUmjetnika<T extends { podrucja: string[]; poveznice: string[] }>({
+    form,
+    podrucja,
+    osobnaPolja,
+}: Props<T>) {
     return (
         <>
-            <Fieldset legend="Osobne informacije">
-                <TextInput label="Ime" {...form.getInputProps("ime")} required />
-                <TextInput label="Prezime" {...form.getInputProps("prezime")} required />
-                {dodatak}
-            </Fieldset>
+            <Fieldset legend="Osobne informacije">{osobnaPolja}</Fieldset>
             <Fieldset legend="Umjetničko djelovanje">
                 <MultiSelect
                     label="Područja umjetničkog djelovanja"
@@ -55,7 +57,11 @@ function PoljaUmjetnika({ form, podrucja, dodatak }: Props) {
                     mt="md"
                     variant="outline"
                     disabled={form.values.poveznice.length >= MAKS_POVEZNICA}
-                    onClick={() => form.insertListItem("poveznice", "")}
+                    // Za generički T TypeScript ne može sam zaključiti da je element liste string,
+                    // pa mu se to kaže tipom koji izvozi Mantine.
+                    onClick={() =>
+                        form.insertListItem("poveznice", "" as FormArrayElement<T, "poveznice">)
+                    }
                 >
                     + Dodaj poveznicu
                 </Button>

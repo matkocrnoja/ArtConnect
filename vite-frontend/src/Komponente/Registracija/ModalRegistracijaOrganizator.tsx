@@ -4,6 +4,7 @@ import { Alert, Modal, Button, Stack } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { registriraj } from "../../api/auth";
 import PoljaOrganizatora from "../ObrasciProfila/PoljaOrganizatora";
+import PoljaImenaIPrezimena from "../ObrasciProfila/PoljaImenaIPrezimena";
 import {
     prazanOrganizator,
     uPodatkeOrganizatora,
@@ -48,7 +49,10 @@ function ModalRegistracijaOrganizator({ opened, onClose }: Props) {
         >
             <form onSubmit={form.onSubmit(handleSubmit)}>
                 <Stack>
-                    <PoljaOrganizatora form={form} />
+                    <PoljaOrganizatora
+                        form={form}
+                        osobnaPolja={<PoljaImenaIPrezimena form={form} />}
+                    />
                     {greska && <Alert color="red">{greska}</Alert>}
                     <Button type="submit" loading={salje}>Podnesi registraciju</Button>
                 </Stack>

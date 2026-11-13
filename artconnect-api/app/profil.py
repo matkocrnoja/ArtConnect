@@ -4,6 +4,8 @@ Sva pravila se provjeravaju ovdje, na backendu, bez obzira na provjere u fronten
 Greške se bacaju kao HTTPException s kodom koji frontend prevodi u poruku.
 """
 
+import unicodedata
+
 from fastapi import HTTPException, status
 from pydantic import HttpUrl, TypeAdapter, ValidationError
 from sqlalchemy import text
@@ -14,22 +16,43 @@ MAKS_POVEZNICA = 5
 _provjera_url = TypeAdapter(HttpUrl)
 
 
-def provjeri_ime_prezime(ime: str, prezime: str) -> None:
-    if not ime:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "ime_obavezno")
-    if not prezime:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "prezime_obavezno")
+# NFC spaja rastavljene znakove (c + kvačica -> č), a split/join svodi razmake na jedan:
+# "  Pero   Perić " -> "Pero Perić".
+def normaliziraj_ime(vrijednost: str) -> str:
+    return " ".join(unicodedata.normalize("NFC", vrijednost).split())
 
 
-# U bazi je jedan stupac ime_prezime, a obrasci imaju zasebna polja.
-# Spaja se razmakom, a dijeli na prvom razmaku: "Ana Marija Horvat" -> ("Ana", "Marija Horvat").
+# Dopuštena su samo slova (bilo kojeg pisma, uključujući č, ć, š, ž, đ) i razmaci između riječi.
+# isalpha() je lažan za brojeve, crtice, apostrofe i ostale simbole.
+def je_ispravno_ime(vrijednost: str) -> bool:
+    return bool(vrijednost) and all(rijec.isalpha() for rijec in vrijednost.split(" "))
+
+
+def _provjeri_ime(vrijednost: str, kod_obavezno: str, kod_neispravno: str) -> str:
+    vrijednost = normaliziraj_ime(vrijednost)
+    if not vrijednost:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, kod_obavezno)
+    if not je_ispravno_ime(vrijednost):
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, kod_neispravno)
+    return vrijednost
+
+
+# Registracija: zasebna polja ime i prezime. Vraća normalizirani par.
+def provjeri_ime_prezime(ime: str, prezime: str) -> tuple[str, str]:
+    return (
+        _provjeri_ime(ime, "ime_obavezno", "ime_neispravno"),
+        _provjeri_ime(prezime, "prezime_obavezno", "prezime_neispravno"),
+    )
+
+
+# Postavke: jedno polje koje se izravno sprema u ime_prezime, bez dijeljenja.
+def provjeri_puno_ime(ime_prezime: str) -> str:
+    return _provjeri_ime(ime_prezime, "ime_prezime_obavezno", "ime_prezime_neispravno")
+
+
+# Registracija sprema ime i prezime u jedan stupac ime_prezime, odvojene razmakom.
 def spoji_ime_prezime(ime: str, prezime: str) -> str:
     return f"{ime} {prezime}"
-
-
-def razdvoji_ime_prezime(ime_prezime: str | None) -> tuple[str, str]:
-    ime, _, prezime = (ime_prezime or "").partition(" ")
-    return ime, prezime
 
 
 def aktivna_podrucja(db: Session, sifre: set) -> list:
