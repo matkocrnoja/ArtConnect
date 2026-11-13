@@ -16,7 +16,7 @@ app.include_router(media.router)
 app.include_router(artists.router)
 app.include_router(organizers.router)
 
-
+#testovi za health check
 @app.get("/health")
 def health():
     return {"status": "ok"}
