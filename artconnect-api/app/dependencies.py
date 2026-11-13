@@ -70,6 +70,19 @@ def get_current_user(
     return TrenutniKorisnik(korisnik, uloga)
 
 
+# za rute za koje nije potrebno biti prijavljen: 
+# onda postoje dva slučaja što se prikazuje
+def get_optional_user(
+    request: Request,
+    response: Response,
+    db: Session = Depends(get_db),
+) -> TrenutniKorisnik | None:
+    try:
+        return get_current_user(request, response, db)
+    except HTTPException:
+        return None
+
+
 def require_role(*dopustene_uloge: Uloga):
     def provjeri_ulogu(
         trenutni: TrenutniKorisnik = Depends(get_current_user),
