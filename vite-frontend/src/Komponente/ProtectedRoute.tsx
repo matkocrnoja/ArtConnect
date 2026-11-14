@@ -6,9 +6,10 @@ import { KorisnikContext } from '../context/KorisnikContext';
 import type { Korisnik, PostavkeMedia } from '../api/types';
 
 // Sesija je u HttpOnly kolačiću koji JavaScript ne vidi, pa o prijavi odlučuje backend.
-// dopusteneUloge: ako je zadano, korisnik s drugom ulogom preusmjerava se na "/".
-export default function ProtectedRoute({ children, dopusteneUloge }: { children: ReactNode; dopusteneUloge?: Korisnik['uloga'][] }) {
+export default function ProtectedRoute({ children }: { children: ReactNode }) {
+    // undefined = još se učitava, null = nije prijavljen
     const [korisnik, setKorisnik] = useState<Korisnik | null | undefined>(undefined);
+    // undefined = još se učitava, null = dohvat nije uspio (stranica radi, ali upload nije moguć)
     const [postavkeDatoteke, setPostavkeDatoteke] = useState<PostavkeMedia | null | undefined>(undefined);
 
     useEffect(() => {
@@ -18,16 +19,8 @@ export default function ProtectedRoute({ children, dopusteneUloge }: { children:
 
     if (korisnik === undefined || postavkeDatoteke === undefined) return null;
     if (korisnik === null) return <Navigate to="/" replace />;
-    if (dopusteneUloge && !dopusteneUloge.includes(korisnik.uloga)) return <Navigate to="/" replace />;
-    const vrijednost = {
-        korisnik,
-        postavkeDatoteke,
-        ocistiKorisnika: () => setKorisnik(null),
-        azurirajKorisnika: (promjene: Partial<Korisnik>) =>
-            setKorisnik((k) => (k ? { ...k, ...promjene } : k)),
-    };
     return (
-        <KorisnikContext.Provider value={vrijednost}>
+        <KorisnikContext.Provider value={{ korisnik, postavkeDatoteke, ocistiKorisnika: () => setKorisnik(null) }}>
             {children}
         </KorisnikContext.Provider>
     );
