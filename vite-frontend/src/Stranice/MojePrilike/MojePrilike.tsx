@@ -16,11 +16,13 @@ import {
   getMyOpportunities,
   getOpportunityTypes,
   deleteOpportunity,
+  getArtAreas,
 } from "../../api/opportunities";
-import type {
-  Opportunity,
-  OpportunityStatus,
-  OpportunityType,
+import {
+  type ArtArea,
+  type Opportunity,
+  type OpportunityStatus,
+  type OpportunityType,
 } from "../../api/types";
 import {
   showError,
@@ -55,17 +57,20 @@ export default function MojePrilike() {
   const [prilike, setPrilike] = useState<Opportunity[]>([]);
   const [vrste, setVrste] = useState<OpportunityType[]>([]);
   const [ucitavanje, setUcitavanje] = useState(true);
+  const [podrucja, setPodrucja] = useState<ArtArea[]>([]);
 
   useEffect(() => {
     async function ucitajPodatke() {
       try {
-        const [dohvacenePrilike, dohvaceneVrste] = await Promise.all([
+        const [dohvacenePrilike, dohvaceneVrste, dohvacenaPodrucja] = await Promise.all([
           getMyOpportunities(),
           getOpportunityTypes(),
+          getArtAreas()
         ]);
 
         setPrilike(dohvacenePrilike);
         setVrste(dohvaceneVrste);
+        setPodrucja(dohvacenaPodrucja);
       } catch (error) {
         showError(
           error instanceof Error
@@ -107,6 +112,14 @@ export default function MojePrilike() {
           : "Brisanje prilike nije uspjelo.",
       );
     }
+  }
+
+  function nazivPodrucja(areaId: string): string {
+   return (
+      podrucja.find(
+         (podrucje) => podrucje.sifra_podrucja === areaId,
+      )?.naziv_podrucja ?? "Nepoznato područje"
+   );
   }
 
   function nazivVrste(typeId: string): string {
@@ -184,7 +197,7 @@ export default function MojePrilike() {
                     </Text>
 
                     <Text size="sm">
-                      <strong>Područje:</strong> ID {prilika.areaId}
+                      <strong>Područje:</strong> {nazivPodrucja(prilika.areaId)}
                     </Text>
 
                     <Text size="sm">

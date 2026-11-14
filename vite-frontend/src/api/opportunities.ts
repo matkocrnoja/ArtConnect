@@ -1,5 +1,10 @@
 import { req, req_priv } from "./client";
-import type { Opportunity, OpportunityInput, OpportunityType } from "./types";
+import type {
+  ArtArea,
+  Opportunity,
+  OpportunityInput,
+  OpportunityType,
+} from "./types";
 
 export class OpportunityApiError extends Error {
   status: number;
@@ -63,9 +68,9 @@ export async function getOpportunityTypes(): Promise<OpportunityType[]> {
   return handleResponse<OpportunityType[]>(response);
 }
 
-export async function getArtAreas(): Promise<unknown[]> {
+export async function getArtAreas(): Promise<ArtArea[]> {
   const response = await req("/podrucja");
-  return handleResponse<unknown[]>(response);
+  return handleResponse<ArtArea[]>(response);
 }
 
 function createFormData(
