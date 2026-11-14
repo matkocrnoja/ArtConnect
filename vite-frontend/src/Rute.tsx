@@ -7,6 +7,7 @@ import Registracija from "./Stranice/Registracija";
 import Prijava from "./Stranice/Prijava";
 import Home from "./Stranice/Home/Home";
 import TestUpload from "./Stranice/TestUpload";
+import MojPortfolio from "./Stranice/MojPortfolio";
 
 const Rute = createBrowserRouter([
     {
@@ -42,6 +43,14 @@ const Rute = createBrowserRouter([
                 element: (
                     <ProtectedRoute>
                         <TestUpload />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "/moj-portfolio",
+                element: (
+                    <ProtectedRoute dopusteneUloge={["umjetnik"]}>
+                        <MojPortfolio />
                     </ProtectedRoute>
                 ),
             },
