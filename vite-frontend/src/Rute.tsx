@@ -7,7 +7,6 @@ import Registracija from "./Stranice/Registracija";
 import Prijava from "./Stranice/Prijava";
 import Home from "./Stranice/Home/Home";
 import TestUpload from "./Stranice/TestUpload";
-import Postavke from "./Stranice/Postavke/Postavke";
 import MojPortfolio from "./Stranice/MojPortfolio";
 
 const Rute = createBrowserRouter([
@@ -28,14 +27,6 @@ const Rute = createBrowserRouter([
                 element: (
                     <ProtectedRoute>
                         <DashboardShell />
-                    </ProtectedRoute>
-                ),
-            },
-            {
-                path: "/postavke",
-                element: (
-                    <ProtectedRoute>
-                        <Postavke />
                     </ProtectedRoute>
                 ),
             },

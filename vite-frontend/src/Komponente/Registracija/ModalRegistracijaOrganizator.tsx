@@ -1,16 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Alert, Modal, Button, Stack } from "@mantine/core";
+import { Alert, Modal, TextInput, Button, Stack, Fieldset } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { registriraj } from "../../api/auth";
-import PoljaOrganizatora from "../ObrasciProfila/PoljaOrganizatora";
-import PoljaImenaIPrezimena from "../ObrasciProfila/PoljaImenaIPrezimena";
-import {
-    prazanOrganizator,
-    uPodatkeOrganizatora,
-    validirajOrganizatora,
-    type VrijednostiOrganizatora,
-} from "../ObrasciProfila/obrasciProfila";
 
 interface Props {
     opened: boolean;
@@ -22,15 +14,27 @@ function ModalRegistracijaOrganizator({ opened, onClose }: Props) {
     const [greska, setGreska] = useState<string | null>(null);
     const [salje, setSalje] = useState(false);
 
-    const form = useForm<VrijednostiOrganizatora>({
-        initialValues: prazanOrganizator,
-        validate: validirajOrganizatora,
+    const form = useForm({
+        initialValues: {
+            ime: "",
+            prezime: "",
+            nazivOrganizacije: "",
+        },
+        validate: {
+            ime: (v) => (v.trim() ? null : "Ime je obavezno"),
+            prezime: (v) => (v.trim() ? null : "Prezime je obavezno"),
+            nazivOrganizacije: (v) => (v.trim() ? null : "Naziv organizacije je obavezan"),
+        },
     });
 
-    const handleSubmit = async (values: VrijednostiOrganizatora) => {
+    const handleSubmit = async (values: typeof form.values) => {
         setSalje(true);
         setGreska(null);
-        const poruka = await registriraj(uPodatkeOrganizatora(values));
+        const poruka = await registriraj({
+            ime: values.ime,
+            prezime: values.prezime,
+            naziv_organizacije: values.nazivOrganizacije,
+        });
         setSalje(false);
 
         if (poruka) setGreska(poruka);
@@ -49,10 +53,15 @@ function ModalRegistracijaOrganizator({ opened, onClose }: Props) {
         >
             <form onSubmit={form.onSubmit(handleSubmit)}>
                 <Stack>
-                    <PoljaOrganizatora
-                        form={form}
-                        osobnaPolja={<PoljaImenaIPrezimena form={form} />}
-                    />
+                    <Fieldset legend="Osobne informacije">
+                        <TextInput label="Ime" {...form.getInputProps("ime")} required />
+                        <TextInput label="Prezime" {...form.getInputProps("prezime")} required />
+                        <TextInput
+                            label="Naziv organizacije"
+                            {...form.getInputProps("nazivOrganizacije")}
+                            required
+                        />
+                    </Fieldset>
                     {greska && <Alert color="red">{greska}</Alert>}
                     <Button type="submit" loading={salje}>Podnesi registraciju</Button>
                 </Stack>
