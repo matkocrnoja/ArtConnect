@@ -5,7 +5,6 @@ import { dohvatiPostavkeMedia } from '../api/media';
 import { KorisnikContext } from '../context/KorisnikContext';
 import type { Korisnik, PostavkeMedia } from '../api/types';
 
-// Sesija je u HttpOnly kolačiću koji JavaScript ne vidi, pa o prijavi odlučuje backend.
 // dopusteneUloge: ako je zadano, korisnik s drugom ulogom preusmjerava se na "/".
 export default function ProtectedRoute({ children, dopusteneUloge }: { children: ReactNode; dopusteneUloge?: Korisnik['uloga'][] }) {
     const [korisnik, setKorisnik] = useState<Korisnik | null | undefined>(undefined);
