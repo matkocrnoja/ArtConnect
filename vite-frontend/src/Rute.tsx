@@ -7,6 +7,7 @@ import Registracija from "./Stranice/Registracija";
 import Prijava from "./Stranice/Prijava";
 import Home from "./Stranice/Home/Home";
 import TestUpload from "./Stranice/TestUpload";
+import MojePrilike from "./Stranice/MojePrilike/MojePrilike";
 
 const Rute = createBrowserRouter([
     {
@@ -45,6 +46,14 @@ const Rute = createBrowserRouter([
                     </ProtectedRoute>
                 ),
             },
+            {
+                path: "/moje-prilike",
+                element: (
+                    <ProtectedRoute requiredRole = "organizator">
+                        <MojePrilike />
+                    </ProtectedRoute>
+                )
+            }
         ],
     },
 ]);
