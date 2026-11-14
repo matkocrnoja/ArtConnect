@@ -9,7 +9,8 @@ Kratice članova tima: MB = Mia Barada, VC = Vilim Crčić, MC = Matko Crnoja, A
 | Datum i sudionici | Glavna tema | Donesena odluka ili zadatak  | Poveznica na zadatak ili  rezultat, ako postoji |
 | --- | --- | --- | --- |
 | 19.10.2026.; MB, VC,  MC, AD, BJ, LK, LS | Dogovor i organizacija rada za prvi ciklus|  Tim se odlučio prvo na izradu autentifikacije pa portofolija. Donesena je podjela: VC i BJ rade backend, MC i LS bazu, MB i AD frontend te LK dokumentaciju.|                                             |
-| 3.11.2026.; MB, VC,  MC, AD, BJ, LK, LS | Usklađivanje frontenda i backenda te ostvarivanje registracije korisnika |  Odlučeno je da se pri registraciji na formi provjerava samo jesu li ispunjeni ime i prezime; ti se podaci ne povlače iz Google računa|                                           |
+| 3.11.2026.; MB, VC,  MC, AD, BJ, LK, LS | Usklađivanje frontenda i backenda te ostvarivanje registracije korisnika |  Odlučeno je da se pri registraciji na formi provjerava samo jesu li ispunjeni ime i prezime; ti se podaci ne povlače iz Google računa|    
+| 10. 11. 2026.; BJ, VC, LS, MC | Upoznavanje sa sučeljem za programski (Python) pristup S3 bucketu | BJ, VC, LS su uspješno podesili .env file i povezali se sa S3 bucketom za upload datoteka; Dogovorili smo se za daljnji rad oko backenda | / |                                        |
 
 Za svaki relevantan sastanak ili zapis tjedne koordinacije upišite jedan sažet redak. Dodijeljeni zadatak treba imati odgovornu osobu; za neriješeno pitanje treba navesti tko će ga dalje obraditi. Sam naslov sastanka ne pokazuje što se promijenilo. U ovu evidenciju nemojte kopirati cijeli popis issuea ni prijepis razgovora.
 
