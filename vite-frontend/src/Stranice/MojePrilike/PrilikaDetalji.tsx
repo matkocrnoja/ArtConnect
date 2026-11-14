@@ -1,51 +1,13 @@
 import { useEffect, useState } from "react";
-import {
-  Anchor,
-  Badge,
-  Button,
-  Center,
-  Container,
-  Divider,
-  Group,
-  Loader,
-  Paper,
-  Stack,
-  Text,
-  Title,
-} from "@mantine/core";
-import { useNavigate, useParams } from "react-router-dom";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-
-import HeaderTabs from "../../Komponente/HeaderTabs/HeaderTabs";
+import { Alert, Center, Loader, Button, Stack, Container } from "@mantine/core";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   getOpportunity,
   getOpportunityTypes,
   getArtAreas,
 } from "../../api/opportunities";
-import type {
-  Opportunity,
-  OpportunityType,
-  ArtArea,
-} from "../../api/types";
-import { showError } from "../../KorisnickeNotifikacije/KorisnickeNotifikacije";
-
-function formatDatum(datum: string | null) {
-  if (!datum) return "Nije navedeno";
-
-  return new Intl.DateTimeFormat("hr-HR", {
-    dateStyle: "long",
-    timeStyle: "short",
-  }).format(new Date(datum));
-}
-
-const statusNazivi: Record<string, string> = {
-  PRIPREMA: "U pripremi",
-  OTVORENO: "Otvoreno",
-  ZATVORENO: "Zatvoreno",
-  ODABIR: "Odabir",
-  ZAVRSENO: "Završeno",
-};
+import type { ArtArea, Opportunity, OpportunityType } from "../../api/types";
+import OpportunityView from "../../Komponente/Prilike/OpportunityView";
 
 export default function PrilikaDetalji() {
   const { id } = useParams();
@@ -55,174 +17,82 @@ export default function PrilikaDetalji() {
   const [vrste, setVrste] = useState<OpportunityType[]>([]);
   const [podrucja, setPodrucja] = useState<ArtArea[]>([]);
   const [ucitavanje, setUcitavanje] = useState(true);
-  const [greska, setGreska] = useState<string | null>(null);
+  const [greska, setGreska] = useState("");
 
   useEffect(() => {
-    let aktivno = true;
+    if (!id) {
+      setGreska("Prilika nije pronađena.");
+      setUcitavanje(false);
+      return;
+    }
 
-    async function ucitajPodatke() {
-      if (!id) {
-        setGreska("Nedostaje ID prilike.");
-        setUcitavanje(false);
-        return;
-      }
-
+    async function ucitaj() {
       try {
-        const [rezultat, vrsteRezultat, podrucjaRezultat] =
-          await Promise.all([
-            getOpportunity(id),
-            getOpportunityTypes(),
-            getArtAreas(),
-          ]);
+        setUcitavanje(true);
+        setGreska("");
 
-        if (aktivno) {
-          setPrilika(rezultat);
-          setVrste(vrsteRezultat);
-          setPodrucja(podrucjaRezultat);
-        }
-      } catch (error) {
-        const poruka =
-          error instanceof Error
-            ? error.message
-            : "Nije moguće učitati priliku.";
+        const [podaciPrilike, podaciVrsta, podaciPodrucja] = await Promise.all([
+          getOpportunity(id!),
+          getOpportunityTypes(),
+          getArtAreas(),
+        ]);
 
-        if (aktivno) {
-          setGreska(poruka);
-          showError(poruka);
-        }
+        setPrilika(podaciPrilike);
+        setVrste(podaciVrsta);
+        setPodrucja(podaciPodrucja);
+      } catch {
+        setGreska("Došlo je do greške pri učitavanju prilike.");
       } finally {
-        if (aktivno) {
-          setUcitavanje(false);
-        }
+        setUcitavanje(false);
       }
     }
 
-    void ucitajPodatke();
-
-    return () => {
-      aktivno = false;
-    };
+    ucitaj();
   }, [id]);
 
-  const nazivVrste =
-    vrste.find((vrsta) => vrsta.id === prilika?.typeId)?.name ??
-    "Nepoznata vrsta";
+  if (ucitavanje) {
+    return (
+      <Center py="xl">
+        <Loader />
+      </Center>
+    );
+  }
 
-  const nazivPodrucja =
-    podrucja.find(
-      (podrucje) =>
-        podrucje.sifra_podrucja === prilika?.areaId
-    )?.naziv_podrucja ?? "Nepoznato područje";
+  if (greska || !prilika) {
+    return (
+      <Alert color="red" m="lg">
+        {greska || "Prilika nije pronađena."}
+      </Alert>
+    );
+  }
+
+  const vrsta = vrste.find((item) => item.id === prilika.typeId);
+  const podrucje = podrucja.find(
+    (item) => item.sifra_podrucja === prilika.areaId,
+  );
+
+  if (!vrsta || !podrucje) {
+    return (
+      <Alert color="red" m="lg">
+        Nije moguće pronaći vrstu ili područje ove prilike.
+      </Alert>
+    );
+  }
 
   return (
-    <>
-      <HeaderTabs />
+    <Container size="md" py="xl">
+      <Stack gap="md">
+        <Button
+          variant="light"
+          color="gray"
+          w="fit-content"
+          onClick={() => navigate("/moje-prilike")}
+        >
+          Povratak na Moje prilike
+        </Button>
 
-      <Container size="md" py="xl">
-        {ucitavanje ? (
-          <Center p="xl">
-            <Loader />
-          </Center>
-        ) : greska || !prilika ? (
-          <Stack align="center" p="xl">
-            <Text c="red">
-              {greska ?? "Prilika nije pronađena."}
-            </Text>
-
-            <Button onClick={() => navigate("/")}>
-              Natrag na početnu
-            </Button>
-          </Stack>
-        ) : (
-          <Stack gap="lg">
-            <Button
-              variant="subtle"
-              color="gray"
-              onClick={() => navigate(-1)}
-              w="fit-content"
-            >
-              ← Natrag
-            </Button>
-
-            <Paper withBorder radius="md" p="lg">
-              <Stack gap="md">
-                <Group justify="space-between">
-                  <Badge>
-                    {statusNazivi[prilika.status] ?? prilika.status}
-                  </Badge>
-                </Group>
-
-                <Title order={1}>{prilika.title}</Title>
-
-                <Group gap="xs">
-                  <Badge variant="light">{nazivVrste}</Badge>
-                  <Badge variant="light" color="gray">
-                    {nazivPodrucja}
-                  </Badge>
-                </Group>
-
-                <Divider />
-
-                <Stack gap={4}>
-                  <Text fw={600}>Rok za prijavu</Text>
-                  <Text>{formatDatum(prilika.applicationDeadline)}</Text>
-                </Stack>
-
-                <Stack gap={4}>
-                  <Text fw={600}>Početak događaja</Text>
-                  <Text>{formatDatum(prilika.eventStart)}</Text>
-                </Stack>
-
-                {prilika.eventEnd && (
-                  <Stack gap={4}>
-                    <Text fw={600}>Završetak događaja</Text>
-                    <Text>{formatDatum(prilika.eventEnd)}</Text>
-                  </Stack>
-                )}
-
-                {prilika.location && (
-                  <Stack gap={4}>
-                    <Text fw={600}>Lokacija</Text>
-                    <Text>{prilika.location.address}</Text>
-                  </Stack>
-                )}
-
-                <Divider />
-
-                <Title order={2}>Opis prilike</Title>
-
-                <div>
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {prilika.content}
-                  </ReactMarkdown>
-                </div>
-
-                {prilika.files.length > 0 && (
-                  <>
-                    <Divider />
-
-                    <Title order={2}>Privitci</Title>
-
-                    <Stack gap="xs">
-                      {prilika.files.map((datoteka) => (
-                        <Anchor
-                          key={datoteka.id}
-                          href={datoteka.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          download={datoteka.fileName}
-                        >
-                          {datoteka.fileName}
-                        </Anchor>
-                      ))}
-                    </Stack>
-                  </>
-                )}
-              </Stack>
-            </Paper>
-          </Stack>
-        )}
-      </Container>
-    </>
+        <OpportunityView opportunity={prilika} type={vrsta} area={podrucje} />
+      </Stack>
+    </Container>
   );
 }

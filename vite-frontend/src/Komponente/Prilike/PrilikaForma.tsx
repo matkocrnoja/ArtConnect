@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import {
   ActionIcon,
@@ -57,14 +56,9 @@ type FormValues = {
 function datumUISO(vrijednost: Date | string | null): string {
   if (!vrijednost) return "";
 
-  const datum =
-    vrijednost instanceof Date
-      ? vrijednost
-      : new Date(vrijednost);
+  const datum = vrijednost instanceof Date ? vrijednost : new Date(vrijednost);
 
-  return Number.isNaN(datum.getTime())
-    ? ""
-    : datum.toISOString();
+  return Number.isNaN(datum.getTime()) ? "" : datum.toISOString();
 }
 
 function datumUFormu(vrijednost: string | null): Date | null {
@@ -72,9 +66,7 @@ function datumUFormu(vrijednost: string | null): Date | null {
 
   const datum = new Date(vrijednost);
 
-  return Number.isNaN(datum.getTime())
-    ? null
-    : datum;
+  return Number.isNaN(datum.getTime()) ? null : datum;
 }
 
 export default function OpportunityForm({
@@ -108,35 +100,20 @@ export default function OpportunityForm({
     initialValues: pocetneVrijednosti,
 
     validate: {
-      title: (value) =>
-        !value.trim()
-          ? "Unesi naslov prilike."
-          : null,
+      title: (value) => (!value.trim() ? "Unesi naslov prilike." : null),
 
-      typeId: (value) =>
-        value
-          ? null
-          : "Odaberi vrstu prilike.",
+      typeId: (value) => (value ? null : "Odaberi vrstu prilike."),
 
-      areaId: (value) =>
-        value
-          ? null
-          : "Odaberi umjetničko područje.",
+      areaId: (value) => (value ? null : "Odaberi umjetničko područje."),
 
-      content: (value) =>
-        !value.trim()
-          ? "Unesi opis prilike."
-          : null,
+      content: (value) => (!value.trim() ? "Unesi opis prilike." : null),
 
       applicationDeadline: (value) => {
         if (!value) {
           return "Odaberi rok prijave.";
         }
 
-        if (
-          mode === "create" &&
-          new Date(value) <= new Date()
-        ) {
+        if (mode === "create" && new Date(value) <= new Date()) {
           return "Rok prijave mora biti u budućnosti.";
         }
 
@@ -192,11 +169,10 @@ export default function OpportunityForm({
 
     async function ucitajPodatke() {
       try {
-        const [dohvaceneVrste, dohvacenaPodrucja] =
-          await Promise.all([
-            getOpportunityTypes(),
-            getArtAreas(),
-          ]);
+        const [dohvaceneVrste, dohvacenaPodrucja] = await Promise.all([
+          getOpportunityTypes(),
+          getArtAreas(),
+        ]);
 
         if (aktivno) {
           setVrste(dohvaceneVrste);
@@ -244,15 +220,12 @@ export default function OpportunityForm({
 
   const postojeciPrivitci =
     opportunity?.files.filter(
-      (datoteka) =>
-        !uklonjeniIdjevi.includes(datoteka.id),
+      (datoteka) => !uklonjeniIdjevi.includes(datoteka.id),
     ) ?? [];
 
-  const ukupanBrojPrivitaka =
-    postojeciPrivitci.length + datoteke.length;
+  const ukupanBrojPrivitaka = postojeciPrivitci.length + datoteke.length;
 
-  const maksimalanBroj =
-    postavkeMedia?.max_privitaka_po_prilici ?? 0;
+  const maksimalanBroj = postavkeMedia?.max_privitaka_po_prilici ?? 0;
 
   function dodajDatoteke(noveDatoteke: File[] | null) {
     if (!noveDatoteke || !postavkeMedia) return;
@@ -267,23 +240,17 @@ export default function OpportunityForm({
 
     for (const datoteka of noveDatoteke) {
       if (!postavkeMedia.mime_types.includes(datoteka.type)) {
-        odbijene.push(
-          `${datoteka.name}: tip datoteke nije dopušten.`,
-        );
+        odbijene.push(`${datoteka.name}: tip datoteke nije dopušten.`);
         continue;
       }
 
       if (datoteka.size > maksimalnaVelicina) {
-        odbijene.push(
-          `${datoteka.name}: datoteka je prevelika.`,
-        );
+        odbijene.push(`${datoteka.name}: datoteka je prevelika.`);
         continue;
       }
 
       if (
-        postojeciPrivitci.length +
-          datoteke.length +
-          prihvacene.length >=
+        postojeciPrivitci.length + datoteke.length + prihvacene.length >=
         maksimalanBroj
       ) {
         odbijene.push(
@@ -296,10 +263,7 @@ export default function OpportunityForm({
     }
 
     if (prihvacene.length > 0) {
-      setDatoteke((trenutne) => [
-        ...trenutne,
-        ...prihvacene,
-      ]);
+      setDatoteke((trenutne) => [...trenutne, ...prihvacene]);
     }
 
     if (odbijene.length > 0) {
@@ -308,29 +272,22 @@ export default function OpportunityForm({
   }
 
   function ukloniNovuDatoteku(index: number) {
-    setDatoteke((trenutne) =>
-      trenutne.filter((_, i) => i !== index),
-    );
+    setDatoteke((trenutne) => trenutne.filter((_, i) => i !== index));
   }
 
   function ukloniPostojecuDatoteku(id: string) {
-    setUklonjeniIdjevi((trenutni) => [
-      ...trenutni,
-      id,
-    ]);
+    setUklonjeniIdjevi((trenutni) => [...trenutni, id]);
   }
 
   const rokJeZakljucan =
     mode === "edit" &&
     opportunity &&
-    (opportunity.status === "ODABIR" ||
-      opportunity.status === "ZAVRSENO");
+    (opportunity.status === "ODABIR" || opportunity.status === "ZAVRSENO");
 
   const rokJeZaProduzenje =
     mode === "edit" &&
     opportunity &&
-    (opportunity.status === "OTVORENO" ||
-      opportunity.status === "ZATVORENO");
+    (opportunity.status === "OTVORENO" || opportunity.status === "ZATVORENO");
 
   const opisRoka =
     opportunity?.status === "ZATVORENO"
@@ -343,94 +300,63 @@ export default function OpportunityForm({
 
   async function spremiPriliku(vrijednosti: FormValues) {
     if (mode === "edit" && opportunity) {
-      const promijenjeno = (polje: keyof FormValues) =>
-        form.isDirty(polje);
+      const promijenjeno = (polje: keyof FormValues) => form.isDirty(polje);
 
-      const greske: Partial<
-        Record<keyof FormValues, string>
-      > = {};
+      const greske: Partial<Record<keyof FormValues, string>> = {};
 
-      if (
-        promijenjeno("title") &&
-        !vrijednosti.title.trim()
-      ) {
+      if (promijenjeno("title") && !vrijednosti.title.trim()) {
         greske.title = "Unesi naslov prilike.";
       }
 
-      if (
-        promijenjeno("typeId") &&
-        !vrijednosti.typeId
-      ) {
+      if (promijenjeno("typeId") && !vrijednosti.typeId) {
         greske.typeId = "Odaberi vrstu prilike.";
       }
 
-      if (
-        promijenjeno("areaId") &&
-        !vrijednosti.areaId
-      ) {
+      if (promijenjeno("areaId") && !vrijednosti.areaId) {
         greske.areaId = "Odaberi umjetničko područje.";
       }
 
-      if (
-        promijenjeno("content") &&
-        !vrijednosti.content.trim()
-      ) {
+      if (promijenjeno("content") && !vrijednosti.content.trim()) {
         greske.content = "Unesi opis prilike.";
       }
 
       if (promijenjeno("applicationDeadline")) {
         if (!vrijednosti.applicationDeadline) {
-          greske.applicationDeadline =
-            "Odaberi rok prijave.";
+          greske.applicationDeadline = "Odaberi rok prijave.";
         } else {
-          const noviRok = new Date(
-            vrijednosti.applicationDeadline,
-          );
+          const noviRok = new Date(vrijednosti.applicationDeadline);
 
           if (noviRok <= new Date()) {
-            greske.applicationDeadline =
-              "Rok prijave mora biti u budućnosti.";
+            greske.applicationDeadline = "Rok prijave mora biti u budućnosti.";
           } else if (
             (opportunity.status === "OTVORENO" ||
               opportunity.status === "ZATVORENO") &&
-            noviRok <=
-              new Date(opportunity.applicationDeadline)
+            noviRok <= new Date(opportunity.applicationDeadline)
           ) {
-            greske.applicationDeadline =
-              "Rok prijave može se samo produžiti.";
+            greske.applicationDeadline = "Rok prijave može se samo produžiti.";
           }
         }
       }
 
-      if (
-        promijenjeno("applicationDeadline") ||
-        promijenjeno("eventStart")
-      ) {
+      if (promijenjeno("applicationDeadline") || promijenjeno("eventStart")) {
         if (!vrijednosti.eventStart) {
-          greske.eventStart =
-            "Odaberi početak događanja.";
+          greske.eventStart = "Odaberi početak događanja.";
         } else if (
           vrijednosti.applicationDeadline &&
           new Date(vrijednosti.eventStart) <
             new Date(vrijednosti.applicationDeadline)
         ) {
-          greske.eventStart =
-            "Događanje ne može početi prije roka prijave.";
+          greske.eventStart = "Događanje ne može početi prije roka prijave.";
         }
       }
 
-      if (
-        promijenjeno("eventStart") ||
-        promijenjeno("eventEnd")
-      ) {
+      if (promijenjeno("eventStart") || promijenjeno("eventEnd")) {
         if (
           vrijednosti.eventEnd &&
           vrijednosti.eventStart &&
-          new Date(vrijednosti.eventEnd) <
-            new Date(vrijednosti.eventStart)
+          new Date(vrijednosti.eventEnd) < new Date(vrijednosti.eventStart)
         ) {
-          greske.eventEnd =
-            "Završetak ne može biti prije početka događanja.";
+          greske.eventEnd = "Završetak ne može biti prije početka događanja.";
         }
       }
 
@@ -484,9 +410,7 @@ export default function OpportunityForm({
   return (
     <Stack p="md" pt="xs" maw={800} mx="auto">
       <Title order={1}>
-        {mode === "create"
-          ? "Nova prilika"
-          : "Uredi priliku"}
+        {mode === "create" ? "Nova prilika" : "Uredi priliku"}
       </Title>
 
       <Text c="dimmed">
@@ -544,14 +468,9 @@ export default function OpportunityForm({
                   ? new Date(opportunity.applicationDeadline)
                   : new Date()
               }
-              value={datumUFormu(
-                form.values.applicationDeadline,
-              )}
+              value={datumUFormu(form.values.applicationDeadline)}
               onChange={(value) => {
-                form.setFieldValue(
-                  "applicationDeadline",
-                  datumUISO(value),
-                );
+                form.setFieldValue("applicationDeadline", datumUISO(value));
 
                 form.clearFieldError("applicationDeadline");
                 form.clearFieldError("eventStart");
@@ -567,10 +486,7 @@ export default function OpportunityForm({
               required
               value={datumUFormu(form.values.eventStart)}
               onChange={(value) => {
-                form.setFieldValue(
-                  "eventStart",
-                  datumUISO(value),
-                );
+                form.setFieldValue("eventStart", datumUISO(value));
 
                 form.clearFieldError("eventStart");
                 form.clearFieldError("eventEnd");
@@ -585,10 +501,7 @@ export default function OpportunityForm({
               clearable
               value={datumUFormu(form.values.eventEnd)}
               onChange={(value) => {
-                form.setFieldValue(
-                  "eventEnd",
-                  datumUISO(value),
-                );
+                form.setFieldValue("eventEnd", datumUISO(value));
 
                 form.clearFieldError("eventEnd");
               }}
@@ -615,15 +528,13 @@ export default function OpportunityForm({
                 onChange={dodajDatoteke}
                 accept={postavkeMedia?.mime_types.join(",")}
                 disabled={
-                  !postavkeMedia ||
-                  ukupanBrojPrivitaka >= maksimalanBroj
+                  !postavkeMedia || ukupanBrojPrivitaka >= maksimalanBroj
                 }
               />
 
               <Text size="xs" c="dimmed">
-                Najviše {maksimalanBroj} privitaka. Maksimalna
-                veličina pojedine datoteke:{" "}
-                {postavkeMedia?.max_velicina_datoteke_mb ?? 0} MB.
+                Najviše {maksimalanBroj} privitaka. Maksimalna veličina pojedine
+                datoteke: {postavkeMedia?.max_velicina_datoteke_mb ?? 0} MB.
               </Text>
 
               {greskaDatoteka && (
@@ -633,10 +544,7 @@ export default function OpportunityForm({
               )}
 
               {postojeciPrivitci.map((datoteka) => (
-                <Group
-                  key={datoteka.id}
-                  justify="space-between"
-                >
+                <Group key={datoteka.id} justify="space-between">
                   <Text size="sm">
                     {datoteka.fileName} (
                     {(datoteka.sizeBytes / 1024 / 1024).toFixed(2)} MB)
@@ -647,9 +555,7 @@ export default function OpportunityForm({
                     color="red"
                     variant="subtle"
                     aria-label={`Ukloni ${datoteka.fileName}`}
-                    onClick={() =>
-                      ukloniPostojecuDatoteku(datoteka.id)
-                    }
+                    onClick={() => ukloniPostojecuDatoteku(datoteka.id)}
                   >
                     <IconX size={16} />
                   </ActionIcon>
@@ -662,8 +568,8 @@ export default function OpportunityForm({
                   justify="space-between"
                 >
                   <Text size="sm">
-                    {datoteka.name} (
-                    {(datoteka.size / 1024 / 1024).toFixed(2)} MB)
+                    {datoteka.name} ({(datoteka.size / 1024 / 1024).toFixed(2)}{" "}
+                    MB)
                   </Text>
 
                   <ActionIcon
@@ -671,9 +577,7 @@ export default function OpportunityForm({
                     color="red"
                     variant="subtle"
                     aria-label={`Ukloni ${datoteka.name}`}
-                    onClick={() =>
-                      ukloniNovuDatoteku(index)
-                    }
+                    onClick={() => ukloniNovuDatoteku(index)}
                   >
                     <IconX size={16} />
                   </ActionIcon>
@@ -682,22 +586,12 @@ export default function OpportunityForm({
             </Stack>
 
             <Group justify="flex-end">
-              <Button
-                variant="default"
-                type="button"
-                onClick={onCancel}
-              >
+              <Button variant="default" type="button" onClick={onCancel}>
                 Odustani
               </Button>
 
-              <Button
-                type="submit"
-                loading={spremanje}
-                disabled={ucitavanje}
-              >
-                {mode === "create"
-                  ? "Stvori priliku"
-                  : "Spremi promjene"}
+              <Button type="submit" loading={spremanje} disabled={ucitavanje}>
+                {mode === "create" ? "Stvori priliku" : "Spremi promjene"}
               </Button>
             </Group>
           </Stack>
