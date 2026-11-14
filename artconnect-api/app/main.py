@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.middleware import setup_cors, setup_session
-from app.routers import art, auth, media, podrucja
+from app.routers import art, artists, auth, media, organizers, podrucja
 
 app = FastAPI(title="ArtConnect API")
 setup_cors(app)
@@ -13,8 +13,10 @@ app.include_router(auth.router)
 app.include_router(art.router)
 app.include_router(podrucja.router)
 app.include_router(media.router)
+app.include_router(artists.router)
+app.include_router(organizers.router)
 
-
+#testovi za health check
 @app.get("/health")
 def health():
     return {"status": "ok"}
