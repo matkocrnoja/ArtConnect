@@ -1,3 +1,5 @@
+import mimetypes
+import uuid
 from functools import lru_cache
 
 import boto3
@@ -24,3 +26,13 @@ def get_s3():
 def get_bucket() -> str:
     get_s3()  # baca 503 ako S3 nije konfiguriran
     return get_settings().s3_bucket
+
+
+def kljuc_datoteke_djela(
+    umjetnik_id: uuid.UUID, djelo_id: uuid.UUID, datoteka_id: uuid.UUID, mime_tip: str
+) -> str:
+    extension = mimetypes.guess_extension(mime_tip) or "." + mime_tip.split("/")[-1]
+    # Kako guess_extension na win64 sustavima za content_type="image/webp" vraća None
+    # napravljen je fallback koji "image/webp" rastavlja na listu ["image", "webp"] i bira
+    # zadnji dio (-1.) liste - što je upravo "webp"
+    return f"djela/{umjetnik_id}/{djelo_id}/{datoteka_id}{extension}"
