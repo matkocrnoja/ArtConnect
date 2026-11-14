@@ -34,8 +34,8 @@ rectangle "ArtConnect" {
   usecase "UC-02\nOdjava korisnika" as UC02
   usecase "UC-03\nPregled javnog sadržaja" as UC03
   usecase "UC-04\nUpravljanje profilom i\npregled obavijesti" as UC04
-  usecase "UC-05\nPrijava na priliku" as UC05
-  usecase "UC-06\nUpravljanje portfolijem" as UC06
+  usecase "UC-05\nUpravljanje portfolijem" as UC05
+  usecase "UC-06\nPrijava na priliku" as UC06
   usecase "UC-07\nPraćenje i dopuna\nprijava" as UC07
   usecase "UC-08\nDodavanje događanja\nu kalendar" as UC08
   usecase "UC-09\nUpravljanje prilikama" as UC09
