@@ -38,7 +38,7 @@ export default function ArtworkGrid({ artworks, zauzetoId, onAdd, onEdit, onDele
         return (
             <Card withBorder py="xl">
                 <Stack align="center" gap="xs">
-                    <Title order={4}>Još nemaš nijedno djelo</Title>
+                    <Title order={4}>Ovdje nažalost nema ništa za prikazati...</Title>
                     <Text c="dimmed" ta="center" maw={420}>
                         Dodaj prvo djelo i priloži njegove slike ili PDF. Novo djelo je privatno dok ga ne označiš kao javno.
                     </Text>

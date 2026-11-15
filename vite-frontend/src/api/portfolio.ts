@@ -1,6 +1,6 @@
 import { API_URL, req_priv } from "./client";
 import type {
-    Artwork, ArtworkInput, DeletableCheck, Portfolio, PostavkeMedia, UploadLimits,
+    Artwork, ArtworkFile, ArtworkInput, Portfolio, PostavkeMedia, UploadLimits,
 } from "./types";
 
 export class ApiError extends Error {
@@ -39,9 +39,35 @@ export function porukaZabranjenogBrisanja(prilike: { title: string }[]): string 
         : `Djelo nije moguće obrisati jer je dio aktivnih prijava na prilikama ${nazivi}.`;
 }
 
+// Backend vraća url datoteke kao putanju (npr. "/media/djela/..."),
+// pa ispred svake putanje dodajemo adresu poslužitelja da je preglednik može otvoriti.
+function sApsolutnimUrlovima(artwork: Artwork): Artwork {
+    const datoteke: ArtworkFile[] = [];
+    for (const datoteka of artwork.files) {
+        datoteke.push({
+            id: datoteka.id,
+            mimeType: datoteka.mimeType,
+            sizeBytes: datoteka.sizeBytes,
+            url: `${API_URL}${datoteka.url}`,
+        });
+    }
+    return { ...artwork, files: datoteke };
+}
+
 export async function getPortfolio(): Promise<Portfolio> {
     const odgovor = await provjeri(await req_priv("/me/portfolio"));
-    return odgovor.json();
+    const portfolio: Portfolio = await odgovor.json();
+
+    const artworks: Artwork[] = [];
+    for (const artwork of portfolio.artworks) {
+        artworks.push(sApsolutnimUrlovima(artwork));
+    }
+
+    return {
+        biography: portfolio.biography,
+        artDescription: portfolio.artDescription,
+        artworks: artworks,
+    };
 }
 
 export async function updateProfile(podaci: { biography: string; artDescription: string }): Promise<Pick<Portfolio, "biography" | "artDescription">> {
@@ -51,7 +77,7 @@ export async function updateProfile(podaci: { biography: string; artDescription:
 
 export async function getArtwork(id: string): Promise<Artwork> {
     const odgovor = await provjeri(await req_priv(`/me/artworks/${id}`));
-    return odgovor.json();
+    return sApsolutnimUrlovima(await odgovor.json());
 }
 
 function multipart(podaci: ArtworkInput, datoteke: File[], removedFileIds?: string[]): FormData {
@@ -68,7 +94,7 @@ export async function createArtwork(podaci: ArtworkInput, datoteke: File[]): Pro
         body: multipart(podaci, datoteke),
         credentials: "include",
     }));
-    return odgovor.json();
+    return sApsolutnimUrlovima(await odgovor.json());
 }
 
 export async function updateArtwork(id: string, podaci: ArtworkInput, datoteke: File[], removedFileIds: string[]): Promise<Artwork> {
@@ -77,15 +103,11 @@ export async function updateArtwork(id: string, podaci: ArtworkInput, datoteke: 
         body: multipart(podaci, datoteke, removedFileIds),
         credentials: "include",
     }));
-    return odgovor.json();
+    return sApsolutnimUrlovima(await odgovor.json());
 }
 
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function checkArtworkDeletable(_id: string): Promise<DeletableCheck> {
-    return { ok: true };
-}
-
+// Brisanje djela koje je dio aktivne prijave backend odbija s 409
+// i listom prilika u tijelu (vidi porukaGreske / porukaZabranjenogBrisanja).
 export async function deleteArtwork(id: string): Promise<void> {
     await provjeri(await req_priv(`/me/artworks/${id}`, { method: "DELETE" }));
 }

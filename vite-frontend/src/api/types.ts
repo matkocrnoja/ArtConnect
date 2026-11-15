@@ -13,10 +13,11 @@ export interface PostavkeMedia {
   max_privitaka_po_prilici: number
 }
 
+// Ime izvorne datoteke se ne pohranjuje; datoteku identificira id (S3 ključ),
+// a veličinu backend čita iz S3 (0 ako S3 trenutno nije dostupan).
 export type ArtworkFile = {
   id: string;
-  fileName: string;
-  mimeType: "application/pdf" | "image/jpeg" | "image/png" | "image/gif";
+  mimeType: string; // npr. "image/png", "application/pdf" (ovisi o postavkama sustava)
   sizeBytes: number;
   url: string;
 };
@@ -31,7 +32,6 @@ export type Artwork = {
   isPublic: boolean;
   files: ArtworkFile[];
   createdAt: string;
-  updatedAt: string;
 };
 
 export type Portfolio = {
@@ -54,8 +54,4 @@ export type ArtworkInput = {
   description: string | null;
   isPublic: boolean;
 };
-
-export type DeletableCheck =
-  | { ok: true }
-  | { ok: false; opportunities: { id: string; title: string }[] };
 

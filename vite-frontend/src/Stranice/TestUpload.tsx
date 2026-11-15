@@ -155,7 +155,7 @@ export default function TestUpload() {
                             <FileInput
                                 multiple
                                 label="Datoteke"
-                                description={postavke && `${postavke.mime_types.join(", ")} · do ${postavke.max_velicina_datoteke_mb} MB · najviše ${postavke.max_datoteka_po_djelu} po djelu`}
+                                description={postavke && `${postavke.mime_types.join(", ")} - do ${postavke.max_velicina_datoteke_mb} MB - najviše ${postavke.max_datoteka_po_djelu} po djelu`}
                                 accept={postavke?.mime_types.join(",")}
                                 value={datoteke}
                                 onChange={setDatoteke}

@@ -6,7 +6,7 @@ import ArtworkFormModal from "../Komponente/Portfolio/ArtworkFormModal";
 import ArtworkGrid, { ArtworkGridSkeleton } from "../Komponente/Portfolio/ArtworkGrid";
 import ArtworkPreviewModal from "../Komponente/Portfolio/ArtworkPreviewModal";
 import ProfilTekstovi from "../Komponente/Portfolio/ProfilTekstovi";
-import { checkArtworkDeletable, deleteArtwork, getArtwork, getPortfolio, porukaGreske, porukaZabranjenogBrisanja } from "../api/portfolio";
+import { ApiError, deleteArtwork, getArtwork, getPortfolio, porukaGreske } from "../api/portfolio";
 import type { Artwork, Portfolio } from "../api/types";
 import { showError, showSuccess, showWarning } from "../KorisnickeNotifikacije/KorisnickeNotifikacije";
 
@@ -68,30 +68,59 @@ export default function MojPortfolio() {
             confirmProps: { color: "red" },
             onConfirm: async () => {
                 try {
-                    const provjera = await checkArtworkDeletable(artwork.id);
-                    if (!provjera.ok) {
-                        showWarning(porukaZabranjenogBrisanja(provjera.opportunities));
-                        return;
-                    }
                     await deleteArtwork(artwork.id);
-                    setPortfolio((p) => p && { ...p, artworks: p.artworks.filter((a) => a.id !== artwork.id) });
+                    // Makni obrisano djelo iz prikazane liste.
+                    setPortfolio((prethodni) => {
+                        if (prethodni === null) {
+                            return prethodni;
+                        }
+                        const preostalaDjela = prethodni.artworks.filter((a) => a.id !== artwork.id);
+                        return {
+                            biography: prethodni.biography,
+                            artDescription: prethodni.artDescription,
+                            artworks: preostalaDjela,
+                        };
+                    });
                     showSuccess("Djelo je obrisano.");
                 } catch (greska) {
-                    showError(porukaGreske(greska));
+                    // 409: djelo je dio aktivne prijave pa se ne može obrisati
+                    if (greska instanceof ApiError && greska.status === 409) {
+                        showWarning(porukaGreske(greska));
+                    } else {
+                        showError(porukaGreske(greska));
+                    }
                 }
             },
         });
     };
 
+    // Poziva se nakon spremanja u ArtworkFormModal, i za novo i za uređeno djelo.
     const djeloSpremljeno = (spremljeno: Artwork) => {
-        setPortfolio((p) => {
-            if (!p) return p;
-            const postoji = p.artworks.some((a) => a.id === spremljeno.id);
+        setPortfolio((prethodni) => {
+            if (prethodni === null) {
+                return prethodni;
+            }
+
+            const vecPostoji = prethodni.artworks.some((a) => a.id === spremljeno.id);
+
+            let novaDjela: Artwork[];
+            if (vecPostoji) {
+                // Uređeno djelo: zamijeni staru verziju novom, ostala djela ostaju ista.
+                novaDjela = prethodni.artworks.map((a) => {
+                    if (a.id === spremljeno.id) {
+                        return spremljeno;
+                    }
+                    return a;
+                });
+            } else {
+                // Novo djelo: dodaj ga na početak liste.
+                novaDjela = [spremljeno, ...prethodni.artworks];
+            }
+
             return {
-                ...p,
-                artworks: postoji
-                    ? p.artworks.map((a) => (a.id === spremljeno.id ? spremljeno : a))
-                    : [spremljeno, ...p.artworks],
+                biography: prethodni.biography,
+                artDescription: prethodni.artDescription,
+                artworks: novaDjela,
             };
         });
     };
@@ -99,7 +128,7 @@ export default function MojPortfolio() {
     return (
         <>
             <HeaderTabs />
-            <Container size="md" py="lg">
+            <Container size="md">
                 <Stack gap="xl">
                     {greskaUcitavanja && (
                         <Alert color="red" title="Portfolio se nije učitao">
@@ -121,7 +150,19 @@ export default function MojPortfolio() {
                         <>
                             <ProfilTekstovi
                                 profil={{ biography: portfolio.biography, artDescription: portfolio.artDescription }}
-                                onSaved={(profil) => setPortfolio((p) => p && { ...p, ...profil })}
+                                onSaved={(profil) => {
+                                    // Spremi nove tekstove profila, a djela ostaju kakva jesu.
+                                    setPortfolio((prethodni) => {
+                                        if (prethodni === null) {
+                                            return prethodni;
+                                        }
+                                        return {
+                                            biography: profil.biography,
+                                            artDescription: profil.artDescription,
+                                            artworks: prethodni.artworks,
+                                        };
+                                    });
+                                }}
                             />
                             <ArtworkGrid
                                 artworks={portfolio.artworks}

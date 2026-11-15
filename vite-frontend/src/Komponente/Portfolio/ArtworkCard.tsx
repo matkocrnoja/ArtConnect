@@ -12,7 +12,7 @@ interface Props {
 
 export default function ArtworkCard({ artwork, zauzeto, onEdit, onDelete, onPreview }: Props) {
     const slika = artwork.files.find((f) => f.mimeType.startsWith("image/"));
-    const podaci = [artwork.year, artwork.technique].filter((x) => x !== null && x !== "").join(" · ");
+    const podaci = [artwork.year, artwork.technique].filter((x) => x !== null && x !== "").join(" - ");
 
     return (
         <Card withBorder padding="md" h="100%">

@@ -25,10 +25,25 @@ interface Vrijednosti {
     newFiles: File[];
 }
 
+// Izvorno ime datoteke se ne pohranjuje, pa se postojeće datoteke označavaju vrstom i rednim brojem.
+function oznakaDatoteke(f: ArtworkFile, indeks: number): string {
+    let vrsta: string;
+    if (f.mimeType === "application/pdf") {
+        vrsta = "PDF dokument";
+    } else {
+        vrsta = "Slika";
+    }
+    return `${vrsta} ${indeks + 1}`;
+}
+
+// Pretvara broj bajtova u čitljiv tekst, npr. "1.3 MB" ili "250 kB".
 function velicina(bajtovi: number): string {
-    return bajtovi >= 1024 * 1024
-        ? `${(bajtovi / (1024 * 1024)).toFixed(1)} MB`
-        : `${Math.max(1, Math.round(bajtovi / 1024))} kB`;
+    const jedanMegabajt = 1024 * 1024;
+    if (bajtovi >= jedanMegabajt) {
+        return `${(bajtovi / jedanMegabajt).toFixed(1)} MB`;
+    }
+    const kilobajti = Math.round(bajtovi / 1024);
+    return `${Math.max(1, kilobajti)} kB`;
 }
 
 export default function ArtworkFormModal({ artwork, onClose, onSaved }: Props) {
@@ -66,6 +81,19 @@ export default function ArtworkFormModal({ artwork, onClose, onSaved }: Props) {
     const ukupnoDatoteka = form.values.existingFiles.length + form.values.newFiles.length;
     const dosegnutLimit = ukupnoDatoteka >= limiti.maxFilesPerArtwork;
 
+    // Makne postojeću datoteku (onu koja je već spremljena na poslužitelju) iz forme.
+    // Stvarno brisanje događa se tek kod spremanja, preko removedFileIds.
+    const ukloniPostojecuDatoteku = (id: string) => {
+        const preostale = form.values.existingFiles.filter((f) => f.id !== id);
+        form.setFieldValue("existingFiles", preostale);
+    };
+
+    // Makne tek dodanu (još neprenesenu) datoteku iz forme.
+    const ukloniNovuDatoteku = (indeks: number) => {
+        const preostale = form.values.newFiles.filter((_, j) => j !== indeks);
+        form.setFieldValue("newFiles", preostale);
+    };
+
     const dodajDatoteke = (odabrane: File[]) => {
         const razlozi: string[] = [];
         const prihvacene: File[] = [];
@@ -100,14 +128,21 @@ export default function ArtworkFormModal({ artwork, onClose, onSaved }: Props) {
 
         setSpremam(true);
         try {
-            const spremljeno = artwork
-                ? await updateArtwork(
-                    artwork.id,
-                    podaci,
-                    v.newFiles,
-                    artwork.files.filter((f) => !v.existingFiles.some((e) => e.id === f.id)).map((f) => f.id),
-                )
-                : await createArtwork(podaci, v.newFiles);
+            let spremljeno: Artwork;
+            if (artwork) {
+                // Skupi id-eve datoteka koje je korisnik maknuo iz forme:
+                // to su one koje djelo ima na poslužitelju, a više nisu u existingFiles.
+                const uklonjeneDatotekeId: string[] = [];
+                for (const datoteka of artwork.files) {
+                    const zadrzana = v.existingFiles.some((e) => e.id === datoteka.id);
+                    if (!zadrzana) {
+                        uklonjeneDatotekeId.push(datoteka.id);
+                    }
+                }
+                spremljeno = await updateArtwork(artwork.id, podaci, v.newFiles, uklonjeneDatotekeId);
+            } else {
+                spremljeno = await createArtwork(podaci, v.newFiles);
+            }
 
             showSuccess(artwork ? "Djelo je spremljeno." : "Djelo je dodano.");
             onSaved(spremljeno);
@@ -147,7 +182,7 @@ export default function ArtworkFormModal({ artwork, onClose, onSaved }: Props) {
                             withAsterisk
                             label="Datoteke"
                             placeholder={dosegnutLimit ? "Dosegnut je najveći broj datoteka" : "Odaberi datoteke"}
-                            description={`Do ${limiti.maxFileSizeMb} MB · najviše ${limiti.maxFilesPerArtwork} po djelu`}
+                            description={`Do ${limiti.maxFileSizeMb} MB - najviše ${limiti.maxFilesPerArtwork} po djelu`}
                             accept={limiti.mime_types.join(",")}
                             disabled={dosegnutLimit}
                             value={[]}
@@ -156,14 +191,17 @@ export default function ArtworkFormModal({ artwork, onClose, onSaved }: Props) {
                         />
                         {odbijene.map((razlog) => <Text key={razlog} c="red" size="sm">{razlog}</Text>)}
 
-                        {form.values.existingFiles.map((f) => (
+                        {form.values.existingFiles.map((f, i) => (
                             <Group key={f.id} justify="space-between" wrap="nowrap">
-                                <Text size="sm" truncate>{f.fileName} <Text span c="dimmed">({velicina(f.sizeBytes)})</Text></Text>
+                                <Text size="sm" truncate>
+                                    {oznakaDatoteke(f, i)}
+                                    {f.sizeBytes > 0 && <Text span c="dimmed"> ({velicina(f.sizeBytes)})</Text>}
+                                </Text>
                                 <ActionIcon
                                     variant="subtle"
                                     color="red"
-                                    aria-label={`Ukloni ${f.fileName}`}
-                                    onClick={() => form.setFieldValue("existingFiles", form.values.existingFiles.filter((e) => e.id !== f.id))}
+                                    aria-label={`Ukloni: ${oznakaDatoteke(f, i)}`}
+                                    onClick={() => ukloniPostojecuDatoteku(f.id)}
                                 >
                                     <IconX size={16} />
                                 </ActionIcon>
@@ -179,7 +217,7 @@ export default function ArtworkFormModal({ artwork, onClose, onSaved }: Props) {
                                     variant="subtle"
                                     color="red"
                                     aria-label={`Ukloni ${f.name}`}
-                                    onClick={() => form.setFieldValue("newFiles", form.values.newFiles.filter((_, j) => j !== i))}
+                                    onClick={() => ukloniNovuDatoteku(i)}
                                 >
                                     <IconX size={16} />
                                 </ActionIcon>
