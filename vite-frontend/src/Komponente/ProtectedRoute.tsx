@@ -6,7 +6,7 @@ import { KorisnikContext } from '../context/KorisnikContext';
 import type { Korisnik, PostavkeMedia } from '../api/types';
 
 // Sesija je u HttpOnly kolačiću koji JavaScript ne vidi, pa o prijavi odlučuje backend.
-export default function ProtectedRoute({ children }: { children: ReactNode }) {
+export default function ProtectedRoute({ children, requiredRole } : { children: ReactNode; requiredRole?: Korisnik['uloga'] }) {
     // undefined = još se učitava, null = nije prijavljen
     const [korisnik, setKorisnik] = useState<Korisnik | null | undefined>(undefined);
     // undefined = još se učitava, null = dohvat nije uspio (stranica radi, ali upload nije moguć)
@@ -19,6 +19,7 @@ export default function ProtectedRoute({ children }: { children: ReactNode }) {
 
     if (korisnik === undefined || postavkeDatoteke === undefined) return null;
     if (korisnik === null) return <Navigate to="/" replace />;
+    if (requiredRole && korisnik.uloga !== requiredRole) return <Navigate to="/" replace />;
     return (
         <KorisnikContext.Provider value={{ korisnik, postavkeDatoteke, ocistiKorisnika: () => setKorisnik(null) }}>
             {children}

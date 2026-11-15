@@ -8,11 +8,12 @@ interface RequestOptions {
 
 function send(path: string, credentials: RequestCredentials, { method = 'GET', body }: RequestOptions): Promise<Response> {
   const hasBody = body !== undefined;
+  const isFormData = body instanceof FormData;
   return fetch(`${API_URL}${path}`, {
     method,
     credentials,
-    headers: hasBody ? { 'Content-Type': 'application/json' } : undefined,
-    body: hasBody ? JSON.stringify(body) : undefined,
+    headers: hasBody && !isFormData ? { 'Content-Type': 'application/json' } : undefined,
+    body: hasBody ? isFormData ? body : JSON.stringify(body) : undefined,
   });
 }
 
