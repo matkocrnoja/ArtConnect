@@ -16,7 +16,7 @@ export default function ProtectedRoute({ children, dopusteneUloge }: { children:
     }, []);
 
     if (korisnik === undefined || postavkeDatoteke === undefined) return null;
-    if (korisnik === null) return <Navigate to="/" replace />;
+    if (korisnik === null) return <Navigate to="/prijava" replace />;
     if (dopusteneUloge && !dopusteneUloge.includes(korisnik.uloga)) return <Navigate to="/" replace />;
     const vrijednost = {
         korisnik,
