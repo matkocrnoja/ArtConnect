@@ -68,7 +68,6 @@ Umjetnik --> UC07
 ' --- Organizator ---
 Organizator --> UC04
 Organizator --> UC09
-Organizator --> UC10
 Organizator --> UC11
 
 ' --- Administrator ---
@@ -84,4 +83,5 @@ UC08 -- Calendar
 
 ' --- Odnosi među obrascima uporabe ---
 UC08 .> UC07 : <<extend>>
+UC10 .> UC09 : <<include>>
 @enduml
