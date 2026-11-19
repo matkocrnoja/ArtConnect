@@ -20,20 +20,22 @@ export default function MojPortfolio() {
     const [preview, setPreview] = useState<Artwork | null>(null);
     const [zauzetoId, setZauzetoId] = useState<string | null>(null);
 
+    // Dohvaća portfolio s poslužitelja kad se stranica otvori i kad kliknemo "Pokušaj ponovno"
     useEffect(() => {
-        let otkazano = false;
+        let otkazano = false; // true ako je stranica zatvorena prije nego što je odgovor stigao
         getPortfolio()
             .then((p) => { if (!otkazano) setPortfolio(p); })
             .catch(() => { if (!otkazano) setGreskaUcitavanja(true); });
         return () => { otkazano = true; };
     }, [pokusaj]);
 
+    // Klik na "Pokušaj ponovno" - sakrije poruku o grešci i ponovno dohvati portfolio
     const ponovi = () => {
         setGreskaUcitavanja(false);
         setPokusaj((n) => n + 1);
     };
 
-    // Uredi i Preview prikazuju svježe detalje djela s poslužitelja (GET /me/artworks/{id}).
+    // Uredi i Preview prikazuju svježe detalje djela s poslužitelja (GET /me/artworks/{id})
     const dohvatiDetalje = async (artwork: Artwork): Promise<Artwork | null> => {
         setZauzetoId(artwork.id);
         try {
@@ -46,16 +48,19 @@ export default function MojPortfolio() {
         }
     };
 
+    // Gumb uredi - otvara formular za uređivanje
     const uredi = async (artwork: Artwork) => {
         const detalji = await dohvatiDetalje(artwork);
         if (detalji) setFormular({ artwork: detalji });
     };
 
+    // Gumb preview - dohvaća najnovije podatke djela i otvori prozor za pregled
     const pregledaj = async (artwork: Artwork) => {
         const detalji = await dohvatiDetalje(artwork);
         if (detalji) setPreview(detalji);
     };
 
+    // Gumb obriši - pita za potvrdu, pa briše djelo na poslužitelju i iz prikazane liste
     const obrisi = (artwork: Artwork) => {
         modals.openConfirmModal({
             title: "Brisanje djela",
@@ -69,7 +74,7 @@ export default function MojPortfolio() {
             onConfirm: async () => {
                 try {
                     await deleteArtwork(artwork.id);
-                    // Makni obrisano djelo iz prikazane liste.
+                    // Makni obrisano djelo iz prikazane liste
                     setPortfolio((prethodni) => {
                         if (prethodni === null) {
                             return prethodni;
@@ -94,9 +99,10 @@ export default function MojPortfolio() {
         });
     };
 
-    // Poziva se nakon spremanja u ArtworkFormModal, i za novo i za uređeno djelo.
+    // Poziva se nakon spremanja u ArtworkFormModal, i za novo i za uređeno djelo
     const djeloSpremljeno = (spremljeno: Artwork) => {
         setPortfolio((prethodni) => {
+            // prethodni = portfolio prije ove promjene
             if (prethodni === null) {
                 return prethodni;
             }
@@ -105,7 +111,7 @@ export default function MojPortfolio() {
 
             let novaDjela: Artwork[];
             if (vecPostoji) {
-                // Uređeno djelo: zamijeni staru verziju novom, ostala djela ostaju ista.
+                // Uređeno djelo: zamijeni staru verziju novom, ostala djela ostaju ista
                 novaDjela = prethodni.artworks.map((a) => {
                     if (a.id === spremljeno.id) {
                         return spremljeno;
@@ -113,7 +119,7 @@ export default function MojPortfolio() {
                     return a;
                 });
             } else {
-                // Novo djelo: dodaj ga na početak liste.
+                // Novo djelo: dodaj ga na početak liste
                 novaDjela = [spremljeno, ...prethodni.artworks];
             }
 
@@ -151,7 +157,7 @@ export default function MojPortfolio() {
                             <ProfilTekstovi
                                 profil={{ biography: portfolio.biography, artDescription: portfolio.artDescription }}
                                 onSaved={(profil) => {
-                                    // Spremi nove tekstove profila, a djela ostaju kakva jesu.
+                                    // Spremi nove tekstove profila, a djela ostaju kakva jesu
                                     setPortfolio((prethodni) => {
                                         if (prethodni === null) {
                                             return prethodni;
