@@ -3,7 +3,7 @@ import { IconFileText } from "@tabler/icons-react";
 import type { Artwork } from "../../api/types";
 
 export default function ArtworkPublicView({ artwork }: { artwork: Artwork }) {
-    // Red ispod naslova: godina, tehnika i dimenzije (samo ona polja koja su ispunjena).
+    // Red ispod naslova: godina, tehnika i dimenzije (samo ona polja koja su ispunjena)
     const podaci: (string | number)[] = [];
     if (artwork.year !== null) {
         podaci.push(artwork.year);
@@ -21,12 +21,11 @@ export default function ArtworkPublicView({ artwork }: { artwork: Artwork }) {
                 <Title order={3}>{artwork.title}</Title>
                 {podaci.length > 0 && <Text c="dimmed">{podaci.join(" - ")}</Text>}
             </Stack>
-
             {artwork.description && <Text style={{ whiteSpace: "pre-wrap" }}>{artwork.description}</Text>}
 
             <Stack>
                 {artwork.files.map((datoteka) => {
-                    // Slike se prikazuju direktno, a ostale datoteke (PDF) kao poveznica.
+                    // Slike se prikazuju direktno, a ostale datoteke (PDF) kao poveznica
                     const jeSlika = datoteka.mimeType.startsWith("image/");
                     if (jeSlika) {
                         return (

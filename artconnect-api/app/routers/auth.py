@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import RedirectResponse
 from joserfc.errors import JoseError
-from pydantic import BaseModel, ConfigDict, HttpUrl, TypeAdapter, ValidationError
+from pydantic import BaseModel, ConfigDict
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -18,6 +18,15 @@ from app.config import get_settings
 from app.database import get_db
 from app.dependencies import TABLICE_ULOGA, TrenutniKorisnik, get_current_user, je_blokiran
 from app.google import oauth
+# Pravila za podatke profila zajednička su s rutama /artists/me i /organizers/me,
+# pa registracija i stranica Postavke uvijek provjeravaju podatke na isti način.
+from app.profil import (
+    ocisti_poveznice,
+    provjeri_ime_prezime,
+    provjeri_naziv_organizacije,
+    provjeri_podrucja,
+    spoji_ime_prezime,
+)
 from app.sesija import (
     KOLACIC_REGISTRACIJE,
     KOLACIC_SESIJE,
@@ -32,12 +41,11 @@ from app.sesija import (
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
-MAKS_POVEZNICA = 5
 
-#objekt za provjeru poveznica
-_provjera_url = TypeAdapter(HttpUrl)
-
-#model u kojem se šalju podatci za registraciju
+# Tijelo zahtjeva POST /auth/register. Model samo prima podatke; sva pravila
+# (obavezna polja, dopušteni znakovi, duljine, broj područja i poveznica) provjeravaju se
+# funkcijama iz app/profil.py, koje vraćaju kodove grešaka koje frontend prevodi u poruke.
+# E-adresa i Google identitet ne dolaze iz tijela, nego iz kolačića registracije.
 class Registracija(BaseModel):
     model_config = ConfigDict(str_strip_whitespace=True)
 
@@ -66,45 +74,12 @@ def pronadi_korisnika(db: Session, uloga: Uloga, sub: str):
         {"sub": sub},
     ).first()
 
-#od baze trazi aktivna podrucja, vraca samo ona koja postoje i koja su aktivna - za tu sifru
-def aktivna_podrucja(db: Session, sifre: set) -> list:
-    return list(db.execute(
-        text("""
-            SELECT * FROM podrucja_djelovanja
-            WHERE sifra_podrucja = ANY(:sifre) AND aktivno
-        """),
-        {"sifre": list(sifre)},
-    ))
-
-
-def ocisti_poveznice(vrijednosti: list[str]) -> list[str]:
-    #praznjenje praznih stringova iz vrijednosti
-    poveznice = []
-    for poveznica in vrijednosti:
-        if poveznica:
-            poveznice.append(poveznica)
-    
-    if len(poveznice) > MAKS_POVEZNICA:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "previse_poveznica")
-    # provjera ispravnosti poveznice
-    try:
-        for poveznica in poveznice:
-            _provjera_url.validate_python(poveznica)
-    except ValidationError:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "neispravna_poveznica")
-
-    return poveznice
-
 
 def novi_umjetnik(db: Session, podaci: Registracija, zajednicko: dict) -> uuid.UUID:
-    sifre = set(podaci.sifre_podrucja)
-    if not sifre:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "podrucje_obavezno")
-
-    podrucja = aktivna_podrucja(db, sifre)
-    if len(podrucja) != len(sifre):
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "neispravno_podrucje")
-
+    # Područja: barem 1, najviše 20 (duplikati se ne broje jer je skup), sva moraju biti aktivna.
+    # Poveznice: prazne se zanemaruju, najviše 5, svaka mora biti ispravan http(s) URL.
+    # Obje provjere idu prije prvog INSERT-a, pa neispravan zahtjev ništa ne upisuje.
+    podrucja = provjeri_podrucja(db, set(podaci.sifre_podrucja))
     poveznice = ocisti_poveznice(podaci.poveznice)
 
     # portfolio mora postojati prije umjetnika jer je umjetnici.id strani ključ na njega
@@ -135,8 +110,10 @@ def novi_umjetnik(db: Session, podaci: Registracija, zajednicko: dict) -> uuid.U
 
 
 def novi_organizator(db: Session, podaci: Registracija, zajednicko: dict) -> uuid.UUID:
-    if not podaci.naziv_organizacije:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "naziv_organizacije_obavezan")
+    # Naziv organizacije je obavezan i ima najviše 200 znakova. Normalizira se kao ime
+    # (NFC, jedan razmak između riječi), ali smije sadržavati brojeve i znakove ("Studio 54").
+    # U bazu se sprema normalizirana vrijednost, ne izvorni unos.
+    naziv = provjeri_naziv_organizacije(podaci.naziv_organizacije)
 
     return db.execute(
         text("""
@@ -144,7 +121,7 @@ def novi_organizator(db: Session, podaci: Registracija, zajednicko: dict) -> uui
             VALUES (gen_random_uuid(), :google_subject_id, :email, :ime_prezime, :naziv_organizacije)
             RETURNING id
         """),
-        {**zajednicko, "naziv_organizacije": podaci.naziv_organizacije},
+        {**zajednicko, "naziv_organizacije": naziv},
     ).scalar_one()
 
 #3 ako je prijava preko Googlea uspjela, a korisnik ne postoji, onda se radi o registraciji
@@ -168,15 +145,16 @@ def register(
     if pronadi_korisnika(db, uloga, identitet["sub"]) is not None:
         raise HTTPException(status.HTTP_409_CONFLICT, "vec_registriran")
 
-    if not podaci.ime:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "ime_obavezno")
-    if not podaci.prezime:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "prezime_obavezno")
+    # Ime i prezime unose se u zasebna polja, a u bazu idu kao jedan stupac ime_prezime
+    # ("Ime Prezime"). Svako polje je obavezno i smije sadržavati samo slova i razmake;
+    # prije provjere se normalizira (NFC, višak razmaka se uklanja). Spojeni ime_prezime
+    # smije imati najviše 100 znakova, isto kao u Postavkama, gdje se mijenja kao jedno polje.
+    ime, prezime = provjeri_ime_prezime(podaci.ime, podaci.prezime)
 
     zajednicko = {
         "google_subject_id": identitet["sub"],
         "email": identitet["email"],
-        "ime_prezime": f"{podaci.ime} {podaci.prezime}",
+        "ime_prezime": spoji_ime_prezime(ime, prezime),
     }
     # ako prode bez greske, dodaje se novi korisnik
     try:

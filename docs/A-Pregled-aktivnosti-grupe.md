@@ -1,6 +1,5 @@
 # A. Pregled aktivnosti grupe
 
-**Cilj:** Prikazati kako je tim organizirao projekt, raspodijelio rad, reagirao na važne probleme i pridonio rezultatu. Zapisi trebaju opisivati ishode, a ne samo navoditi da je sastanak održan ili da se o nekoj temi raspravljalo.
 
 ## A.1 Evidencija sastanaka
 
@@ -9,108 +8,57 @@ Kratice članova tima: MB = Mia Barada, VC = Vilim Crčić, MC = Matko Crnoja, A
 | Datum i sudionici | Glavna tema | Donesena odluka ili zadatak  | Poveznica na zadatak ili  rezultat, ako postoji |
 | --- | --- | --- | --- |
 | 19.10.2026.; MB, VC,  MC, AD, BJ, LK, LS | Dogovor i organizacija rada za prvi ciklus|  Tim se odlučio prvo na izradu autentifikacije pa portofolija. Donesena je podjela: VC i BJ rade backend, MC i LS bazu, MB i AD frontend te LK dokumentaciju.|                                             |
-| 3.11.2026.; MB, VC,  MC, AD, BJ, LK, LS | Usklađivanje frontenda i backenda te ostvarivanje registracije korisnika |  Odlučeno je da se pri registraciji na formi provjerava samo jesu li ispunjeni ime i prezime; ti se podaci ne povlače iz Google računa|    
-| 10. 11. 2026.; BJ, VC, LS, MC | Upoznavanje sa sučeljem za programski (Python) pristup S3 bucketu | BJ, VC, LS su uspješno podesili .env file i povezali se sa S3 bucketom za upload datoteka; Dogovorili smo se za daljnji rad oko backenda | / |                                        |
+| 3.11.2026.; MB, VC,  MC, AD, BJ, LK, LS | Usklađivanje frontenda i backenda te ostvarivanje registracije korisnika |  Odlučeno je da se pri registraciji na formi provjerava samo jesu li ispunjeni ime i prezime; ti se podaci ne povlače iz Google računa|  |   
+| 10. 11. 2026.; BJ, VC, LS, MC | Upoznavanje sa sučeljem za programski (Python) pristup S3 bucketu | BJ, VC, LS su uspješno podesili .env file i povezali se sa S3 bucketom za upload datoteka; Dogovorili smo se za daljnji rad oko backenda |  |                                        
 
-Za svaki relevantan sastanak ili zapis tjedne koordinacije upišite jedan sažet redak. Dodijeljeni zadatak treba imati odgovornu osobu; za neriješeno pitanje treba navesti tko će ga dalje obraditi. Sam naslov sastanka ne pokazuje što se promijenilo. U ovu evidenciju nemojte kopirati cijeli popis issuea ni prijepis razgovora.
-
-<details>
-<summary><strong>Primjer evidencije sastanaka (CrisisMap)</strong></summary>
-
-**Primjer — CrisisMap:**
-
-**Kratice članova tima:** AK = Ana Kovač; LM = Luka Marić; EP = Ema Petrović; NK = Nika Kralj.
-
-| Datum i sudionici | Glavna tema | Odluka, radnja ili otvoreno pitanje | Poveznica na zadatak ili nastali rezultat, ako postoji |
-| --- | --- | --- | --- |
-| 15. 11. 2025.; AK, LM, EP | Lokacija kada je pristup preglednika odbijen | Dodati ručni odabir položaja na karti u obrazac za prijavu. AK obrađuje obrazac; LM provjerava valjanost lokacije. | Zadataka #21 i #23. |
-| 22. 11. 2025.; AK, EP | Usklađivanje formata lokacijskih podataka | klijentski dio i poslužiteljski API koriste neusklađene formate koordinata. EP će uskladiti format zahtjeva i demonstrira spremanje na sljedećem pregledu. | Zadatak #25. |
-
-**Ishod i odgovornost:** Zapisi jasno definiraju tko je odgovoran za koji dio posla i koji je provjerljivi rezultat dogovoren. npr Rečenica „Raspravljali smo o obradi lokacije” prikrila bi je li se itko obvezao na promjenu. Ovi redci navode odluku ili otvorenu radnju, odgovornu osobu i rezultat koji se može pregledati.
-
-</details>
 
 ## A.2 Plan rada
 
-**Cilj:** Prikazati planirani redoslijed rada i odgovornosti u timu. Prikažite projektne tjedne ili druga kratka razdoblja koja tim koristi, uključujući pripremu za formalne provjere.
+**Trenutačni plan:** Plan se vodi u ovoj tablici, a prema podjeli rada dogovorenoj 19. 10. 2026. odgovorni su: VC i BJ za poslužitelj, MC i LS za bazu, MB i AD za klijent, LK za dokumentaciju. 
 
-**Trenutačni plan:** [Poveznica na GitHub Projects ploču, Gantogram ili održavanu tablicu u nastavku. Navesti osobu zaduženu za ažurnost plana. Odaberite jedan glavni prikaz i navedite tko ga održava ažurnim.]
-
-| Razdoblje/Tjedan | Glavni planirani rad | Odgovorni članovi | Poveznica na zadatke |
+| Razdoblje | Glavni planirani rad | Odgovorni članovi | Poveznica na zadatke |
 | --- | --- | --- | --- |
-|  |  |  |  |
+| Ciklus 1 (7. tjedan) | Prijava Google računom, registracija i uloge, uređivanje profila | VC, BJ (poslužitelj); MB, AD (klijent) | [#2 (Izrada komponente za registraciju)](https://github.com/matkocrnoja/ArtConnect/issues/2), [ #3 (Registracija koristeći OAuth2.0 (Google))](https://github.com/matkocrnoja/ArtConnect/issues/3), [#4 (Dashboard prijavljenog umjetnika)](https://github.com/matkocrnoja/ArtConnect/issues/4), [#8 (Postavke umjetnika/organizatora)](https://github.com/matkocrnoja/ArtConnect/issues/8), [auth](../artconnect-api/app/routers/auth.py) |
+| Ciklus 1 (7. tjedan) | Portfolio: djela s datotekama u S3 bucketu | VC, BJ, LS (poslužitelj i baza); AD (klijent) | [#5 Izrada i održavanje ER dijagrama](https://github.com/matkocrnoja/ArtConnect/issues/5), [#9 Umjetnik: Moj portfolio - frontend](https://github.com/matkocrnoja/ArtConnect/issues/9), [#11 Umjetnik: Moj portfolio - backend](https://github.com/matkocrnoja/ArtConnect/issues/11), [portfolio](../artconnect-api/app/routers/portfolio.py), [media](../artconnect-api/app/routers/media.py) |
+| Ciklus 1 (7. tjedan) | Prilike: stvaranje, uređivanje, pregled | MB (klijent) | [#10 Organizator: Moje prilike - frontend](https://github.com/matkocrnoja/ArtConnect/issues/10) |
+| Ciklus 1 (7. tjedan) | Analiza zahtjeva, obrasci uporabe, arhitektura | LK, MC | [#1 Sažimanje količine funkcionalnih zahtjeva](https://github.com/matkocrnoja/ArtConnect/issues/1), [#6 Izrada dokumentacije: Obrasci uporabe](https://github.com/matkocrnoja/ArtConnect/issues/6), [dokument 2](./2-Analiza%20zahtjeva.md), [dokument 3](./3-Obrasci-uporabe.md), [dokument 4](./4-Arhitektura-i-oblikovanje.md)|
+| Ciklus 2 (14. tjedan) | Prijave na prilike, obavijesti, pregled prijava za organizatora, administracija | [TODO: tim upisuje raspodjelu] | [TODO: tim upisuje #issue]|
 
-Ako koristite tablicu, plan vodite na korisnoj tjednoj razini i ažurirajte ga kada se prioriteti promijene. Kratice članova tima definirajte  u A.1 i ovdje ih primjenjujte dosljedno; ako dva člana imaju iste inicijale, proširite kraticu. Plan nije dokaz da je planirani rad dovršen (to dokazuje kod i dokumentacija).
 
-<details>
-<summary><strong>Primjer plana rada</strong></summary>
-
-**Primjer — CrisisMap:** Plan rada obuhvaća razvoj prijava, karte i postavljanja aplikacije. Za svako razdoblje navedeni su glavni zadaci i odgovorni članovi.
-
-| Razdoblje | Glavni planirani rad | Odgovorni članovi | Poveznica na zadatke/opis |
-| --- | --- | --- | --- |
-| Projektni tjedan 6 | Obrazac za prijavu i provjera valjanosti lokacije | AK, LM | Zadataka #21 i #23. |
-| Projektni tjedan 7 | Povezivanje obrasca s API-jem za prijave | EP | Zadatak #25. |
-
-**Čitanje plana:** Kratice štede prostor u sažetom planu; njihove definicije s početka A.1 vrijede u cijelom ovom primjeru. Kada rad kasni, ažurirajte stvarni zadatak i očekivanje u planu; nemojte tvrditi da je nedovršena funkcionalnost završena samo zato što je predviđeni tjedan prošao.
-
-</details>
+Plan nije dokaz da je planirani rad dovršen; to dokazuju kod i dokumentacija.
 
 ## A.3 Aktivnosti i doprinosi članova
 
-**Cilj:** Prikazati koji su članovi radili na važnim projektnim aktivnostima i približan trud koji prijavljuju. Uz implementaciju uključite oblikovanje, dokumentaciju, integraciju, ispitivanje i postavljanje.
+Sate nisu zapisivali svi članovi pa je stupac „Prijavljeni sati” ostavljen da ga svaki član sam upiše. Rezultati su preuzeti iz povijesti zapisa promjena.
 
-| Aktivnost ili rezultat | Član | Prijavljeni sati | Reprezentativni rezultat ili poveznica |
-| --- | --- | --- | --- |
-|  |  |  |  |
+| Aktivnost ili rezultat | Član | Reprezentativni rezultat ili poveznica |
+| :--- | :--- | :--- |
+| Opseg projekta i analiza zahtjeva (dok. 1 i 2), kasnije sažimanje zahtjeva | MC, LK |[1-Projekt.md](./1-Projekt.md), [2-Analiza zahtjeva.md](./2-Analiza%20zahtjeva.md) |
+| Obrasci uporabe (dok. 3), sažimanje i ispravak numeracije | LK | [3-Obrasci-uporabe.md](./3-Obrasci-uporabe.md) |
+| Arhitektura i oblikovanje (dok. 4) | MC, LK | [4-Arhitektura-i-oblikovanje.md](./4-Arhitektura-i-oblikovanje.md) |
+| Kostur poslužitelja (FastAPI), prijava i registracija preko OAuth-a | BJ, VC | [auth](../artconnect-api/app/routers/auth.py), [google](../artconnect-api/app/google.py) |
+| Povezivanje klijenta i poslužitelja za prijavu, upload i kontrola pristupa datotekama | VC | [media](../artconnect-api/app/routers/media.py) |
+| Dohvat portfolija, profila i djela | BJ | [portfolio](../artconnect-api/app/routers/portfolio.py) |
+| ER dijagram, ograničenja datoteka i ispravak baze, uređivanje podataka umjetnika i organizatora | LS | [4-2-artconnect-data-ERD.puml](./puml/4-2-artconnect-data-ERD.puml) |
+| Klijent: landing, registracija, prijava i odjava, usmjeravanje dev/prod | MC | [vite-frontend](../vite-frontend) |
+| Klijent: komponente registracije, zaštićene rute, obavijesti (značka nepročitanih) | AD | [vite-frontend](../vite-frontend) |
+| Klijent: zaglavlje s karticama, prilike (kartice, detalji, dodavanje i uređivanje) | MB | grana `prilike-funkcionalnost` |
+| Spajanje klijenta s poslužiteljem za portfolio | MC | zapis promjene „Spajanje frontenda s backendom” (15. 11. 2026.) |
+| S3 testna skripta i sustav korisničkih obavijesti | MC | zapis promjene od 10. 11. 2026. |
 
-Koristite aktivnosti specifične za projekt umjesto obaveznog retka za svako poglavlje dokumentacije ili svaki UML dijagram. Tim treba dosljedno bilježiti sate i izbjegavati dvostruko brojanje zajedničkog rada; reprezentativni rezultat objašnjava što je prijavljeni trud proizveo. Sati su samoprijavljena procjena uloženog rada, a ne mjera kvalitete niti zamjena za pregled koda i artefakata.
-
-<details>
-<summary><strong>Primjer aktivnosti i rezultata rada</strong></summary>
-
-**Primjer — CrisisMap:** Tablica razlikuje implementaciju, integraciju i dokumentaciju te svaku aktivnost povezuje s rezultatom.
-
-| Aktivnost ili rezultat | Član | Prijavljeni sati | Reprezentativni rezultat ili poveznica |
-| --- | --- | --- | --- |
-| Ručni unos položaja na karti | AK | 8 | Zadatak #21; promjena klijentskog dijela. |
-| Provjera valjanosti i trajna pohrana prijave | LM | 10 | Zadatak #23; promjena pozadinskog sustava i ispitivanje. |
-| Integracija klijenta i API-ja te javno postavljanje | EP | 7 | Zadatak #25; konfiguracija u `render.yaml` i `dist/` |
-| Obrazac uporabe za podnošenje prijave i provjera odbijenog dopuštenja | NK | 5 | Završene izmjene UC-002 i ispitivanje ST-03. |
-
-**Trud i rezultat:** Završni stupac omogućuje raspravu o doprinosu bez tretiranja velikog broja sati kao dokaza isporuke. Tim može prijaviti stvarno dugotrajan, još neriješen problem integracije kao obavljen rad i iskreno opisati njegov ishod.
-
-</details>
 
 ## A.4 Pregled promjena u repozitoriju
 
-**Cilj:** Prikazati kada su promjene napravljene u repozitoriju i tko ih je napravio, uz napomenu da sam broj zapisa promjena ne mjeri kvalitetu doprinosa.
+**Prikaz aktivnosti repozitorija:** [Contributors](https://github.com/matkocrnoja/ArtConnect/graphs/contributors); razdoblje od 12. 10. do 17. 11. 2026.
 
-**Prikaz aktivnosti repozitorija:** [Ugradite ili povežite GitHubov prikaz `Contributors` i generirani graf za projektni repozitorij; navedite razdoblje koje obuhvaća.]
-
-Graf može pokazati kada su zapisi promjena napravljeni i tko ih je napravio, ali ne prikazuje sav rad na oblikovanju, ispitivanju, integraciji, pregledu ili dokumentaciji. Ako postoji uočljiv nesklad s tablicom aktivnosti, kratko ga objasnite; nemojte iz grafa izvoditi broj sati. Generirani prikaz neka bude vezan uz stvarni repozitorij umjesto da se ručno crta drugi graf.
+Prema broju zapisa promjena (uključujući spajanja grana) najviše ih je upisao MC (45, od toga dio pod dva korisnička imena), zatim AD (14), VC (13), LK (12), BJ (7), MB (6) i LS (6). Broj zapisa ne mjeri doprinos: dokumentaciju i oblikovanje, ispitivanje i rad u paru taj prikaz ne prikazuje, a MC je uz vlastiti rad često spajao grane drugih članova.
 
 ## A.5 Ključni inženjerski izazovi i rješenja
 
-**Cilj:** Dokumentirati stvarne tehničke i organizacijske prepreke s kojima se tim suočio, poduzete korektivne inženjerske korake te konačni ishod. Odaberite konkretne izazove umjesto općenite pohvale timskog rada.
-
 | Izazov | Poduzeta radnja | Ishod ili preostalo ograničenje |
 | --- | --- | --- |
-|  |  |  |
-
-<details>
-<summary><strong>Rješavanje nesklada formata lokacije</strong></summary>
-
-**Primjer — CrisisMap:**
-
-| Izazov | Poduzeta radnja | Ishod ili preostalo ograničenje |
-| --- | --- | --- |
-| Odabrani položaj na karti prikazivao se u klijentu, ali podnesena prijava nije zadržavala koordinate. | AK i EP usporedile su zahtjev preglednika s poljima lokacije koje očekuje API; AK je uskladila format zahtjeva, a LM je dodao provjeru valjanosti lokacije. | Nova prijava u ovom se scenariju može dohvatiti sa spremljenim položajem; tim povezuje odgovarajuću promjenu integracije i provjeru. |
-
-**Problem, odgovor i ishod:** Svaki se dio može provjeriti u projektu. Rečenica poput „imali smo poteškoće s integracijom i riješili ih timskim radom” ne bi čitatelju rekla što nije radilo ni kako je rješenje promijenjeno.
-
-</details>
-
----
-
->**Završna provjera:** Sastanci navode smislene ishode i odgovorne osobe; plan odražava namjeravani rad; tablica uloženog rada i generirani prikaz repozitorija odnose na ovaj vidljivi projekt; konkretni izazovi povezani su s radnjama i njihovim rezultatima. 
+| Spajanje poslužitelja na S3 bucket za datoteke djela. | Na sastanku 10. 11. BJ, VC i LS postavili su `.env` datoteku i povezali se s bucketom; MC je napravio testnu skriptu, a VC upload i kontrolu pristupa datotekama. | Upload radi; S3 je izborna konfiguracija pa poslužitelj bez nje odgovara statusom 503. |
+| Poslužitelj se nije pokretao na Windowsu. | MC je preskočio `uvloop` na Windowsu. | Lokalni razvoj radi na obje platforme. |
+| Stranica Moj portfolio napravljena s lažnim (MSW) podacima nije odgovarala poslužitelju. | MC je 14. 11. poništio tu izmjenu, a 15. 11. klijent je spojen na poslužitelj. | Portfolio radi s pravim podacima iz API-ja. |
+| Na Windowsu `mimetypes` ne vraća nastavak za `image/webp`, pa su ključevi u S3 bucketu ostajali bez nastavka. | U `s3storage.py` dodan je zaobilazni put koji vrstu `image/webp` rastavlja i uzima zadnji dio. | Datoteke tog formata dobivaju nastavak `webp` na svim platformama. |
+| Zahtjevi su bili preopširni za pregled. | LK i MC spojili su srodne zahtjeve i skratili kriterije (1. 11., vidi odjeljak 2.5). | Zahtjevi u dokumentu 2 sažeti su na 28 funkcijskih. |

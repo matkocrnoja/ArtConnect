@@ -13,6 +13,7 @@ interface Props {
     onSaved: (profil: Profil) => void;
 }
 
+// Prikazuje jedan tekst profila (samo za čitanje), ako je prazan, prikaže sivi placeholder
 function Tekst({ naslov, tekst, placeholder }: { naslov: string; tekst: string; placeholder: string }) {
     return (
         <Stack gap={6}>
@@ -32,6 +33,7 @@ function Tekst({ naslov, tekst, placeholder }: { naslov: string; tekst: string; 
     );
 }
 
+// Polje za uređivanje jednog teksta, s brojačem znakova ispod (npr. "120 / 2000")
 function Polje({ label, value, onChange, placeholder }: { label: string; value: string; onChange: (v: string) => void; placeholder: string }) {
     return (
         <Textarea

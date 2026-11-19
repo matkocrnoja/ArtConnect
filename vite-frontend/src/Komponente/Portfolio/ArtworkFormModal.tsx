@@ -25,7 +25,7 @@ interface Vrijednosti {
     newFiles: File[];
 }
 
-// Izvorno ime datoteke se ne pohranjuje, pa se postojeće datoteke označavaju vrstom i rednim brojem.
+// Izvorno ime datoteke se ne pohranjuje, pa se postojeće datoteke označavaju vrstom i rednim brojem
 function oznakaDatoteke(f: ArtworkFile, indeks: number): string {
     let vrsta: string;
     if (f.mimeType === "application/pdf") {
@@ -36,7 +36,7 @@ function oznakaDatoteke(f: ArtworkFile, indeks: number): string {
     return `${vrsta} ${indeks + 1}`;
 }
 
-// Pretvara broj bajtova u čitljiv tekst, npr. "1.3 MB" ili "250 kB".
+// Pretvara broj bajtova u čitljiv tekst, npr. "1.3 MB" ili "250 kB"
 function velicina(bajtovi: number): string {
     const jedanMegabajt = 1024 * 1024;
     if (bajtovi >= jedanMegabajt) {
@@ -52,7 +52,7 @@ export default function ArtworkFormModal({ artwork, onClose, onSaved }: Props) {
     const limiti = {
         maxFilesPerArtwork: postavke?.max_datoteka_po_djelu ?? 3,
         maxFileSizeMb: postavke?.max_velicina_datoteke_mb ?? 5,
-        mime_types: postavke?.mime_types ?? [],
+        mimeTypes: postavke?.mime_types ?? [],
     };
 
     const mobitel = useMediaQuery("(max-width: 48em)");
@@ -73,34 +73,47 @@ export default function ArtworkFormModal({ artwork, onClose, onSaved }: Props) {
         },
         validate: {
             title: (val) => (val.trim() ? null : "Naziv je obavezan."),
-            year: (val) => (val !== "" && Number(val) > trenutnaGodina ? `Godina ne smije biti veća od ${trenutnaGodina}.` : null),
-            newFiles: (_, values) => (values.existingFiles.length + values.newFiles.length === 0 ? "Dodaj barem jednu datoteku." : null),
+            year: (val) => {
+                const godinaUnesena = val !== "";
+                if (godinaUnesena && Number(val) > trenutnaGodina) {
+                    return `Godina ne smije biti veća od ${trenutnaGodina}.`;
+                }
+                return null;
+            },
+            // Provjerava ukupan broj datoteka (postojeće + nove)
+            newFiles: (_, values) => {
+                const ukupno = values.existingFiles.length + values.newFiles.length;
+                if (ukupno === 0) return "Dodaj barem jednu datoteku.";
+                return null;
+            },
         },
     });
 
     const ukupnoDatoteka = form.values.existingFiles.length + form.values.newFiles.length;
     const dosegnutLimit = ukupnoDatoteka >= limiti.maxFilesPerArtwork;
 
-    // Makne postojeću datoteku (onu koja je već spremljena na poslužitelju) iz forme.
-    // Stvarno brisanje događa se tek kod spremanja, preko removedFileIds.
+    // Makne postojeću datoteku (onu koja je već spremljena na poslužitelju) iz forme
+    // Stvarno brisanje događa se tek kod spremanja, preko uklonjeneDatotekeId
     const ukloniPostojecuDatoteku = (id: string) => {
         const preostale = form.values.existingFiles.filter((f) => f.id !== id);
         form.setFieldValue("existingFiles", preostale);
     };
 
-    // Makne tek dodanu (još neprenesenu) datoteku iz forme.
+    // Makne tek dodanu (još neprenesenu) datoteku iz forme
     const ukloniNovuDatoteku = (indeks: number) => {
-        const preostale = form.values.newFiles.filter((_, j) => j !== indeks);
+        const preostale = form.values.newFiles.filter((_f, i) => i !== indeks);
         form.setFieldValue("newFiles", preostale);
     };
 
+    // Za svaku novu datoteku provjeri vrstu, veličinu i broj
+    // Valjane dodaj u formu, a za odbijene zapamti razlog
     const dodajDatoteke = (odabrane: File[]) => {
         const razlozi: string[] = [];
         const prihvacene: File[] = [];
         let slobodno = limiti.maxFilesPerArtwork - ukupnoDatoteka;
 
         for (const datoteka of odabrane) {
-            if (limiti.mime_types.length > 0 && !limiti.mime_types.includes(datoteka.type)) {
+            if (limiti.mimeTypes.length > 0 && !limiti.mimeTypes.includes(datoteka.type)) {
                 razlozi.push(`${datoteka.name}: vrsta datoteke nije dopuštena`);
             } else if (datoteka.size > limiti.maxFileSizeMb * 1024 * 1024) {
                 razlozi.push(`${datoteka.name}: veća je od ${limiti.maxFileSizeMb} MB`);
@@ -134,7 +147,7 @@ export default function ArtworkFormModal({ artwork, onClose, onSaved }: Props) {
                 // to su one koje djelo ima na poslužitelju, a više nisu u existingFiles.
                 const uklonjeneDatotekeId: string[] = [];
                 for (const datoteka of artwork.files) {
-                    const zadrzana = v.existingFiles.some((e) => e.id === datoteka.id);
+                    const zadrzana = v.existingFiles.some((postojeca) => postojeca.id === datoteka.id);
                     if (!zadrzana) {
                         uklonjeneDatotekeId.push(datoteka.id);
                     }
@@ -183,7 +196,7 @@ export default function ArtworkFormModal({ artwork, onClose, onSaved }: Props) {
                             label="Datoteke"
                             placeholder={dosegnutLimit ? "Dosegnut je najveći broj datoteka" : "Odaberi datoteke"}
                             description={`Do ${limiti.maxFileSizeMb} MB - najviše ${limiti.maxFilesPerArtwork} po djelu`}
-                            accept={limiti.mime_types.join(",")}
+                            accept={limiti.mimeTypes.join(",")}
                             disabled={dosegnutLimit}
                             value={[]}
                             onChange={dodajDatoteke}

@@ -1,6 +1,5 @@
 # 4. Arhitektura i oblikovanje
 
-**Cilj:** Definirati arhitekturni stil, dekompoziciju programa na podsustave i module, organizaciju podataka te dinamičko ponašanje tijekom izvođenja. Arhitektura predstavlja temelj za implementaciju i ažurira se pri svakoj važnijoj promjeni projektnih odluka.
 
 | Arhitekturni pogled | Ključno inženjersko pitanje | Primijenjeni model ili dijagram |
 | :--- | :--- | :--- |
@@ -14,13 +13,21 @@
 
 ---
 
-Za svaki UML dijagram čuvajte čitljivu sliku i PlantUML izvor, kako je opisano na stranici [Home](./Home.md). U dovršenoj stranici koristite vlastite projektne odluke i modele.
 
 ## 4.1 Ključne arhitekturne odluke
+
+ArtConnect je web-aplikacija klijent-poslužitelj: React klijent poziva REST API (FastAPI), podaci su u PostgreSQL-u, a datoteke djela u S3 bucketu.
 
 | Odluka | Razmatrana alternativa | Projektno specifično obrazloženje i kompromis |
 | --- | --- | --- |
 | Pohrana datoteka djela u S3 bucketu | Pohrana datoteka u SQL tablici ili u datotečnom sustavu poslužitelja | Fotografije i datoteke djela zauzimaju puno prostora, pa bi u SQL tablici usporavale bazu i sigurnosne kopije, a u datotečnom sustavu bile vezane uz jedan poslužitelj. S3 pohranu odvaja od poslužitelja, a baza čuva samo ključ datoteke i metapodatke djela. Kompromis je ovisnost o vanjskom servisu i potreba za usklađivanjem zapisa u bazi s datotekama u bucketu. |
+| Web-klijent odvojen od jednog REST API-ja (FastAPI)| Poslužiteljski generirane stranice; više zasebnih usluga | Sučelje s tri uloge traži puno interakcije u pregledniku, a sva pravila i provjere ovlasti ostaju na jednom mjestu u API-ju. Kompromis je dodatna konfiguracija klijent-API (CORS, kolačići), a kvar jedne instance zaustavlja sve funkcionalnosti. |
+| Slojevita organizacija poslužitelja (API, aplikacija, domena, infrastruktura)| Sva logika u funkcijama routera | Poslovna pravila ne ovise o HTTP-u ni SQL-u pa se mogu zasebno provjeriti i ne ponavljaju po rutama, a baza i S3 skriveni su iza sučelja domene. Kompromis je više razreda za jednostavne operacije; trenutačni kod još drži dio pravila i SQL u routerima. |
+| PostgreSQL s parametriziranim SQL-om (SQLAlchemy text())|Dokumentna baza; ORM modeli| Podaci su gusto povezani, a pravila (jedna prijava po umjetniku i prilici, samo vlastita djela u prijavi) relacijska shema izražava izravno. Kompromis je što shema nije u kodu aplikacije pa se imena tablica i stupaca usklađuju ručno. |
+Prijava isključivo putem Google OAuth 2.0|Vlastita prijava e-adresom i lozinkom|Zadatak traži vanjskog pružatelja identiteta pa sustav ne čuva lozinke; korisnik se identificira Google identifikatorom (sub), a uloge i blokiranje vodi aplikacija. Kompromis je da bez Google računa nema pristupa. |
+Sesija kao potpisani JWT u httpOnly kolačiću|Sesije u bazi; token u localStorage| Kolačić nije dostupan JavaScriptu, a poslužitelj pri svakom zahtjevu provjerava postoji li korisnik i je li blokiran. Kompromis je da se pojedinačna sesija ne može opozvati prije isteka, osim blokiranjem računa. |
+Zasebne tablice za umjetnike, organizatore i administratore|Jedna tablica korisnika s oznakom uloge| Isti Google račun može biti i umjetnik i organizator, a administratori se unose ručno. Kompromis je ponavljanje zajedničkih stupaca i izbor tablice prema ulozi u kodu. |
+
 
 ## 4.2 Gradivni blokovi i UML dijagram komponenata
 
@@ -56,54 +63,58 @@ Započnite crtanjem granice oko predloženog sustava. Unutar nje prepoznajte dij
 
 ## 4.3 Model podataka i oblikovanje razreda
 
-**Cilj:** Objasniti važne informacije koje aplikacija pohranjuje i jedno reprezentativno područje oblikovanja na razini razreda. Model podataka i UML dijagram razreda odgovaraju na različita pitanja; jedno ne zamjenjuje drugo.
-
 ### 4.3.1 ER dijagram i model podataka
 
 **Cilj:** Prikazati važne pohranjene entitete, njihove identifikatore i veze te dovoljno atributa za razumijevanje podataka aplikacije. ER dijagram odvojen je od reprezentativnog UML dijagrama razreda u nastavku.
 
+Model podataka prikazuje sve trajne podatke platforme, od korisnika i portfolija do prilika, prijava i obavijesti.
+
 ![ER dijagram](./diagrams/4-2-artconnect-data-ERD.svg)
 **PlantUML izvor:** [izvor](./puml/4-2-artconnect-data-ERD.puml)
 
-**Implementacija:** [Navedite gdje je odgovarajući model podataka definiran u projektu.]
+**Implementacija:** Poslužitelj pristupa PostgreSQL-u SQL upitima preko SQLAlchemyja ([database.py](../artconnect-api/app/database.py), [routers/portfolio.py](../artconnect-api/app/routers/portfolio.py), [routers/auth.py](../artconnect-api/app/routers/auth.py)). Shemu ne stvara kod aplikacije, a SQL skripte za sada nema u repozitoriju; izvor modela je ER dijagram.
 
-<details>
-<summary><strong>Jedna prijava poplave i povezani podaci</strong></summary>
+| Skupina | Entiteti | Što pohranjuju |
+| --- | --- | --- |
+| Korisnici | `Umjetnik`, `Organizator`, `Administrator`, `Blokirani umjetnik` | Računi po ulozi s Google identifikatorom i statusom računa; organizator ima naziv organizacije i oznaku ovjere; blokiranje je veza organizator-umjetnik. |
+| Portfolio | `Portfolio`, `Djelo`, `Datoteka djela`, `Područje umjetnika` | Biografija i opis, djela s vidljivošću te metapodaci datoteka. Sama datoteka je u S3 bucketu. |
+| Prilike | `Prilika`, `Materijal prilike`, `Poziv`, `Lista želja` | Prilika s rokom, terminom, mjestom i statusom, njezini materijali te pozivi i spremljene prilike. |
+| Prijave | `Prijava`, `Djelo u prijavi`, `Materijal prijave`, `Zahtjev za dopunu` | Prijava umjetnika na priliku s odabranim djelima, privicima i zahtjevima za dopunu. |
+| Obavijesti | `Obavijest`, `Postavka obavijesti` | Obavijesti po primatelju i uključenost pojedinih vrsta. |
+| Šifrarnici i postavke | `Područje djelovanja`, `Vrsta prilike`, `Postavka sustava` | Područja i vrste prilika te postavke koje mijenja administrator (ograničenja datoteka, trajanje sesije). |
 
-**Primjer — CrisisMap:** Ana putem svojeg korisničkog računa podnosi prijavu poplave `R-104`. Odabire lokaciju na karti i označava razinu ozbiljnosti kao visoku. Građanin može podnijeti više prijava; svaka prijava pripada jednoj kategoriji kriznog događaja, primjerice *Poplava*. Aplikacija pohranjuje prijavu i njezine koordinate. Kartografske pločice dolaze od vanjskog pružatelja i nisu entiteti u modelu podataka aplikacije.
+**Važne odluke modela:** Identifikatori su UUID-ovi, a statusi enumeracije. Umjetnik, organizator i administrator zasebni su entiteti jer isti Google račun može imati više uloga. Šifrarnici se isključuju zastavicom `aktivno`, a djela i prilike „mekim brisanjem” (`uklonjeno_u` i razlog), jer ih stare prijave i obavijesti i dalje referenciraju. Umjetnik se na priliku može prijaviti najviše jednom, a djela u prijavi vezana su entitetom `Djelo u prijavi` koji pamti autora, kako se ne bi prijavila tuđa djela. Datoteke djela leže u S3 bucketu, a baza čuva samo metapodatke. Pravila tipa „barem jedan” (npr. djelo ima barem jednu datoteku) provjerava aplikacija, a ne baza.
 
-![ER dijagram podataka sustava CrisisMap](./assets/diagrams/4-2-crisismap-data-ERD.svg)
+**Razlike između modela i trenutačne implementacije:** Na grani `master` kod koristi tablice `umjetnici`, `organizatori`, `administratori`, `djela`, `datoteke_djela`, `podrucja_djelovanja`, `umjetnici_podrucja` i `postavke_sustava`, a `prijave`, `prijave_djela` i `prilike` samo čita pri provjeri uklanjanja djela. Ostali entiteti (npr. obavijesti, pozivi, lista želja) planirani su modelom, ali ih kod još ne koristi.
 
-**Slika 4.2. ER dijagram podataka sustava CrisisMap**
-
-**PlantUML izvor:** [izvor](./puml/4-2-crisismap-data-ERD.puml)
-
-**Analiza primjera:** `R-104` ima jednog autora i jednu kategoriju; Ana i kategorija *Poplava* mogu biti povezane s više prijava. Dijagram prikazuje veze bez prepisivanja svih stupaca baze podataka ili pisanja drugog tabličnog opisa za svaki entitet. Ako aplikacija prihvaća i **anonimne** prijave, tu mogućnost prikažite u vezi s entitetom `Citizen`. Ako su kategorije fiksne vrijednosti, a ne pohranjeni zapisi, nemojte izmišljati tablicu kategorija. Završni ER dijagram usporedite s modelom trajne pohrane i objasnite samo razlike važne za razumijevanje projekta.
-
-</details>
 
 ### 4.3.2 Reprezentativni UML dijagram razreda
 
-**Cilj:** Prije implementacije reprezentativnog dijela sustava modelirati i prikazati razrede ili sučelja potrebna za dodjelu odgovornosti, operacija i veza. Oblikovanje ažurirajte kada se te odluke promijene.
 
-**Dijagram razreda:** [Ugradite čitljiv UML dijagram razreda za reprezentativni dio oblikovanja.]  
-**PlantUML izvor:** [Poveznica na odgovarajuću `.puml` datoteku.]  
-**Referenca na kod pri završnom pregledu:** [Poveznica na odgovarajuću implementaciju.]
+**Odabrano područje**: upravljanje djelima u portfoliju umjetnika (stvaranje, uređivanje i uklanjanje djela s datotekama). Ono povezuje bazu, S3 i poslovna pravila pa dobro pokazuje podjelu odgovornosti po slojevima.
 
-<details>
-<summary><strong>Oblikovanje odgovornosti prijave i dopuštenih promjena</strong></summary>
 
-**Primjer — CrisisMap:** Prijava sadrži pravila za promjenu vlastitog statusa. Razred tijeka rada koordinira podnošenje i pregled, dok sučelje repozitorija opisuje potrebne operacije trajne pohrane. Dijagram predlaže te odgovornosti prije implementacije.
+![ER dijagram](./diagrams/4-3-artconnect-dijagram-razreda.svg)
 
-![Dijagram razreda za obradu prijava kriznih događaja](./assets/diagrams/4-3-crisismap-domain-CD.svg)
+**Slika 4.3. Dijagram razreda za upravljanje djelima portfolija**
+  
+**PlantUML izvor:** [izvor](./puml/4-3-artconnect-dijagram-razreda.puml)   
+**Kod:** [portfolio](../artconnect-api/app/routers/portfolio.py), [media](../artconnect-api/app/routers/media.py), [s3storage](artconnect-api/app/s3storage.py)
 
-**Slika 4.3. Dijagram razreda za obradu prijava kriznih događaja**
+Poslužitelj je podijeljen u četiri sloja, a ovisnosti idu prema domeni.
 
-**PlantUML izvor:** [izvor](./puml/4-3-crisismap-domain-CD.puml)
+| Sloj | Sadržaj | Pravilo |
+| --- | --- | --- |
+| Prezentacijski | `PortfolioRouter`, DTO-ovi `DjeloUnos`, `DjeloOdgovor` i `DatotekaOdgovor` | Prima zahtjev i vraća odgovor; provjerava ulogu (`require_role`); ne sadrži poslovna pravila. |
+| Aplikacijski | `PortfolioServis` | Koordinira slučaj uporabe: dohvaća ograničenja, poziva domenu, vodi transakciju i usklađuje bazu sa S3. |
+| Domenski | `Djelo`, `DatotekaDjela`, `OgranicenjaDatoteka`, `Umjetnik`, `Prilika` i enumeracija `StatusPrilike` te sučelja `DjeloRepozitorij`, `PostavkeRepozitorij`, `DatotecnaPohrana` | Pravila o djelu i datotekama te sučelja koja domena traži od pohrane; ne zna za HTTP, SQL ni S3. |
+| Infrastruktura | `SqlDjeloRepozitorij`, `SqlPostavkeRepozitorij`, `S3DatotecnaPohrana` | Implementira sučelja domene upitima prema PostgreSQL-u i pozivima prema S3. |
 
-**Analiza primjera:** `DisasterReport` sadrži dopuštena pravila promjene stanja pa tijek rada ne može prešutno odobriti već odbijenu prijavu. `ReportWorkflow` koordinira operaciju bez preuzimanja pravila prijelaza stanja same prijave; `ReportRepository` definira potrebne operacije pohrane. Kompozicija `Location` i odabrani tipovi prikazuju veze korisne za oblikovanje. Dijagram namjerno izostavlja stupce baze podataka i nepovezane razrede: ER model objašnjava pohranjene podatke, dok ovaj dijagram dodjeljuje programske odgovornosti i operacije. Ti su razredi odluka oblikovanja, a ne obavezni slojevi za svaki tim. Završnu implementaciju usporedite s početnim oblikovanjem i ažurirajte dijagram tamo gdje su se odluke promijenile; generiranje dijagrama iz koda tek na kraju ne može zamijeniti ovo početno modeliranje.
+`Djelo` samo čuva svoja pravila: naziv je obavezan, godina nije u budućnosti, novo djelo je zadano privatno, a uklanjanje mora imati razlog, ne može se samo obrist redak. `OgranicenjaDatoteka` nosi dopuštene vrste i najveću veličinu i broj datoteka iz postavki sustava te ih provjerava pri svakom prijenosu. `PortfolioServis` pri spremanju upisuje u bazu, prenosi datoteke na S3 i tek tada potvrđuje transakciju; pri grešci poništava bazu i briše već prenesene objekte, a objekte uklonjenih datoteka briše tek nakon uspješne potvrde. Brisanje djela odbija se dok je djelo u aktivnoj prijavi, a inače se djelo samo označi uklonjenim. Sučelja repozitorija i pohrane omogućuju zamjenu baze i S3 lažnim implementacijama u ispitivanjima. `Djelo.izradi` je statička tvornička metoda (na dijagramu podcrtana): poziva se na samom razredu jer objekt još ne postoji, a vraća novo djelo uz provjeru pravila. `Umjetnik` i `Prilika` prikazani su samo ključnim atributima, a vlasništvo nad djelom označeno je vezom „vlasnik”. Dijagram namjerno izostavlja stupce baze (njih objašnjava ER dijagram), vanjske sustave (PostgreSQL i S3), dohvat cijelog portfolija i ostale module.
 
-</details>
+**Stanje implementacije:** U trenutačnom kodu ta podjela još nije potpuno provedena: usmjernik u `portfolio.py` izravno izvršava SQL i sadrži pravila, a pristup S3 je u `s3storage.py`. Dijagram prikazuje ciljno oblikovanje prema kojem se pravila izdvajaju u domenske razrede, a SQL i S3 u infrastrukturu. Odgovor API-ja za djelo za sada je običan rječnik koji gradi funkcija `u_artwork`, a ne zaseban razred; `DjeloOdgovor` i `DatotekaOdgovor` na dijagramu zato opisuju oblik tog odgovora, dok je `DjeloUnos` stvarna Pydantic klasa. Pri završnom pregledu dijagram treba uskladiti s kodom.
+
+
 
 ## 4.4 Ponašanje tijekom izvođenja
 
