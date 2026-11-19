@@ -22,13 +22,14 @@ ALGORITAM = "HS256"
 TRAJANJE_KOLACICA_SESIJE_S = 30 * 24 * 60 * 60 # 30d
 TRAJANJE_REGISTRACIJE_S = 10 * 60 # 10min
 
-
+# _potpisi pretvori podatke o korisniku (id, ulogu, itd.) u JWT token potpisan tajnim kljucem iz .env, 
+# tako da ga se može spremiti u kolačić, a backend kasnije prepozna ako ga je netko mjenjao
 def _potpisi(podaci: dict) -> str:
     return jwt.encode(podaci, get_settings().secret_key.get_secret_value(), algorithm=ALGORITAM)
 
 
 def stvori_token_sesije(korisnik_id: uuid.UUID, uloga: Uloga) -> str:
-    # "svrha" sprječava da se token za registraciju iskoristi kao sesija i obrnuto.
+    # "svrha" sprječava da se token za registraciju iskoristi kao sesija i obrnuto
     return _potpisi({
         "svrha": "sesija",
         "sub": str(korisnik_id),
@@ -48,6 +49,7 @@ def stvori_token_registracije(sub: str, email: str, uloga: Uloga) -> str:
 
 
 def _procitaj(token: str, svrha: str, obavezna_polja: list[str]) -> dict | None:
+    # suprotno od _potpisi, dekodiranje JWT
     try:
         podaci = jwt.decode(
             token,

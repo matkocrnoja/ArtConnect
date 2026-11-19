@@ -11,7 +11,7 @@ from app.sesija import Uloga
 
 router = APIRouter(prefix="/art", tags=["art"])
 
-
+#model u kojem se formatu šalju podatci za nova djela
 class NovoDjelo(BaseModel):
     model_config = ConfigDict(str_strip_whitespace=True)
 
@@ -22,13 +22,14 @@ class NovoDjelo(BaseModel):
     opis: str | None = None
     javno: bool = False
 
-
+#ruta za slanje novog djela u bazu
 @router.post("/djela", status_code=status.HTTP_201_CREATED)
 def novo_djelo(
     podaci: NovoDjelo,
     trenutni: TrenutniKorisnik = Depends(require_role(Uloga.umjetnik)),
     db: Session = Depends(get_db),
 ):
+    #provjera ispravnosti godine koja je unesena u podacima
     if podaci.godina_nastanka and podaci.godina_nastanka > datetime.date.today().year:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "godina_u_buducnosti")
 

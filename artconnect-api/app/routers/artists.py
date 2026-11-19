@@ -53,7 +53,7 @@ def dohvati_profil_umjetnika(db: Session, umjetnik_id: uuid.UUID) -> dict:
         "poveznice": umjetnik.poveznice or [],
     }
 
-
+# Dohvati profil trenutnog umjetnika
 @router.get("/me")
 def moj_profil(
     trenutni: TrenutniKorisnik = Depends(require_role(Uloga.umjetnik)),
@@ -61,7 +61,7 @@ def moj_profil(
 ):
     return dohvati_profil_umjetnika(db, trenutni.korisnik.id)
 
-
+# Spremi profil trenutnog umjetnika. Polja koja nisu poslana ostaju nepromijenjena.
 @router.put("/me")
 def spremi_moj_profil(
     podaci: ProfilUmjetnikaUlaz,

@@ -12,7 +12,7 @@ from app.dependencies import TrenutniKorisnik, get_current_user, require_role
 from app.s3storage import kljuc_datoteke_djela
 from app.sesija import Uloga
 
-
+# dopušta frontendu da javasrciptom fetcha backend, na razlicitim adresama
 def setup_cors(app: FastAPI):
     app.add_middleware(
         CORSMiddleware,
@@ -34,8 +34,10 @@ def setup_session(app: FastAPI):
         same_site="lax",
         https_only=settings.cookie_secure,
     )
+#setup_cors i setup_session se pozivaju jednom pri pokretanju servera - vidi main.py
 
 
+# Middleware koji se poziva kod /upload - vidi routers/media.py
 def provjeri_vlasnistvo_djela(
     djelo_id: uuid.UUID = Form(),
     trenutni: TrenutniKorisnik = Depends(require_role(Uloga.umjetnik)),
@@ -52,7 +54,7 @@ def provjeri_vlasnistvo_djela(
         raise HTTPException(status.HTTP_404_NOT_FOUND, "djelo_ne_postoji")
     return djelo
 
-
+# Middleware koji se poziva kod GET /djela/{umjetnik_id}/{djelo_id}/{datoteka_id} - vidi routers/media.py
 def provjeri_pristup_datoteci(
     umjetnik_id: uuid.UUID,
     djelo_id: uuid.UUID,
@@ -74,8 +76,11 @@ def provjeri_pristup_datoteci(
     if datoteka is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "datoteka_ne_postoji")
 
+    # usporedba dohvacenih podataka sa korisnikom koji im pokušava pristupiti
     vlasnik = trenutni.uloga == Uloga.umjetnik and trenutni.korisnik.id == umjetnik_id
     javno_dostupno = datoteka.javno and datoteka.uklonjeno_u is None
+
+    # Osoba koja pristupa datoteci mora biti vlasnik ili ona mora biti javno dostupna
     if not vlasnik and not javno_dostupno:
         raise HTTPException(status.HTTP_403_FORBIDDEN, "zabranjen_pristup")
 

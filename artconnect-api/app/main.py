@@ -17,7 +17,7 @@ app.include_router(artists.router)
 app.include_router(organizers.router)
 app.include_router(portfolio.router)
 
-#testovi za health check
+# testne rute za provjeru povezanosti sa backendom / bazom
 @app.get("/health")
 def health():
     return {"status": "ok"}

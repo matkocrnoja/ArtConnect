@@ -4,6 +4,7 @@ from app.config import get_settings
 
 settings = get_settings()
 
+#definicija za oauth
 oauth = OAuth()
 oauth.register(
     name="google",

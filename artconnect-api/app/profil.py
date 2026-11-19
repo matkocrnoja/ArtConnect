@@ -16,6 +16,7 @@ MAKS_PODRUCJA = 20
 MAKS_DULJINA_IMENA = 100  # cijeli ime_prezime (pri registraciji: ime + razmak + prezime)
 MAKS_DULJINA_NAZIVA = 200  # naziv organizacije
 
+#objekt za provjeru poveznica
 _provjera_url = TypeAdapter(HttpUrl)
 
 
@@ -31,7 +32,8 @@ def normaliziraj_tekst(vrijednost: str) -> str:
 def je_ispravno_ime(vrijednost: str) -> bool:
     return bool(vrijednost) and all(rijec.isalpha() for rijec in vrijednost.split(" "))
 
-
+# Funkcija za provjeru imena i prezimena ili punog imena. Normalizira tekst, provjerava da nije prazan 
+# i da sadrži samo slova i razmake. Ako nije ispravno, baca HTTPException s odgovarajućim kodom.
 def _provjeri_ime(vrijednost: str, kod_obavezno: str, kod_neispravno: str) -> str:
     vrijednost = normaliziraj_tekst(vrijednost)
     if not vrijednost:
@@ -70,7 +72,7 @@ def provjeri_puno_ime(ime_prezime: str) -> str:
 
 
 # Naziv organizacije: ista normalizacija kao ime, ali bez pravila "samo slova",
-# jer naziv smije sadržavati brojeve i znakove ("Studio 54", "Ars & Co. d.o.o.").
+# jer naziv smije sadržavati brojeve i znakove ("Studio 54", "Arts & kraft. d.o.o.").
 def provjeri_naziv_organizacije(naziv: str | None) -> str:
     naziv = normaliziraj_tekst(naziv or "")
     if not naziv:
@@ -78,7 +80,8 @@ def provjeri_naziv_organizacije(naziv: str | None) -> str:
     _provjeri_duljinu(naziv, MAKS_DULJINA_NAZIVA, "naziv_organizacije_predug")
     return naziv
 
-
+# Vraća retke aktivnih područja iz baze, po zadanim šiframa. 
+# Ako neka šifra ne postoji ili nije aktivna, vraća se manji broj redaka.
 def aktivna_podrucja(db: Session, sifre: set) -> list:
     return list(db.execute(
         text("""
@@ -105,10 +108,15 @@ def provjeri_podrucja(db: Session, sifre: set) -> list:
 
 # Prazna polja se zanemaruju; ostale poveznice moraju biti ispravni http(s) URL-ovi.
 def ocisti_poveznice(vrijednosti: list[str]) -> list[str]:
-    poveznice = [poveznica for poveznica in vrijednosti if poveznica]
+    #praznjenje praznih stringova iz vrijednosti
+    poveznice = []
+    for poveznica in vrijednosti:
+        if poveznica:
+            poveznice.append(poveznica)
+
     if len(poveznice) > MAKS_POVEZNICA:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "previse_poveznica")
-
+    # provjera ispravnosti poveznice
     try:
         for poveznica in poveznice:
             _provjera_url.validate_python(poveznica)

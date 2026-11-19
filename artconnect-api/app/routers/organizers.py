@@ -37,7 +37,7 @@ def dohvati_profil_organizatora(db: Session, organizator_id: uuid.UUID) -> dict:
         "ovjeren": organizator.ovjeren,
     }
 
-
+# Dohvati profil trenutnog organizatora
 @router.get("/me")
 def moj_profil(
     trenutni: TrenutniKorisnik = Depends(require_role(Uloga.organizator)),
@@ -45,7 +45,7 @@ def moj_profil(
 ):
     return dohvati_profil_organizatora(db, trenutni.korisnik.id)
 
-
+# Spremi profil trenutnog organizatora. Polja koja nisu poslana ostaju nepromijenjena.
 @router.put("/me")
 def spremi_moj_profil(
     podaci: ProfilOrganizatoraUlaz,
