@@ -22,28 +22,25 @@ Kratice članova tima:
 
 ## A.3 Aktivnosti i doprinosi članova
 
-Sate nisu zapisivali svi članovi pa je stupac „Prijavljeni sati” ostavljen da ga svaki član sam upiše. Rezultati su preuzeti iz povijesti zapisa promjena.
-
-
-
 | Aktivnost ili rezultat | Član | Prijavljeni sati | Reprezentativni rezultat ili poveznica |
 | --- | --- | --- | --- |
 |  Podešavanje početne strukture projekta i početne ER sheme| MC | 1.5h |  |
 |  Uspostava AWS servera i SQL baze podataka| MC | 2h |  |
 |  Izrada projektne specifikacije | MC | 1h | [1-Projekt.md](/docs/1-Projekt.md) |
 |  Specifikacija zahtjeva | BJ, MC, LK | 4.5h | [2-Analiza-zahtjeva.md](/docs/2-Analiza%20zahtjeva.md) |
-|  Izrada sučelja za prijavu i registraciju | AD & MB | Xh |  |
-|  Izrada strukture API-backenda | BJ & VC | Xh |  |
-|  Izrada backenda za prijavu i registraciju | BJ & VC | Xh |  |
-|  Izrada navigacijskog okna za Dashboard | AD & MB | Xh |  |
-|  Ažuriranje, održavanje ER dijagrama i usklađivanje SQL-a | LS | X+ h (još traje) | [4-Arhitektura-i-oblikovanje/4.3.1](/docs/4-Arhitektura-i-oblikovanje.md#431-er-dijagram-i-model-podataka) |
-|  Specifikacija ER dijagrama u dokumentaciji | LS | Xh 
+|  Izrada sučelja za prijavu i registraciju | AD & MB | 2h |  |
+|  Izrada kostura FastAPI-backenda | BJ & VC | 1+1h |  |
+|  Izrada backenda za prijavu i registraciju | BJ & VC | 8+10h |  |
+|  Izrada navigacijskog okna za Dashboard | AD & MB | 2h |  |
+|  Ažuriranje, održavanje ER dijagrama i usklađivanje SQL-a u production bazi | LS | (kontinuirano, on call) |  |
+|  Specifikacija ER dijagrama u dokumentaciji | LS | Xh | [4-Arhitektura-i-oblikovanje/4.3.1](/docs/4-Arhitektura-i-oblikovanje.md#431-er-dijagram-i-model-podataka) |
 |  Izrada funkcionalnosti: Postavke (korisnika) | LS | Xh | |
-|  Izrada sučelja: Moj-portfolio | AD | Xh | |
-|  Izrada sučelja: Moje-prilike | MB | Nije gotovo još | |
+|  Izrada sučelja: Moj-portfolio | AD | 5.5h | |
+|  Izrada sučelja: Moje-prilike | MB | 5.5h+ (još nije gotovo) | |
 |  Postavljanje S3 bucketa i test-bencha | MC | 2.5h | |
-|  Izrada backenda za upload medija t.d. se podržava funkcionalnost portfolija i prilika | BJ & VC | 2.5h | |
+|  Izrada backenda za upload medija t.d. se podržava funkcionalnost portfolija i prilika | BJ & VC | 4+2h | |
 |  Izrada obrazaca uporabe | LK | Xh | [3-Obrasci-uporabe.md](/docs/3-Obrasci-uporabe.md) |
+|  Izrada reprezentativnog UML dijagram razreda | LK | Xh | [4-Arhitektura-i-oblikovanje](/docs/4-Arhitektura-i-oblikovanje.md) |
 
 
 ## A.4 Pregled promjena u repozitoriju
