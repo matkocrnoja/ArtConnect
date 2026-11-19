@@ -13,7 +13,7 @@ from app.sesija import (
     postavi_sesiju,
     procitaj_token_sesije,
 )
-
+# definiranje mogucih uloga zbog organizacijskih razloga
 TABLICE_ULOGA = {
     Uloga.umjetnik: "umjetnici",
     Uloga.organizator: "organizatori",
@@ -32,6 +32,7 @@ def je_blokiran(korisnik) -> bool:
     return getattr(korisnik, "status_racuna", None) == "blokiran"
 
 
+#funkcija koja sa baze ucitava trajanje sesije i vraca int u sekundama
 def trajanje_sesije_s(db: Session, uloga: Uloga) -> int:
     vrijednost = db.execute(
         text("SELECT vrijednost FROM postavke_sustava WHERE kljuc = :kljuc"),
@@ -64,6 +65,7 @@ def get_current_user(
     if je_blokiran(korisnik):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "racun_blokiran")
 
+    #ako je proslo pola trajanje sesije, onda se ona obnavlja
     if proteklo > trajanje / 2:
         postavi_sesiju(response, korisnik.id, uloga)
 

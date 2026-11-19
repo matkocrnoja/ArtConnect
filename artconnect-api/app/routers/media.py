@@ -22,6 +22,7 @@ class PostavkeMedia:
     max_datoteka_po_djelu: int
     max_privitaka_po_prilici: int
 
+# Funkcija kojom se u frontend šalju aktualni podatci o formatu medija koji se prihvaćaju
 @router.get("/settings", status_code=status.HTTP_200_OK)
 def dohvati_postavke_media(db: Session = Depends(get_db)) -> PostavkeMedia:
     redovi = db.execute(
@@ -109,7 +110,7 @@ def upload_privitaka(
 
     return {"djelo_id": djelo.id, "datoteke": datoteke}
 
-
+# dohvacanje djela preko id-a, provjera za dostupnost radi se u middleware.py
 @router.get("/djela/{umjetnik_id}/{djelo_id}/{datoteka_id}")
 def dohvati_datoteku(
     kljuc: str = Depends(provjeri_pristup_datoteci),

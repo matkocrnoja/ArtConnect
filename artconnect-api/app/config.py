@@ -6,7 +6,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 ENV_DATOTEKA = Path(__file__).resolve().parent.parent / ".env"
 
-
+# postavke za ucitavanje sa .env
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=ENV_DATOTEKA, extra="ignore", env_ignore_empty=True
@@ -36,6 +36,6 @@ class Settings(BaseSettings):
         return vrijednost.rstrip("/")
 
 
-@lru_cache
+@lru_cache  #provodi se jedanput, svaki sljedeci poziv se samo salje spremljen odgovor
 def get_settings() -> Settings:
     return Settings()

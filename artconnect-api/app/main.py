@@ -15,7 +15,7 @@ app.include_router(podrucja.router)
 app.include_router(media.router)
 app.include_router(portfolio.router)
 
-
+# testne rute za provjeru povezanosti sa backendom / bazom
 @app.get("/health")
 def health():
     return {"status": "ok"}

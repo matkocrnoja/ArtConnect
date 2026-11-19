@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from app.config import get_settings
 
 settings = get_settings()
-
+# postavljanje obaveznih parametara
 engine = create_engine(
     settings.database_url.get_secret_value(),
     pool_size=settings.db_pool_size,

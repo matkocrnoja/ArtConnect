@@ -34,9 +34,10 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 MAKS_POVEZNICA = 5
 
+#objekt za provjeru poveznica
 _provjera_url = TypeAdapter(HttpUrl)
 
-
+#model u kojem se šalju podatci za registraciju
 class Registracija(BaseModel):
     model_config = ConfigDict(str_strip_whitespace=True)
 
@@ -65,7 +66,7 @@ def pronadi_korisnika(db: Session, uloga: Uloga, sub: str):
         {"sub": sub},
     ).first()
 
-
+#od baze trazi aktivna podrucja, vraca samo ona koja postoje i koja su aktivna - za tu sifru
 def aktivna_podrucja(db: Session, sifre: set) -> list:
     return list(db.execute(
         text("""
@@ -77,10 +78,15 @@ def aktivna_podrucja(db: Session, sifre: set) -> list:
 
 
 def ocisti_poveznice(vrijednosti: list[str]) -> list[str]:
-    poveznice = [poveznica for poveznica in vrijednosti if poveznica]
+    #praznjenje praznih stringova iz vrijednosti
+    poveznice = []
+    for poveznica in vrijednosti:
+        if poveznica:
+            poveznice.append(poveznica)
+    
     if len(poveznice) > MAKS_POVEZNICA:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "previse_poveznica")
-
+    # provjera ispravnosti poveznice
     try:
         for poveznica in poveznice:
             _provjera_url.validate_python(poveznica)
@@ -101,10 +107,14 @@ def novi_umjetnik(db: Session, podaci: Registracija, zajednicko: dict) -> uuid.U
 
     poveznice = ocisti_poveznice(podaci.poveznice)
 
-    # Portfolio mora postojati prije umjetnika jer je umjetnici.id strani ključ na njega.
+    # portfolio mora postojati prije umjetnika jer je umjetnici.id strani ključ na njega
+    
+    # unos za portfolio
     korisnik_id = db.execute(
         text("INSERT INTO portfolio (umjetnik_id) VALUES (gen_random_uuid()) RETURNING umjetnik_id")
     ).scalar_one()
+
+    #unos za umjetnici
     db.execute(
         text("""
             INSERT INTO umjetnici (id, google_subject_id, email, ime_prezime, poveznice)
@@ -112,6 +122,8 @@ def novi_umjetnik(db: Session, podaci: Registracija, zajednicko: dict) -> uuid.U
         """),
         {"id": korisnik_id, **zajednicko, "poveznice": poveznice},
     )
+
+    #unos za umjetnici_podrucja
     db.execute(
         text("""
             INSERT INTO umjetnici_podrucja (umjetnik_id, sifra_podrucja)
@@ -135,7 +147,8 @@ def novi_organizator(db: Session, podaci: Registracija, zajednicko: dict) -> uui
         {**zajednicko, "naziv_organizacije": podaci.naziv_organizacije},
     ).scalar_one()
 
-#3
+#3 ako je prijava preko Googlea uspjela, a korisnik ne postoji, onda se radi o registraciji
+#   provjera registracije i pisanje konkretnih podataka u bazu preko funkcija
 @router.post("/register", status_code=status.HTTP_201_CREATED)
 def register(
     podaci: Registracija,
@@ -165,6 +178,7 @@ def register(
         "email": identitet["email"],
         "ime_prezime": f"{podaci.ime} {podaci.prezime}",
     }
+    # ako prode bez greske, dodaje se novi korisnik
     try:
         if uloga == Uloga.umjetnik:
             korisnik_id = novi_umjetnik(db, podaci, zajednicko)
@@ -179,10 +193,12 @@ def register(
     obrisi_kolacic(response, KOLACIC_REGISTRACIJE)
     return {"id": korisnik_id, "uloga": uloga.value}
 
-#1
+#1 generiranje tokena i preusmjeravanje korisnika na Google prijavu
 @router.get("/google/login")
 async def google_login(request: Request, uloga: Uloga):
+    # uzima se uloga iz GET-a, generira se token te se obadvoje salje u stateu googleu, korisnik se redirecta
     state = f"{uloga.value}.{secrets.token_urlsafe(24)}"
+    # callback adresa je spremljena u .env pod google_redirect_uri
     return await oauth.google.authorize_redirect(
         request, get_settings().google_redirect_uri, state=state
     )
@@ -198,28 +214,40 @@ async def prijava(podaci: Prijava, request: Request):
     )
     return {"url": odlazak.headers["location"]}
 
-#2
+#2 ruta na koju Google vraća nakon prijave
 @router.get("/google/callback")
 async def google_callback(request: Request, db: Session = Depends(get_db)):
+    #provjera greske od strane Googlea
     if request.query_params.get("error") == "access_denied":
         return preusmjeri_s_greskom("odustanak")
-
+    
+    #trazenje tokena od Googlea
     try:
         token = await oauth.google.authorize_access_token(request)
     except (AuthlibBaseError, JoseError, httpx.HTTPError):
         return preusmjeri_s_greskom("neuspjela_prijava")
 
-    podaci = token.get("userinfo") or {}
+    podaci = token.get("userinfo")
+    if podaci is None:
+        return preusmjeri_s_greskom("neuspjela_prijava")
+    
     sub, email = podaci.get("sub"), podaci.get("email")
     if not sub or not email:
         return preusmjeri_s_greskom("neuspjela_prijava")
 
-    # State je "uloga.nasumicno" (registracija) ili "uloga.prijava.nasumicno" (samo prijava).
+    # state je "uloga.nasumicno" (registracija) ili "uloga.prijava.nasumicno" (samo prijava).
     dijelovi_statea = request.query_params["state"].split(".")
+    # state moze biti u dva oblika kad se prihvaca natrag od Googlea
+    #   registracija (google_login): umjetnik.xxxxyyyyzzzz
+    #   prijava (prijava): umjetnik.prijava.xxxxyyyyzzzz
     uloga = Uloga(dijelovi_statea[0])
     samo_prijava = len(dijelovi_statea) == 3 and dijelovi_statea[1] == "prijava"
+
+    # run_in_threadpool pokrene sporu sinkronu funkciju pronadi_korisnika u zasebnoj dretvi, 
+    # da server za vrijeme cekanja baze moze obradivati druge zahtjeve umjesto da stoji
     korisnik = await run_in_threadpool(pronadi_korisnika, db, uloga, sub)
 
+    #ako korisnik ne postoji, prijava salje gresku, inace se salje na registraciju i radi novi korisnik
     if korisnik is None:
         if uloga == Uloga.administrator:
             return preusmjeri_s_greskom("nije_administrator")
@@ -238,12 +266,13 @@ async def google_callback(request: Request, db: Session = Depends(get_db)):
     if je_blokiran(korisnik):
         return preusmjeri_s_greskom("racun_blokiran")
 
+    #ako korisnik postoji, postavljaju se ispravni podatci i preusmjerava se na dashboard
     odgovor = preusmjeri("/dashboard")
     postavi_sesiju(odgovor, korisnik.id, uloga)
     obrisi_kolacic(odgovor, KOLACIC_REGISTRACIJE)
     return odgovor
 
-#4
+#4 ruta koja sluzi za dobivanje podataka o trenutno prijavljenom useru
 @router.get("/me")
 def me(trenutni: TrenutniKorisnik = Depends(get_current_user)):
     korisnik = trenutni.korisnik
@@ -258,7 +287,7 @@ def me(trenutni: TrenutniKorisnik = Depends(get_current_user)):
     return odgovor
 
 
-# Bez get_current_user: odjava mora proći i s isteklom sesijom, a obnova bi vratila kolačić.
+# Bez get_current_user: odjava mora proći i s isteklom sesijom, a obnova bi vratila kolačić
 #5
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
 def logout(response: Response):
