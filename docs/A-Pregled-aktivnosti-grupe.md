@@ -3,13 +3,13 @@
 ## A.1 Evidencija sastanaka
 
 Kratice članova tima: 
-MB = Mia Barada
-VC = Vilim Crčić, 
-MC = Matko Crnoja, 
-AD = Ana Dumbović, 
-BJ = Borna Janežić, 
-LK = Luka Kauzlarić, 
-LS = Leon Sabljak																												
+- MB = Mia Barada
+- VC = Vilim Crčić, 
+- MC = Matko Crnoja, 
+- AD = Ana Dumbović, 
+- BJ = Borna Janežić, 
+- LK = Luka Kauzlarić, 
+- LS = Leon Sabljak																												
 
 | Datum i sudionici | Glavna tema | Donesena odluka ili zadatak  | Poveznica na zadatak ili  rezultat, ako postoji |
 | --- | --- | --- | --- |
@@ -49,24 +49,24 @@ Sate nisu zapisivali svi članovi pa je stupac „Prijavljeni sati” ostavljen 
 ## A.4 Pregled promjena u repozitoriju
 
 ![Contributors](/docs/img/Contributors.png)
+
 Pregled promjena najbolje je vidjeti na [ovoj stranici](https://github.com/matkocrnoja/ArtConnect/issues?q=is%3Aissue+state%3Aclosed), sortirajući od najstarijih do najnovijih zadataka.
 
 Zadatci (kronološki):
-[Sažimanje količine funkcionalnih zahtjeva](https://github.com/matkocrnoja/ArtConnect/issues/1)
-[Izrada komponente za registraciju](https://github.com/matkocrnoja/ArtConnect/issues/2)
-[Registracija koristeći OAuth2.0 (Google)](https://github.com/matkocrnoja/ArtConnect/issues/3)
-[Dashboard prijavljenog umjetnika](https://github.com/matkocrnoja/ArtConnect/issues/4)
-[Izrada i održavanje ER dijagrama](https://github.com/matkocrnoja/ArtConnect/issues/5)
-[Izrada dokumentacije: Obrasci uporabe](https://github.com/matkocrnoja/ArtConnect/issues/6)
-[Usklađivanje frontenda i backenda (registracija, prijava)](https://github.com/matkocrnoja/ArtConnect/pull/7)
-[Postavke umjetnika/organizatora](https://github.com/matkocrnoja/ArtConnect/issues/8)
-[Umjetnik: Moj portfolio - frontend](https://github.com/matkocrnoja/ArtConnect/issues/9)
-[Umjetnik: Moj portfolio - backend](https://github.com/matkocrnoja/ArtConnect/issues/11)
+- [Sažimanje količine funkcionalnih zahtjeva](https://github.com/matkocrnoja/ArtConnect/issues/1)
+- [Izrada komponente za registraciju](https://github.com/matkocrnoja/ArtConnect/issues/2)
+- [Registracija koristeći OAuth2.0 (Google)](https://github.com/matkocrnoja/ArtConnect/issues/3)
+- [Dashboard prijavljenog umjetnika](https://github.com/matkocrnoja/ArtConnect/issues/4)
+- [Izrada i održavanje ER dijagrama](https://github.com/matkocrnoja/ArtConnect/issues/5)
+- [Izrada dokumentacije: Obrasci uporabe](https://github.com/matkocrnoja/ArtConnect/issues/6)
+- [Usklađivanje frontenda i backenda (registracija, prijava)](https://github.com/matkocrnoja/ArtConnect/pull/7)
+- [Postavke umjetnika/organizatora](https://github.com/matkocrnoja/ArtConnect/issues/8)
+- [Umjetnik: Moj portfolio - frontend](https://github.com/matkocrnoja/ArtConnect/issues/9)
+- [Umjetnik: Moj portfolio - backend](https://github.com/matkocrnoja/ArtConnect/issues/11)
 
 U zaključnom komentaru ili listi aktivnosti svakog zadatka nalazi se
-1) Pripadajuća lista commitova koji su zaslužni za ostvarenje zadataka
-ili
-2) Poveznica na pull request u kojem je zadatak zatvoren
+- Pripadajuća lista commitova koji su zaslužni za ostvarenje zadataka ili
+- Poveznica na pull request u kojem je zadatak zatvoren
 
 ## A.5 Ključni inženjerski izazovi i rješenja
 
