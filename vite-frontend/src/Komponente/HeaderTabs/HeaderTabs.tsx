@@ -10,12 +10,12 @@ import { useKorisnik, useOdjava } from '../../context/KorisnikContext';
 const taboviUmjetnik = [
   { label: 'Moj portfolio', path: '/moj-portfolio', value: '/moj-portfolio' },
   { label: 'Moje prijave', path: '/moje-prijave', value: '/moje-prijave' },
-  { label: 'Inbox', value: 'inbox' }
+  { label: 'Inbox', path: '/inbox', value: '/inbox' }
 ];
 
 const taboviOrganizator = [
   { label: 'Moje prilike', path: '/moje-prilike', value: '/moje-prilike' },
-  { label: 'Inbox', value: 'inbox' }
+  { label: 'Inbox', path: '/inbox', value: '/inbox'  }
 ];
 
 

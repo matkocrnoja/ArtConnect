@@ -4,8 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.middleware import setup_cors, setup_session
-from app.routers import art, artists, auth, media, organizers, podrucja
-from app.routers import art, auth, media, podrucja, portfolio
+from app.routers import art, artists, auth, media, organizers, podrucja, portfolio
 
 app = FastAPI(title="ArtConnect API")
 setup_cors(app)

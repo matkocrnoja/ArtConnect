@@ -27,7 +27,7 @@ Cilj platforme je mladim umjetnicima olakšati ulazak u profesionalni svijet umj
 - Mogućnost uvida u statistiku objavljenih prilika (organizatori)
 - Sposobnost prijave u sustav kao administrator
 
-Za potpuni opseg, zahtjeve, oblikovanje i dokaze ispitivanja pogledajte (TODO) [docs](docs/Home.md).
+Za potpuni opseg, zahtjeve, oblikovanje i dokaze ispitivanja pogledajte [docs](/docs/Home.md).
 
 <a id="deployment"></a>
 ## Postavljanje (engl. deployment)
@@ -35,38 +35,79 @@ Za potpuni opseg, zahtjeve, oblikovanje i dokaze ispitivanja pogledajte (TODO) [
 <!-- UPUTA: Ovaj odjeljak opisuje već postavljenu aplikaciju koju se  može otvoriti i isprobati bez lokalnog pokretanja izvornog koda.
 Za Iteraciju 1 i Završni pregled navedite konkretne podatke. Provjerite vodi li URL na javno dostupnu pokrenutu aplikaciju i radi li navedeni tijek uporabe. Nikada ne objavljujte lozinke ni pristupne tokene. -->
 
-**Javno dostupna aplikacija:** (TODO: Nakon deploymenta) [Javni URL]
+**Javno dostupna aplikacija:** 16-171-251-208.nip.io
 
-**Isprobajte:** [Jedna ili dvije kratke radnje koje pokazuju funkcionalan korisnički tijek.] (TODO)
+**Isprobajte:** Registrirajte se kao umjetnik te nakon automatske prijave probajte objaviti nešto u svoj portfolio. Ukoliko nešto krivo upišete prilikom registracije, uvijek možete promijeniti to u postavkama.
 
 **Demonstracija:** [Objasnite kako dobiti potreban ograničeni pristup ako je prijava obavezna; u suprotnom napišite „Korisnički račun nije potreban.” Ovdje ne objavljujte lozinke ni pristupne tokene.] (TODO)
 
-**Ograničenja:** [Kratko navedite ograničenja postavljene inačice ili postavite poveznicu na jedinstveno mjerodavno mjesto u dokumentaciji s poznatim problemima.] (TODO)
+**Ograničenja:** Nema.
 
-[Vodič za postavljanje i pokretanje](docs/6-Postavljanje-instalacija-i-konfiguracija.md) opisuje smještaj aplikacije (engl. hosting) koji tim stvarno koristi. Tim može koristiti Render ili drugu platformu koju ste dogovorili s asistentom/demonstratorom. (TODO)
+(**Trenutno nema vodiča zbog sigurnosnih razloga, pogledajte sekciju Brzi početak / instalacija**)
+[Vodič za postavljanje i pokretanje](docs/6-Postavljanje-instalacija-i-konfiguracija.md) opisuje smještaj aplikacije (engl. hosting) koji tim stvarno koristi. Tim može koristiti Render ili drugu platformu koju ste dogovorili s asistentom/demonstratorom. 
 
 <a id="quick-start"></a>
 ## Brzi početak / instalacija
 
 <!-- Obavezno od Demo 1 nadalje. Zamijenite mjesta za unos naredbama koje je drugi član tima uspješno provjerio nakon čistog kloniranja repozitorija. Detaljne upute za administraciju držite u projektnoj dokumentaciji u direktoriju docs/. -->
 
-**Preduvjeti:** [Navedite potrebno izvršno okruženje (engl. runtime) i verzija, upravitelj paketa (engl. package manager), baza podataka ili vanjska usluga ako je nužna.] (TODO)
-
+**Preduvjeti:**
+- Računalo na kojem se **lokalno** pokreće frontend & backend mora biti spojeno SSH tunelom do krajnjeg poslužitelja (_ssh artconnect_); Kontaktirati voditelja kako biste dobili račun za SSH pristup
+- Najnovija verzija repozitorija je povučena
 ```bash
 git clone https://github.com/matkocrnoja/ArtConnect.git
-cd ...direktorij gdje se to sve nalazi.../ArtConnect
-
-cd vite-frontend
-npm install # ako se prvi put pokrece ili ako ima izmjena u package.json
-npm run dev # pokrece frontend na localhostu
+# ili ako već postoji
+cd <direktorij-repozitorija>
+git checkout master
+git pull
 ```
 
-**Adresa:** localhost:5173 | http://16.171.251.208/
+### Pokretanje SSH tunela (Terminal #1)
+```bash
+ssh artconnect
+# Sustav će prikazati nešto ovakvo
+# (to znači da smo povezani tunelom)
+...
+Last login: <DATE> from <IP>
+imeprezime@ip-adresa:~$ 
+...
+# Na završetku napisati
+imeprezime@ip-adresa:~$ logout
+```
 
-**Konfiguracija:** [Navedite potrebne varijable okruženja (engl. environment variables) ili uputite na sigurnu datoteku `.env.example`; objasnite gdje se dobivaju vrijednosti. Nikada ne stavljajte stvarne pristupne podatke u ovu datoteku, primjer konfiguracije, snimke zaslona, zapise ni zapise promjena (engl. commits).] (TODO)
+### Pokretanje frontenda (Terminal #2)
 
-[Dodajte kratak korak provjere, primjerice koja se stranica treba otvoriti ili koja naredba pokreće osnovnu provjeru.] Za detaljno postavljanje pogledajte [projektnu dokumentaciju](docs/Home.md).
-(TODO)
+```bash
+cd vite-frontend
+npm install
+npm run dev
+```
+
+**Adresa:** localhost:5173
+
+### Pokretanje backenda (Terminal #3)
+Pretpostavlja se da je prvo ikad pokretanje odrađeno i da postoji popunjen .env
+
+Powershell:
+```bash
+> cd .\vite-frontend\
+> # Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+# Naredbu iznad izvršiti samo ako se sljedeća (Activate.ps1) ne aktivira
+> .\.venv\Scripts\Activate.ps1
+> pip install -r requirements.txt
+> uvicorn app.main:app --reload    
+```
+
+**Adresa:** localhost:8000
+
+**Konfiguracija:** 
+Za frontend: nije potrebna. 
+Za backend, prvi put:
+```bash
+cd .\vite-frontend\
+copy .env.example .env 
+# Zatim popuniti .env
+```
 
 ## Tehnologije
 
@@ -92,8 +133,8 @@ npm run dev # pokrece frontend na localhostu
 | Vilim Crčić | Backend |
 
 ## Doprinos projektu
-
-Zadaci se evidentiraju pomoću GitHub Projects/Trello (TODO: Dogovoriti se).
+[Zadatci (GitHub)](https://github.com/matkocrnoja/ArtConnect/issues)
+[Roadmap (GitHub)](https://github.com/users/matkocrnoja/projects/2)
 
 <a id="license"></a>
 

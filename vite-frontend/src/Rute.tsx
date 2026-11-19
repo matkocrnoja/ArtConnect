@@ -9,6 +9,7 @@ import Home from "./Stranice/Home/Home";
 import TestUpload from "./Stranice/TestUpload";
 import Postavke from "./Stranice/Postavke/Postavke";
 import MojPortfolio from "./Stranice/MojPortfolio";
+import NijeDovrseno from "./Stranice/NijeDovrseno";
 
 const Rute = createBrowserRouter([
     {
@@ -52,6 +53,30 @@ const Rute = createBrowserRouter([
                 element: (
                     <ProtectedRoute>
                         <TestUpload />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "/moje-prilike",
+                element: (
+                    <ProtectedRoute>
+                        <NijeDovrseno />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "/moje-prijave",
+                element: (
+                    <ProtectedRoute>
+                        <NijeDovrseno />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "/inbox",
+                element: (
+                    <ProtectedRoute>
+                        <NijeDovrseno />
                     </ProtectedRoute>
                 ),
             },

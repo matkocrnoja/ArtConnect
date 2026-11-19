@@ -1,9 +1,15 @@
 # A. Pregled aktivnosti grupe
 
-
 ## A.1 Evidencija sastanaka
 
-Kratice članova tima: MB = Mia Barada, VC = Vilim Crčić, MC = Matko Crnoja, AD = Ana Dumbović, BJ = Borna Janežić, LK = Luka Kauzlarić, LS = Leon Sabljak																												
+Kratice članova tima: 
+MB = Mia Barada
+VC = Vilim Crčić, 
+MC = Matko Crnoja, 
+AD = Ana Dumbović, 
+BJ = Borna Janežić, 
+LK = Luka Kauzlarić, 
+LS = Leon Sabljak																												
 
 | Datum i sudionici | Glavna tema | Donesena odluka ili zadatak  | Poveznica na zadatak ili  rezultat, ako postoji |
 | --- | --- | --- | --- |
@@ -11,54 +17,68 @@ Kratice članova tima: MB = Mia Barada, VC = Vilim Crčić, MC = Matko Crnoja, A
 | 3.11.2026.; MB, VC,  MC, AD, BJ, LK, LS | Usklađivanje frontenda i backenda te ostvarivanje registracije korisnika |  Odlučeno je da se pri registraciji na formi provjerava samo jesu li ispunjeni ime i prezime; ti se podaci ne povlače iz Google računa|  |   
 | 10. 11. 2026.; BJ, VC, LS, MC | Upoznavanje sa sučeljem za programski (Python) pristup S3 bucketu | BJ, VC, LS su uspješno podesili .env file i povezali se sa S3 bucketom za upload datoteka; Dogovorili smo se za daljnji rad oko backenda |  |                                        
 
-
 ## A.2 Plan rada
-
-**Trenutačni plan:** Plan se vodi u ovoj tablici, a prema podjeli rada dogovorenoj 19. 10. 2026. odgovorni su: VC i BJ za poslužitelj, MC i LS za bazu, MB i AD za klijent, LK za dokumentaciju. 
-
-| Razdoblje | Glavni planirani rad | Odgovorni članovi | Poveznica na zadatke |
-| --- | --- | --- | --- |
-| Ciklus 1 (7. tjedan) | Prijava Google računom, registracija i uloge, uređivanje profila | VC, BJ (poslužitelj); MB, AD (klijent) | [#2 (Izrada komponente za registraciju)](https://github.com/matkocrnoja/ArtConnect/issues/2), [ #3 (Registracija koristeći OAuth2.0 (Google))](https://github.com/matkocrnoja/ArtConnect/issues/3), [#4 (Dashboard prijavljenog umjetnika)](https://github.com/matkocrnoja/ArtConnect/issues/4), [#8 (Postavke umjetnika/organizatora)](https://github.com/matkocrnoja/ArtConnect/issues/8), [auth](../artconnect-api/app/routers/auth.py) |
-| Ciklus 1 (7. tjedan) | Portfolio: djela s datotekama u S3 bucketu | VC, BJ, LS (poslužitelj i baza); AD (klijent) | [#5 Izrada i održavanje ER dijagrama](https://github.com/matkocrnoja/ArtConnect/issues/5), [#9 Umjetnik: Moj portfolio - frontend](https://github.com/matkocrnoja/ArtConnect/issues/9), [#11 Umjetnik: Moj portfolio - backend](https://github.com/matkocrnoja/ArtConnect/issues/11), [portfolio](../artconnect-api/app/routers/portfolio.py), [media](../artconnect-api/app/routers/media.py) |
-| Ciklus 1 (7. tjedan) | Prilike: stvaranje, uređivanje, pregled | MB (klijent) | [#10 Organizator: Moje prilike - frontend](https://github.com/matkocrnoja/ArtConnect/issues/10) |
-| Ciklus 1 (7. tjedan) | Analiza zahtjeva, obrasci uporabe, arhitektura | LK, MC | [#1 Sažimanje količine funkcionalnih zahtjeva](https://github.com/matkocrnoja/ArtConnect/issues/1), [#6 Izrada dokumentacije: Obrasci uporabe](https://github.com/matkocrnoja/ArtConnect/issues/6), [dokument 2](./2-Analiza%20zahtjeva.md), [dokument 3](./3-Obrasci-uporabe.md), [dokument 4](./4-Arhitektura-i-oblikovanje.md)|
-| Ciklus 2 (14. tjedan) | Prijave na prilike, obavijesti, pregled prijava za organizatora, administracija | [TODO: tim upisuje raspodjelu] | [TODO: tim upisuje #issue]|
-
-
-Plan nije dokaz da je planirani rad dovršen; to dokazuju kod i dokumentacija.
+[ArtConnect Roadmap](https://github.com/users/matkocrnoja/projects/2)
 
 ## A.3 Aktivnosti i doprinosi članova
 
 Sate nisu zapisivali svi članovi pa je stupac „Prijavljeni sati” ostavljen da ga svaki član sam upiše. Rezultati su preuzeti iz povijesti zapisa promjena.
 
-| Aktivnost ili rezultat | Član | Reprezentativni rezultat ili poveznica |
-| :--- | :--- | :--- |
-| Opseg projekta i analiza zahtjeva (dok. 1 i 2), kasnije sažimanje zahtjeva | MC, LK |[1-Projekt.md](./1-Projekt.md), [2-Analiza zahtjeva.md](./2-Analiza%20zahtjeva.md) |
-| Obrasci uporabe (dok. 3), sažimanje i ispravak numeracije | LK | [3-Obrasci-uporabe.md](./3-Obrasci-uporabe.md) |
-| Arhitektura i oblikovanje (dok. 4) | MC, LK | [4-Arhitektura-i-oblikovanje.md](./4-Arhitektura-i-oblikovanje.md) |
-| Kostur poslužitelja (FastAPI), prijava i registracija preko OAuth-a | BJ, VC | [auth](../artconnect-api/app/routers/auth.py), [google](../artconnect-api/app/google.py) |
-| Povezivanje klijenta i poslužitelja za prijavu, upload i kontrola pristupa datotekama | VC | [media](../artconnect-api/app/routers/media.py) |
-| Dohvat portfolija, profila i djela | BJ | [portfolio](../artconnect-api/app/routers/portfolio.py) |
-| ER dijagram, ograničenja datoteka i ispravak baze, uređivanje podataka umjetnika i organizatora | LS | [4-2-artconnect-data-ERD.puml](./puml/4-2-artconnect-data-ERD.puml) |
-| Klijent: landing, registracija, prijava i odjava, usmjeravanje dev/prod | MC | [vite-frontend](../vite-frontend) |
-| Klijent: komponente registracije, zaštićene rute, obavijesti (značka nepročitanih) | AD | [vite-frontend](../vite-frontend) |
-| Klijent: zaglavlje s karticama, prilike (kartice, detalji, dodavanje i uređivanje) | MB | grana `prilike-funkcionalnost` |
-| Spajanje klijenta s poslužiteljem za portfolio | MC | zapis promjene „Spajanje frontenda s backendom” (15. 11. 2026.) |
-| S3 testna skripta i sustav korisničkih obavijesti | MC | zapis promjene od 10. 11. 2026. |
+
+
+| Aktivnost ili rezultat | Član | Prijavljeni sati | Reprezentativni rezultat ili poveznica |
+| --- | --- | --- | --- |
+|  Podešavanje početne strukture projekta i početne ER sheme| MC | 1.5h |  |
+|  Uspostava AWS servera i SQL baze podataka| MC | 2h |  |
+|  Izrada projektne specifikacije | MC | 1h | [1-Projekt.md](/docs/1-Projekt.md) |
+|  Specifikacija zahtjeva | BJ, MC, LK | 4.5h | [2-Analiza-zahtjeva.md](/docs/2-Analiza%20zahtjeva.md) |
+|  Izrada sučelja za prijavu i registraciju | AD & MB | Xh |  |
+|  Izrada strukture API-backenda | BJ & VC | Xh |  |
+|  Izrada backenda za prijavu i registraciju | BJ & VC | Xh |  |
+|  Izrada navigacijskog okna za Dashboard | AD & MB | Xh |  |
+|  Ažuriranje, održavanje ER dijagrama i usklađivanje SQL-a | LS | X+ h (još traje) | [4-Arhitektura-i-oblikovanje/4.3.1](/docs/4-Arhitektura-i-oblikovanje.md#431-er-dijagram-i-model-podataka) |
+|  Specifikacija ER dijagrama u dokumentaciji | LS | Xh 
+|  Izrada funkcionalnosti: Postavke (korisnika) | LS | Xh | |
+|  Izrada sučelja: Moj-portfolio | AD | Xh | |
+|  Izrada sučelja: Moje-prilike | MB | Nije gotovo još | |
+|  Postavljanje S3 bucketa i test-bencha | MC | 2.5h | |
+|  Izrada backenda za upload medija t.d. se podržava funkcionalnost portfolija i prilika | BJ & VC | 2.5h | |
+|  Izrada obrazaca uporabe | LK | Xh | [3-Obrasci-uporabe.md](/docs/3-Obrasci-uporabe.md) |
 
 
 ## A.4 Pregled promjena u repozitoriju
 
-**Prikaz aktivnosti repozitorija:** [Contributors](https://github.com/matkocrnoja/ArtConnect/graphs/contributors); razdoblje od 12. 10. do 17. 11. 2026.
+![Contributors](/docs/img/Contributors.png)
+Pregled promjena najbolje je vidjeti na [ovoj stranici](https://github.com/matkocrnoja/ArtConnect/issues?q=is%3Aissue+state%3Aclosed), sortirajući od najstarijih do najnovijih zadataka.
 
-Prema broju zapisa promjena (uključujući spajanja grana) najviše ih je upisao MC (45, od toga dio pod dva korisnička imena), zatim AD (14), VC (13), LK (12), BJ (7), MB (6) i LS (6). Broj zapisa ne mjeri doprinos: dokumentaciju i oblikovanje, ispitivanje i rad u paru taj prikaz ne prikazuje, a MC je uz vlastiti rad često spajao grane drugih članova.
+Zadatci (kronološki):
+[Sažimanje količine funkcionalnih zahtjeva](https://github.com/matkocrnoja/ArtConnect/issues/1)
+[Izrada komponente za registraciju](https://github.com/matkocrnoja/ArtConnect/issues/2)
+[Registracija koristeći OAuth2.0 (Google)](https://github.com/matkocrnoja/ArtConnect/issues/3)
+[Dashboard prijavljenog umjetnika](https://github.com/matkocrnoja/ArtConnect/issues/4)
+[Izrada i održavanje ER dijagrama](https://github.com/matkocrnoja/ArtConnect/issues/5)
+[Izrada dokumentacije: Obrasci uporabe](https://github.com/matkocrnoja/ArtConnect/issues/6)
+[Usklađivanje frontenda i backenda (registracija, prijava)](https://github.com/matkocrnoja/ArtConnect/pull/7)
+[Postavke umjetnika/organizatora](https://github.com/matkocrnoja/ArtConnect/issues/8)
+[Umjetnik: Moj portfolio - frontend](https://github.com/matkocrnoja/ArtConnect/issues/9)
+[Umjetnik: Moj portfolio - backend](https://github.com/matkocrnoja/ArtConnect/issues/11)
+
+U zaključnom komentaru ili listi aktivnosti svakog zadatka nalazi se
+1) Pripadajuća lista commitova koji su zaslužni za ostvarenje zadataka
+ili
+2) Poveznica na pull request u kojem je zadatak zatvoren
 
 ## A.5 Ključni inženjerski izazovi i rješenja
 
 | Izazov | Poduzeta radnja | Ishod ili preostalo ograničenje |
 | --- | --- | --- |
 | Spajanje poslužitelja na S3 bucket za datoteke djela. | Na sastanku 10. 11. BJ, VC i LS postavili su `.env` datoteku i povezali se s bucketom; MC je napravio testnu skriptu, a VC upload i kontrolu pristupa datotekama. | Upload radi; S3 je izborna konfiguracija pa poslužitelj bez nje odgovara statusom 503. |
-| Poslužitelj se nije pokretao na Windowsu. | MC je preskočio `uvloop` na Windowsu. | Lokalni razvoj radi na obje platforme. |
-| Stranica Moj portfolio napravljena s lažnim (MSW) podacima nije odgovarala poslužitelju. | MC je 14. 11. poništio tu izmjenu, a 15. 11. klijent je spojen na poslužitelj. | Portfolio radi s pravim podacima iz API-ja. |
 | Na Windowsu `mimetypes` ne vraća nastavak za `image/webp`, pa su ključevi u S3 bucketu ostajali bez nastavka. | U `s3storage.py` dodan je zaobilazni put koji vrstu `image/webp` rastavlja i uzima zadnji dio. | Datoteke tog formata dobivaju nastavak `webp` na svim platformama. |
 | Zahtjevi su bili preopširni za pregled. | LK i MC spojili su srodne zahtjeve i skratili kriterije (1. 11., vidi odjeljak 2.5). | Zahtjevi u dokumentu 2 sažeti su na 28 funkcijskih. |
+| Spajanjem grana u korijenski direktorij repozitorija dospio je cijeli `node_modules` (141 datoteka, ~60 000 redaka) zajedno s `package.json` izvan frontend projekta. | MC je poništio spajanje (`dee4988`) i uklonio `package.json` i `package-lock.json` iz korijena (`63b8b90`), tako da se ovisnosti instaliraju samo unutar `vite-frontend/`. | U repozitoriju više nema praćenih datoteka iz `node_modules`. Ograničenje: `node_modules` je ignoriran samo u `vite-frontend/.gitignore`; korijen repozitorija nema vlastiti `.gitignore`. |
+| Instalacija backend ovisnosti nije uspijevala na Windows računalima članova tima jer biblioteka `uvloop` ne podržava Windows. | MC je ovisnost označio uvjetno: `uvloop==0.23.0; sys_platform != "win32"` (`f54a0b9`). | `pip install -r requirements.txt` radi na Windowsima i na Linux poslužitelju; na Windowsima se koristi zadana asyncio petlja. |
+| Frontend je imao fiksnu adresu API-ja, a lokalni razvoj (Vite + uvicorn na :8000) i produkcija (nginx) zahtijevaju različite adrese. | MC je u `vite-frontend/src/api/client.ts` uveo odabir adrese prema okruženju (`8eb2ecb`): `http://localhost:8000` u razvoju, `/api` u produkciji, gdje nginx prosljeđuje zahtjeve uvicornu. | Isti kod radi lokalno i na poslužitelju bez ručnih izmjena prije postavljanja. |
+| Ime i prezime povlačili su se iz Google računa, a ti podaci nisu uvijek odgovarali stvarnom imenu korisnika ili su nedostajali. | Na sastanku 3. 11. 2026. odlučeno je da korisnik ime i prezime unosi sam; VC je uklonio preuzimanje tih podataka od Googlea i dodao provjeru na backendu i frontendu (`f55fd07`). LS je kasnije dodao pravilo "samo slova i razmaci” (`74d207c`) te NFC normalizaciju i ograničenja duljine (`fbdee25`). | Ime se provjerava jednako na klijentu i poslužitelju, a baza dodatno ograničava duljinu polja. |
+| U ER modelu i bazi strani ključ između umjetnika i portfolija bio je postavljen u krivom smjeru. | LS je ispravio relaciju u bazi, dodao ograničenja duljine imena i naziva organizacije te ažurirao ER dijagram (`fbdee25`). | Shema baze i ER dijagram u [4.3.1](/docs/4-Arhitektura-i-oblikovanje.md#431-er-dijagram-i-model-podataka) su usklađeni. |
+
+---
