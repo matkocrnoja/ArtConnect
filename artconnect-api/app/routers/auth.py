@@ -18,6 +18,8 @@ from app.config import get_settings
 from app.database import get_db
 from app.dependencies import TABLICE_ULOGA, TrenutniKorisnik, get_current_user, je_blokiran
 from app.google import oauth
+# Pravila za podatke profila zajednička su s rutama /artists/me i /organizers/me,
+# pa registracija i stranica Postavke uvijek provjeravaju podatke na isti način.
 from app.profil import (
     ocisti_poveznice,
     provjeri_ime_prezime,
@@ -40,6 +42,10 @@ from app.sesija import (
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
+# Tijelo zahtjeva POST /auth/register. Model samo prima podatke; sva pravila
+# (obavezna polja, dopušteni znakovi, duljine, broj područja i poveznica) provjeravaju se
+# funkcijama iz app/profil.py, koje vraćaju kodove grešaka koje frontend prevodi u poruke.
+# E-adresa i Google identitet ne dolaze iz tijela, nego iz kolačića registracije.
 class Registracija(BaseModel):
     model_config = ConfigDict(str_strip_whitespace=True)
 
@@ -70,6 +76,9 @@ def pronadi_korisnika(db: Session, uloga: Uloga, sub: str):
 
 
 def novi_umjetnik(db: Session, podaci: Registracija, zajednicko: dict) -> uuid.UUID:
+    # Područja: barem 1, najviše 20 (duplikati se ne broje jer je skup), sva moraju biti aktivna.
+    # Poveznice: prazne se zanemaruju, najviše 5, svaka mora biti ispravan http(s) URL.
+    # Obje provjere idu prije prvog INSERT-a, pa neispravan zahtjev ništa ne upisuje.
     podrucja = provjeri_podrucja(db, set(podaci.sifre_podrucja))
     poveznice = ocisti_poveznice(podaci.poveznice)
 
@@ -95,6 +104,9 @@ def novi_umjetnik(db: Session, podaci: Registracija, zajednicko: dict) -> uuid.U
 
 
 def novi_organizator(db: Session, podaci: Registracija, zajednicko: dict) -> uuid.UUID:
+    # Naziv organizacije je obavezan i ima najviše 200 znakova. Normalizira se kao ime
+    # (NFC, jedan razmak između riječi), ali smije sadržavati brojeve i znakove ("Studio 54").
+    # U bazu se sprema normalizirana vrijednost, ne izvorni unos.
     naziv = provjeri_naziv_organizacije(podaci.naziv_organizacije)
 
     return db.execute(
@@ -126,6 +138,10 @@ def register(
     if pronadi_korisnika(db, uloga, identitet["sub"]) is not None:
         raise HTTPException(status.HTTP_409_CONFLICT, "vec_registriran")
 
+    # Ime i prezime unose se u zasebna polja, a u bazu idu kao jedan stupac ime_prezime
+    # ("Ime Prezime"). Svako polje je obavezno i smije sadržavati samo slova i razmake;
+    # prije provjere se normalizira (NFC, višak razmaka se uklanja). Spojeni ime_prezime
+    # smije imati najviše 100 znakova, isto kao u Postavkama, gdje se mijenja kao jedno polje.
     ime, prezime = provjeri_ime_prezime(podaci.ime, podaci.prezime)
 
     zajednicko = {
