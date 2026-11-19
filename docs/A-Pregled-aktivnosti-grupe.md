@@ -33,14 +33,14 @@ Kratice članova tima:
 |  Izrada backenda za prijavu i registraciju | BJ & VC | 8+10h |  |
 |  Izrada navigacijskog okna za Dashboard | AD & MB | 2h |  |
 |  Ažuriranje, održavanje ER dijagrama i usklađivanje SQL-a u production bazi | LS | (kontinuirano, on call) |  |
-|  Specifikacija ER dijagrama u dokumentaciji | LS | Xh | [4-Arhitektura-i-oblikovanje/4.3.1](/docs/4-Arhitektura-i-oblikovanje.md#431-er-dijagram-i-model-podataka) |
-|  Izrada funkcionalnosti: Postavke (korisnika) | LS | Xh | |
+|  Specifikacija ER dijagrama u dokumentaciji | LS | 2.5h | [4-Arhitektura-i-oblikovanje/4.3.1](/docs/4-Arhitektura-i-oblikovanje.md#431-er-dijagram-i-model-podataka) |
+|  Izrada funkcionalnosti: Postavke (korisnika) | LS | 6h | |
 |  Izrada sučelja: Moj-portfolio | AD | 5.5h | |
 |  Izrada sučelja: Moje-prilike | MB | 5.5h+ (još nije gotovo) | |
 |  Postavljanje S3 bucketa i test-bencha | MC | 2.5h | |
 |  Izrada backenda za upload medija t.d. se podržava funkcionalnost portfolija i prilika | BJ & VC | 4+2h | |
-|  Izrada obrazaca uporabe | LK | Xh | [3-Obrasci-uporabe.md](/docs/3-Obrasci-uporabe.md) |
-|  Izrada reprezentativnog UML dijagram razreda | LK | Xh | [4-Arhitektura-i-oblikovanje](/docs/4-Arhitektura-i-oblikovanje.md) |
+|  Izrada obrazaca uporabe | LK | 4.5h | [3-Obrasci-uporabe.md](/docs/3-Obrasci-uporabe.md) |
+|  Izrada reprezentativnog UML dijagram razreda | LK | 2.5h | [4-Arhitektura-i-oblikovanje](/docs/4-Arhitektura-i-oblikovanje.md) |
 
 
 ## A.4 Pregled promjena u repozitoriju
