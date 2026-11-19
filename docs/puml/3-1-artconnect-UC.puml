@@ -1,3 +1,23 @@
+' ==============================================================================
+' 3-1-artconnect-UC.puml
+'
+' Svrha:    Prikazuje granicu sustava ArtConnect, primarne aktere (neprijavljeni
+'           posjetitelj, umjetnik, organizator, administrator), sekundarne
+'           aktere (Google OAuth 2.0, Google Maps API, Google Calendar API,
+'           vremenski okidač) i 13 obrazaca uporabe (UC-01 do UC-13) s
+'           odnosima <<extend>> i <<include>>. Tokovi i alternative nisu
+'           prikazani; opisani su u specifikacijama u odjeljku 3.2.
+' Autor:    Luka Kauzlarić, kolegij Programsko inženjerstvo
+' AI:       Prvu inačicu izradio je AI prema opisu obrazaca uporabe; autor ju
+'           je pregledao, uskladio sa zahtjevima i odgovara za konačni sadržaj.
+' Praćenje: Pri dodavanju, spajanju ili brisanju obrasca uporabe te pri
+'           promjeni aktera ažurirati dijagram i specifikacije u 3.2.
+'
+' Diagram level: Requirements (system boundary)
+' Diagram type:  UML Use Case Diagram
+' Version:       1.0
+' ==============================================================================
+
 @startuml 3-1-artconnect-UC
 left to right direction
 skinparam shadowing false

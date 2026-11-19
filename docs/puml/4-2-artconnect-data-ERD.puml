@@ -18,8 +18,8 @@
 ' Version:       1.0
 ' ==============================================================================
 
-@startuml
-title Sustav Artconnect – logički podatkovni model
+@startuml 4-2-artconnect-data-ERD
+title Sustav Artconnect - logički podatkovni model
 left to right direction
 
 skinparam shadowing false

@@ -1,0 +1,147 @@
+' ==============================================================================
+' 4-3-artconnect-portfolio-CD.puml
+'
+' Svrha:    Prikazuje reprezentativni dio oblikovanja poslužitelja: upravljanje
+'           djelima u portfoliju umjetnika (stvaranje, uređivanje, uklanjanje
+'           djela s datotekama) kroz slojeve API, aplikacija, domena i
+'           infrastruktura. Prikazane su odgovornosti, ključne operacije i veze,
+'           a ne svi atributi ni stupci baze (vidi ER dijagram 4-2).
+' Kod:      artconnect-api/app/routers/portfolio.py, media.py, s3storage.py
+'           (ciljno oblikovanje: pravila i SQL se iz routera izdvajaju u
+'           servis, domenu i repozitorije). UploadFile je tip okvira FastAPI.
+' Autor:    Luka Kauzlarić, kolegij Programsko inženjerstvo
+' AI:       Prvu inačicu izradio je AI prema izvornom kodu; autor ju je dužan
+'           pregledati i odgovara za konačni sadržaj.
+' Praćenje: Pri izdvajanju servisa i repozitorija iz routera ažurirati imena
+'           i potpise.
+'
+' Diagram level: Design (representative slice)
+' Diagram type:  UML Class Diagram
+' Version:       1.0
+' ==============================================================================
+
+@startuml 4-3-artconnect-dijagram-razreda
+package "Presentacijski sloj (API)" {
+class PortfolioRouter {
+  +novoDjelo(data:str, files:list[UploadFile]) : DjeloDto
+  +urediDjelo(djeloId:UUID, data:str, removedFileIds:str, files:list[UploadFile]) : DjeloDto
+  +obrisiDjelo(djeloId:UUID) : void
+}
+class DjeloOdgovor <<DTO>>{
+  -id : UUID
+  -title : str
+  -year : int | None
+  -technique : str | None
+  -dimensions : str | None
+  -description : str | None
+  -isPublic : bool
+  -createdAt : datetime
+}
+class DjeloUnos <<DTO>>{
+  -title : str
+  -year : int | None
+  -technique : str | None
+  -dimensions : str | None
+  -description : str | None
+  -isPublic : bool
+}
+class DatotekaOdgovor <<DTO>>{
+  -id : UUID
+  -mimeType : str
+  -sizeBytes : int
+  -url : str
+}
+}
+
+package "Aplikacijski sloj" {
+class PortfolioServis {
+  +novoDjelo(umjetnikId:UUID, unos:DjeloUnos, datoteke:list[UploadFile]) : Djelo
+  +urediDjelo(umjetnikId:UUID, djeloId:UUID, unos:DjeloUnos, uklonjene:list[UUID], nove:list[UploadFile]) : Djelo
+  +obrisiDjelo(umjetnikId:UUID, djeloId:UUID) : void
+}
+}
+
+package Infrastruktura {
+class SqlPostavkeRepozitorij 
+class SqlDjeloRepozitorij 
+class S3DatotecnaPohrana 
+}
+
+package "Domenski sloj" {
+interface DatotecnaPohrana {
+  {abstract} +spremi(kljuc:str, sadrzaj:BinaryIO, mimeTip:str) : void
+  {abstract} +obrisi(kljuc:str) : void
+  {abstract} +velicine(prefiks:str) : dict[str, int]
+}
+interface PostavkeRepozitorij {
+  {abstract} +ogranicenjaDatoteka() : OgranicenjaDatoteka
+}
+interface DjeloRepozitorij {
+  {abstract} +dohvatiVlastitoDjelo(umjetnikId:UUID, djeloId:UUID) : Djelo
+  {abstract} +spremi(djelo:Djelo) : Djelo
+  {abstract} +azuriraj(djelo:Djelo) : void
+  {abstract} +datoteke(djeloId:UUID) : list[DatotekaDjela]
+  {abstract} +dodajDatoteku(datoteka:DatotekDjela) : void
+  {abstract} +obrisiDatoteke(datotekaIds:list[UUID]) : void
+  {abstract} +prilikeSAktivnomPrijavom(djeloId:UUID) : list[Prilika]
+}
+class Djelo {
+  -id : UUID
+  -naziv : str
+  -godinaNastanka : int
+  -javno : bool
+  -uklonjenoU : datetime
+  -razlogUklanjanja : str
+  {static} +izradi(umjetnikId:UUID, unos:DjeloUnos) : Djelo
+  +uredi(djelo:DjeloUnos) : void
+  +ukloni(razlog:str, sada:datetime) : void
+  +jeUklonjeno() : bool
+}
+enum StatusPrilike {
+  PRIPREMA
+  OTVORENO_ZA_PRIJAVE
+  PRIJAVE_ZATVORENE
+  U_PROCESU_ODABIRA
+  ZAVRSENO
+}
+class Prilika {
+  -id : UUID
+  -naziv : str
+  -status : StatusPrilike
+}
+class OgranicenjaDatoteka <<value object>>{
+  -dopusteniMimeTipovi : list[str]
+  -maxVelicinaMb : int
+  -maxDatotekaPoDjelu : int
+  +provjeri(datoteke:list[UploadFile], postojece:int) : void
+}
+class Umjetnik {
+  -id : UUID
+  -imePrezime : str
+}
+class DatotekaDjela {
+  -id : UUID
+  -mimeTip : str
+  +kljuc(umjetnikId:UUID) : str
+}
+}
+
+PortfolioRouter ..> DjeloUnos : prima
+PortfolioRouter --> PortfolioServis : poziva
+DjeloRepozitorij ..> Djelo : pohranjuje
+DatotekaDjela "1..*" --> "1" Djelo : ima
+PortfolioServis ..> OgranicenjaDatoteka : provjerava datoteke
+PortfolioServis ..> Djelo : stvara/mijenja
+PostavkeRepozitorij ..> OgranicenjaDatoteka : vraća
+PortfolioServis --> DjeloRepozitorij
+PortfolioServis --> PostavkeRepozitorij
+PortfolioServis --> DatotecnaPohrana
+SqlDjeloRepozitorij ..|> DjeloRepozitorij
+SqlPostavkeRepozitorij ..|> PostavkeRepozitorij
+S3DatotecnaPohrana ..|> DatotecnaPohrana
+PortfolioRouter ..> DjeloOdgovor : vraća
+DjeloOdgovor --> "0..*" DatotekaOdgovor : files
+Umjetnik "1" --> "0..*" Djelo : vlasnik
+DjeloRepozitorij ..> Prilika : vraća
+Prilika --> StatusPrilike
+@enduml
