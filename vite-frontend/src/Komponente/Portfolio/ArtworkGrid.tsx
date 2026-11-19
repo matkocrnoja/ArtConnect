@@ -3,6 +3,7 @@ import { IconPlus } from "@tabler/icons-react";
 import type { Artwork } from "../../api/types";
 import ArtworkCard from "./ArtworkCard";
 
+// Broj stupaca u mreži: 1 na mobitelu, 2 i 3 na većim ekranima
 const STUPCI = { base: 1, sm: 2, md: 3 };
 
 interface Props {
@@ -14,6 +15,7 @@ interface Props {
     onPreview: (artwork: Artwork) => void;
 }
 
+// Prazne kartice koje se prikazuju dok se portfolio učitava
 export function ArtworkGridSkeleton() {
     return (
         <SimpleGrid cols={STUPCI}>
@@ -34,6 +36,7 @@ export default function ArtworkGrid({ artworks, zauzetoId, onAdd, onEdit, onDele
         <Button leftSection={<IconPlus size={16} />} onClick={onAdd}>Dodaj</Button>
     );
 
+    // Nema djela - prikaži poruku i gumb za dodavanje
     if (artworks.length === 0) {
         return (
             <Card withBorder py="xl">
