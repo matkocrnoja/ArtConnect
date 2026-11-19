@@ -16,6 +16,7 @@ MAKS_PODRUCJA = 20
 MAKS_DULJINA_IMENA = 100  # cijeli ime_prezime (pri registraciji: ime + razmak + prezime)
 MAKS_DULJINA_NAZIVA = 200  # naziv organizacije
 
+#objekt za provjeru poveznica
 _provjera_url = TypeAdapter(HttpUrl)
 
 
@@ -107,10 +108,15 @@ def provjeri_podrucja(db: Session, sifre: set) -> list:
 
 # Prazna polja se zanemaruju; ostale poveznice moraju biti ispravni http(s) URL-ovi.
 def ocisti_poveznice(vrijednosti: list[str]) -> list[str]:
-    poveznice = [poveznica for poveznica in vrijednosti if poveznica]
+    #praznjenje praznih stringova iz vrijednosti
+    poveznice = []
+    for poveznica in vrijednosti:
+        if poveznica:
+            poveznice.append(poveznica)
+
     if len(poveznice) > MAKS_POVEZNICA:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "previse_poveznica")
-
+    # provjera ispravnosti poveznice
     try:
         for poveznica in poveznice:
             _provjera_url.validate_python(poveznica)
