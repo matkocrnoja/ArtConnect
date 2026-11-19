@@ -39,6 +39,7 @@ Sate nisu zapisivali svi članovi pa je stupac „Prijavljeni sati” ostavljen 
 | Kostur poslužitelja (FastAPI), prijava i registracija preko OAuth-a | BJ, VC | [auth](../artconnect-api/app/routers/auth.py), [google](../artconnect-api/app/google.py) |
 | Povezivanje klijenta i poslužitelja za prijavu, upload i kontrola pristupa datotekama | VC | [media](../artconnect-api/app/routers/media.py) |
 | Dohvat portfolija, profila i djela | BJ | [portfolio](../artconnect-api/app/routers/portfolio.py) |
+| Model baze podataka | LS | [baza](https://dbdiagram.io/d/artconnect-1-0-6ae0f2d5ed134e407e23221d) |
 | ER dijagram, ograničenja datoteka i ispravak baze, uređivanje podataka umjetnika i organizatora | LS | [4-2-artconnect-data-ERD.puml](./puml/4-2-artconnect-data-ERD.puml) |
 | Klijent: landing, registracija, prijava i odjava, usmjeravanje dev/prod | MC | [vite-frontend](../vite-frontend) |
 | Klijent: komponente registracije, zaštićene rute, obavijesti (značka nepročitanih) | AD | [vite-frontend](../vite-frontend) |
