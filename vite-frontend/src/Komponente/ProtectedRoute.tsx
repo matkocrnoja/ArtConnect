@@ -5,11 +5,9 @@ import { dohvatiPostavkeMedia } from '../api/media';
 import { KorisnikContext } from '../context/KorisnikContext';
 import type { Korisnik, PostavkeMedia } from '../api/types';
 
-// Sesija je u HttpOnly kolačiću koji JavaScript ne vidi, pa o prijavi odlučuje backend.
-export default function ProtectedRoute({ children }: { children: ReactNode }) {
-    // undefined = još se učitava, null = nije prijavljen
+// dopusteneUloge: ako je zadano, korisnik s drugom ulogom preusmjerava se na "/".
+export default function ProtectedRoute({ children, dopusteneUloge }: { children: ReactNode; dopusteneUloge?: Korisnik['uloga'][] }) {
     const [korisnik, setKorisnik] = useState<Korisnik | null | undefined>(undefined);
-    // undefined = još se učitava, null = dohvat nije uspio (stranica radi, ali upload nije moguć)
     const [postavkeDatoteke, setPostavkeDatoteke] = useState<PostavkeMedia | null | undefined>(undefined);
 
     useEffect(() => {
@@ -18,7 +16,8 @@ export default function ProtectedRoute({ children }: { children: ReactNode }) {
     }, []);
 
     if (korisnik === undefined || postavkeDatoteke === undefined) return null;
-    if (korisnik === null) return <Navigate to="/" replace />;
+    if (korisnik === null) return <Navigate to="/prijava" replace />;
+    if (dopusteneUloge && !dopusteneUloge.includes(korisnik.uloga)) return <Navigate to="/" replace />;
     const vrijednost = {
         korisnik,
         postavkeDatoteke,

@@ -1,15 +1,14 @@
-import mimetypes
-import uuid
 from dataclasses import dataclass
 
 from botocore.exceptions import ClientError
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
 from fastapi.responses import StreamingResponse
-from sqlalchemy import text
+from sqlalchemy import Row, text
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.s3storage import get_bucket, get_s3
+from app.middleware import provjeri_pristup_datoteci, provjeri_vlasnistvo_djela
+from app.s3storage import get_bucket, get_s3, kljuc_datoteke_djela
 
 router = APIRouter(prefix="/media", tags=["media"])
 
@@ -46,20 +45,19 @@ def dohvati_postavke_media(db: Session = Depends(get_db)) -> PostavkeMedia:
 @router.post("/upload", status_code=status.HTTP_201_CREATED)
 def upload_privitaka(
     privitci: list[UploadFile],
+    djelo: Row = Depends(provjeri_vlasnistvo_djela),
     postavke: PostavkeMedia = Depends(dohvati_postavke_media), # Dohvacanje limita za datoteke
+    db: Session = Depends(get_db),
     s3=Depends(get_s3), # Dohvat S3 wrappera
     bucket: str = Depends(get_bucket), # Dohvat samog bucketa
 ):
-
-    direktorij="/uploadane_slike"
-    # Konkretna implementacija:
-    # direktorij = "/djela/{umjetnik.umjetnik_id}/{djelo_id}"
-    # umjetnik_id zaključiti na temelju pošiljatelja zahtjeva
-    # djelo_id na temelju body.djelo_id
-    # (utvrditi da djelo_id u tijelu UISTINU pripada umjetniku prije nastavka dalje!!!)
+    postojece = db.execute(
+        text("SELECT count(*) FROM datoteke_djela WHERE djelo_id = :djelo_id"),
+        {"djelo_id": djelo.id},
+    ).scalar_one()
 
     # Provjera zadovoljavaju li datoteke limite
-    if len(privitci) > postavke.max_datoteka_po_djelu:
+    if postojece + len(privitci) > postavke.max_datoteka_po_djelu:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "previse_privitaka")
 
     max_velicina_bytes = postavke.max_velicina_datoteke_mb * 1024 * 1024
@@ -78,28 +76,43 @@ def upload_privitaka(
 
     # Ako smo došli do ovdje, sve datoteke zadovoljavaju limite
     kljucevi = []
-    for privitak in privitci:
-        extension = mimetypes.guess_extension(privitak.content_type) or "." + privitak.content_type.split("/")[-1]
-        # Kako guess_extension na win64 sustavima za content_type="image/webp" vraća None
-        # napravljen je fallback koji "image/webp" rastavlja na listu ["image", "webp"] i bira
-        # zadnji dio (-1.) liste - što je upravo "webp"
+    datoteke = []
+    try:
+        for privitak in privitci:
+            datoteka_id = db.execute(
+                text("""
+                    INSERT INTO datoteke_djela (djelo_id, mime_tip)
+                    VALUES (:djelo_id, :mime_tip)
+                    RETURNING id
+                """),
+                {"djelo_id": djelo.id, "mime_tip": privitak.content_type},
+            ).scalar_one()
 
-        identifikator = uuid.uuid4();
-        # Konkretna implementacija:
-        # identifikator = izvrši(INSERT INTO datoteke_djela (djelo_id, mime_tip) RETURNING id).rezultat["id"]
+            kljuc = kljuc_datoteke_djela(
+                djelo.umjetnik_id, djelo.id, datoteka_id, privitak.content_type
+            )
+            s3.upload_fileobj(
+                privitak.file, bucket, kljuc, ExtraArgs={"ContentType": privitak.content_type}
+            )
+            # https://docs.aws.amazon.com/boto3/latest/reference/services/s3/client/upload_fileobj.html
+            kljucevi.append(kljuc)
+            datoteke.append({
+                "id": datoteka_id,
+                "poveznica": f"/media/djela/{djelo.umjetnik_id}/{djelo.id}/{datoteka_id}",
+            })
+        db.commit()
+    except Exception:
+        db.rollback()
+        for kljuc in kljucevi:
+            s3.delete_object(Bucket=bucket, Key=kljuc)
+        raise
 
-        kljuc = direktorij + f"/{identifikator}{extension}"
-        s3.upload_fileobj(
-            privitak.file, bucket, kljuc, ExtraArgs={"ContentType": privitak.content_type}
-        )
-        kljucevi.append(kljuc);
-    return {"kljucevi": kljucevi}
-        # https://docs.aws.amazon.com/boto3/latest/reference/services/s3/client/upload_fileobj.html
+    return {"djelo_id": djelo.id, "datoteke": datoteke}
 
-# :path govori FastAPI-ju da ovaj parametar sadrži generalno višestruko znakova "/"
-@router.get("/get_file/{kljuc:path}")
+
+@router.get("/djela/{umjetnik_id}/{djelo_id}/{datoteka_id}")
 def dohvati_datoteku(
-    kljuc: str,
+    kljuc: str = Depends(provjeri_pristup_datoteci),
     s3=Depends(get_s3),
     bucket: str = Depends(get_bucket),
 ):
