@@ -82,20 +82,22 @@ def novi_umjetnik(db: Session, podaci: Registracija, zajednicko: dict) -> uuid.U
     podrucja = provjeri_podrucja(db, set(podaci.sifre_podrucja))
     poveznice = ocisti_poveznice(podaci.poveznice)
 
-    # portfolio mora postojati prije umjetnika jer je umjetnici.id strani ključ na njega
-    
-    # unos za portfolio
+    # umjetnik mora postojati prije portfolija jer je portfolio.umjetnik_id strani ključ na umjetnici.id
+
+    #unos za umjetnici; id generira baza
     korisnik_id = db.execute(
-        text("INSERT INTO portfolio (umjetnik_id) VALUES (gen_random_uuid()) RETURNING umjetnik_id")
+        text("""
+            INSERT INTO umjetnici (google_subject_id, email, ime_prezime, poveznice)
+            VALUES (:google_subject_id, :email, :ime_prezime, :poveznice)
+            RETURNING id
+        """),
+        {**zajednicko, "poveznice": poveznice},
     ).scalar_one()
 
-    #unos za umjetnici
+    # unos za portfolio, s istim id-om kao umjetnik
     db.execute(
-        text("""
-            INSERT INTO umjetnici (id, google_subject_id, email, ime_prezime, poveznice)
-            VALUES (:id, :google_subject_id, :email, :ime_prezime, :poveznice)
-        """),
-        {"id": korisnik_id, **zajednicko, "poveznice": poveznice},
+        text("INSERT INTO portfolio (umjetnik_id) VALUES (:umjetnik_id)"),
+        {"umjetnik_id": korisnik_id},
     )
 
     #unos za umjetnici_podrucja
@@ -143,6 +145,7 @@ def register(
         raise HTTPException(status.HTTP_403_FORBIDDEN, "registracija_nije_dopustena")
 
     if pronadi_korisnika(db, uloga, identitet["sub"]) is not None:
+        print("vec_registriran korisnik1");
         raise HTTPException(status.HTTP_409_CONFLICT, "vec_registriran")
 
     # Ime i prezime unose se u zasebna polja, a u bazu idu kao jedan stupac ime_prezime
@@ -163,8 +166,9 @@ def register(
         else:
             korisnik_id = novi_organizator(db, podaci, zajednicko)
         db.commit()
-    except IntegrityError:
+    except IntegrityError as e:
         db.rollback()
+        print("vec_registriran korisnik2:", repr(e.orig))
         raise HTTPException(status.HTTP_409_CONFLICT, "vec_registriran")
 
     postavi_sesiju(response, korisnik_id, uloga)
