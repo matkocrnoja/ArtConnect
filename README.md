@@ -90,7 +90,7 @@ Pretpostavlja se da je prvo ikad pokretanje odrađeno i da postoji popunjen .env
 
 Powershell:
 ```bash
-> cd .\vite-frontend\
+> cd .\artconnect-api\
 > # Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 # Naredbu iznad izvršiti samo ako se sljedeća (Activate.ps1) ne aktivira
 > .\.venv\Scripts\Activate.ps1
