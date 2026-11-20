@@ -4,7 +4,7 @@ import type { Artwork } from "../../api/types";
 
 interface Props {
     artwork: Artwork;
-    zauzeto: boolean; // true dok se dohvaćaju detalji ovog djela (gumbi Uredi/Preview su pokrenuti)
+    zauzeto: boolean; // true dok se dohvaćaju detalji ovog djela (gumbi Uredi/Preview se vrte)
     onEdit: (artwork: Artwork) => void;
     onDelete: (artwork: Artwork) => void;
     onPreview: (artwork: Artwork) => void;
