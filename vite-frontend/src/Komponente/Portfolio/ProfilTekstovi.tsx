@@ -62,12 +62,14 @@ export default function ProfilTekstovi({ profil, onSaved }: Props) {
     const [biography, setBiography] = useState(profil.biography);
     const [artDescription, setArtDescription] = useState(profil.artDescription);
 
+    // Gumb "Uredi" - prepisuje trenutni tekst u polja i dopušta uređivanje
     const uredi = () => {
         setBiography(profil.biography);
         setArtDescription(profil.artDescription);
         setUredujem(true);
     };
 
+    // Gumb "Spremi" - šalje tekstove na poslužitelj i zatvara uređivanje
     const spremi = async () => {
         setSpremam(true);
         try {
